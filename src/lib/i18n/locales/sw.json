@@ -40,7 +40,7 @@
     "authTitle": "Karibu tena.",
     "authText": "Ingia ili kuendelea na safari yako na ISG.",
     "registerTitle": "Sura yako mpya inaanzia hapa.",
-    "registerText": "Fungua akaunti ya mwombaji na uthibitishe barua pepe yako.",
+    "registerText": "Fungua akaunti kwa barua pepe na nenosiri.",
     "forgotTitle": "Rudi kwenye akaunti yako.",
     "forgotText": "Tutakutumia kiungo cha kurejesha akaunti ikiwa ipo kwa barua pepe hii.",
     "resetTitle": "Chagua nenosiri jipya.",
@@ -55,7 +55,8 @@
     "adult": "Ninathibitisha kuwa nina miaka 18 au zaidi.",
     "acceptTerms": "Ninakubali masharti na ninatambua taarifa za faragha.",
     "setup": "Huduma hii inaandaliwa. Tafadhali wasiliana na ISG.",
-    "detailsEnglish": "Maelezo ya kina na fomu kwa sasa ziko kwa Kiingereza. Wasiliana na mshauri kwa msaada wa lugha."
+    "detailsEnglish": "Maelezo ya kina na fomu kwa sasa ziko kwa Kiingereza. Wasiliana na mshauri kwa msaada wa lugha.",
+    "confirmPassword": "Thibitisha nenosiri"
   },
   "home": {
     "eyebrow": "Elimu ya kimataifa. Ushauri binafsi.",
@@ -138,8 +139,8 @@
       "Hapana. Watoa ufadhili, vyuo na mamlaka za uhamiaji hufanya maamuzi yao. Tathmini ya awali haihakikishi ufadhili, udahili au visa."
     ],
     [
-      "Naweza kuanza bila akaunti?",
-      "Ndiyo. Jaza tathmini ya awali kama mgeni. Unaweza kufungua akaunti iliyothibitishwa baadaye. Hakuna nyaraka za elimu au utambulisho zinazohitajika sasa."
+      "Ninahitaji akaunti ili kuanza?",
+      "Ndiyo. Fungua akaunti kwa barua pepe na nenosiri kabla ya kuanza ushauri. Huhitaji kuthibitisha barua pepe wakati wa usajili. Maendeleo yako yanahifadhiwa kwenye akaunti."
     ],
     [
       "Nitajua maombi yanatumwa wapi?",

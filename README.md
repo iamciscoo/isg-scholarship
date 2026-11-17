@@ -17,7 +17,7 @@ Use .env.example for another environment. Never commit real environment files. C
 docker compose --env-file .env.local -f compose.yaml -f compose.integrations.yaml up --build -d
 ```
 
-Open http://localhost:3002. The admin dashboard is /admin; /admin/settings manages roles and notification recipients. Consultation requires registration and email verification. Public intake remains disabled pending the remaining provider setup. compose.yaml alone runs the basic app without optional integration files. The image runs non-root; hosted Supabase supplies database, Auth and Storage.
+Open http://localhost:3002. The admin dashboard is /admin; /admin/consultations handles submitted consultations; /dashboard/consultations shows a user’s drafts and request status; /admin/settings manages roles and notification recipients. Consultation requires registration. Public intake remains disabled pending the remaining provider setup. compose.yaml alone runs the basic app without optional integration files. The image runs non-root; hosted Supabase supplies database, Auth and Storage.
 
 ## Verify
 
@@ -39,4 +39,4 @@ The full audit reports unpatched development-tool advisory GHSA-fc5q-39xc-vjpf i
 
 Origin: https://github.com/iamciscoo/isg-scholarship.git. Future updates use git push. Configure hosting secrets separately. GitHub Pages cannot run this application's server-side authentication and API routes; use a Next.js host or Docker behind HTTPS with an authenticated notification scheduler.
 
-[Setup](docs/SETUP.md) | [Architecture](docs/ARCHITECTURE.md) | [Verification](docs/VERIFICATION.md) | [Assets](docs/ASSETS.md) | [Roadmap](docs/ROADMAP.md)
+[Latest UX update](docs/ACCOUNT-UX-UPDATE.md) | [Setup](docs/SETUP.md) | [Architecture](docs/ARCHITECTURE.md) | [Verification](docs/VERIFICATION.md) | [Assets](docs/ASSETS.md) | [Roadmap](docs/ROADMAP.md)

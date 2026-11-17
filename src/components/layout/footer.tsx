@@ -23,6 +23,7 @@ export async function Footer() {
             <Link href="/about">{t.about}</Link>
             <Link href="/services">{t.services}</Link>
             <Link href="/pathways">{t.pathways}</Link>
+            <Link href="/universities">University life</Link>
             <Link href="/how-it-works">{t.journey}</Link>
           </div>
           <div>

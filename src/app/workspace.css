@@ -1,10 +1,11 @@
 .workspace {
   min-height: 100dvh;
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px minmax(0, 1fr);
   background: #f7f8fa;
 }
 .workspace-sidebar {
+  min-width: 0;
   background: #fff;
   border-right: 1px solid var(--line);
   padding: 24px 20px;
@@ -192,13 +193,15 @@ td small {
   gap: 16px;
   align-items: center;
   flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
 }
 .workspace-top form {
   display: inline;
 }
 @media (max-width: 900px) {
   .workspace {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .workspace-sidebar {
     border-right: 0;
@@ -215,6 +218,7 @@ td small {
   }
   .workspace-sidebar nav a {
     white-space: nowrap;
+    flex-shrink: 0;
   }
   .workspace-label {
     display: none;

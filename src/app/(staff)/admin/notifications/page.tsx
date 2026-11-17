@@ -7,12 +7,7 @@ export default async function Notifications({ searchParams }: { searchParams: Pr
   const composerKey = (await searchParams).new || "initial";
   const { db, user, role } = await requireStaff(true);
   const [people, messages] = await Promise.all([
-    db
-      .from("profiles")
-      .select("id,first_name,last_name")
-      .eq("status", "active")
-      .order("created_at", { ascending: false })
-      .limit(500),
+    db.rpc("staff_accounts"),
     db
       .from("account_notifications")
       .select("id,title,body,recipient_id,created_at")
@@ -20,10 +15,12 @@ export default async function Notifications({ searchParams }: { searchParams: Pr
       .limit(30),
   ]);
   if (people.error || messages.error) throw new Error("Notification workspace unavailable");
-  const recipients = people.data.map((p) => ({
-    id: p.id,
-    name: `${p.first_name} ${p.last_name}`.trim() || `Account ${p.id.slice(0, 8)}`,
-  }));
+  const recipients = people.data
+    .filter((p: { status: string }) => p.status === "active")
+    .map((p: { id: string; first_name: string; last_name: string; email: string }) => ({
+      id: p.id,
+      name: `${p.first_name} ${p.last_name}`.trim() ? `${p.first_name} ${p.last_name} · ${p.email}` : p.email,
+    }));
   return (
     <Workspace role={role} email={user.email || ""} active="notifications">
       <h1>Keep your students informed.</h1>
@@ -48,7 +45,8 @@ export default async function Notifications({ searchParams }: { searchParams: Pr
                   <p>{n.body}</p>
                   <small>
                     {n.recipient_id
-                      ? recipients.find((r) => r.id === n.recipient_id)?.name || "One account"
+                      ? recipients.find((r: { id: string; name: string }) => r.id === n.recipient_id)?.name ||
+                        "One account"
                       : "All active accounts"}{" "}
                     · {new Date(n.created_at).toISOString().slice(0, 10)}
                   </small>

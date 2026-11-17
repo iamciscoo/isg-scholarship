@@ -48,7 +48,9 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
     if (!password.success) return { error: password.error.issues[0].message };
     if (fd.get("terms") !== "on" || fd.get("adult") !== "on")
       return { error: "Confirm you are 18 or older and accept the terms and privacy information." };
-    const { error } = await db.auth.signUp({
+    if (fd.get("confirmPassword") !== credentials.data.password)
+      return { error: "The two passwords must match." };
+    const { data: registered, error } = await db.auth.signUp({
       ...credentials.data,
       options: {
         emailRedirectTo: `${url}/auth/callback?next=/consultation`,
@@ -60,16 +62,14 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
         error:
           "We couldn’t start registration. Please try again or use password recovery if you already have an account.",
       };
-    return {
-      message:
-        "Check your email to verify your account. If you already have an account, sign in or use password recovery.",
-    };
+    if (registered.session) redirect(safeNext(String(fd.get("next") || "/dashboard")));
+    return { message: "Your account was created. Sign in to continue." };
   }
   const { data, error } = await db.auth.signInWithPassword({
     ...credentials.data,
     options: captchaRequired ? { captchaToken: captchaToken.data } : undefined,
   });
-  if (error) return { error: "We couldn’t sign you in. Check your details and verify your email first." };
+  if (error) return { error: "We couldn’t sign you in. Check your email and password." };
   const requested = String(fd.get("next") || "");
   if (!requested && data.user) {
     const { data: role } = await db.from("user_roles").select("role").eq("user_id", data.user.id).single();
@@ -80,7 +80,7 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
 }
 export async function signOut() {
   const db = await createClient();
-  await db.auth.signOut({ scope: "global" });
+  await db.auth.signOut({ scope: "local" });
   redirect("/login");
 }
 export async function resetPassword(_state: AuthState, fd: FormData): Promise<AuthState> {
@@ -91,6 +91,6 @@ export async function resetPassword(_state: AuthState, fd: FormData): Promise<Au
   const { error } = await db.auth.updateUser({ password: password.data });
   if (error)
     return { error: "This recovery session could not update your password. Request a new recovery link." };
-  await db.auth.signOut({ scope: "global" });
+  await db.auth.signOut({ scope: "local" });
   return { message: "Your password has been updated. Sign in with your new password." };
 }

@@ -8,7 +8,7 @@ import {
   FileCheck2,
   GraduationCap,
   Plane,
-  ShieldCheck,
+  CircleCheck,
   UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { HomeMotion } from "@/components/public/home-motion";
 import { DestinationStories } from "@/components/public/destination-stories";
 import { getMessages } from "@/lib/i18n/server";
 import { Leaders } from "@/components/public/leaders";
+import { UniversityLife } from "@/components/public/university-life";
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 export default async function Home() {
   const { home: h, ui: t } = await getMessages();
@@ -67,7 +68,7 @@ export default async function Home() {
       </section>
       <div className="promise-strip container">
         {h.promises.map((text, i) => {
-          const Icon = [Compass, ShieldCheck, FileCheck2][i];
+          const Icon = [Compass, CircleCheck, FileCheck2][i];
           return (
             <div key={text}>
               <Icon size={20} />
@@ -103,6 +104,7 @@ export default async function Home() {
         </div>
       </section>
       <Leaders />
+      <UniversityLife />
       <DestinationStories />
       <section className="pathways-section section">
         <div className="container">
@@ -164,7 +166,7 @@ export default async function Home() {
           />
         </div>
         <div className="care-copy">
-          <ShieldCheck size={30} strokeWidth={1.4} />
+          <CircleCheck size={30} strokeWidth={1.4} />
           <h2>{h.careTitle}</h2>
           <p>{h.careText}</p>
           <ul>

@@ -40,7 +40,7 @@
     "authTitle": "Heureux de vous revoir.",
     "authText": "Connectez-vous pour poursuivre votre parcours avec ISG.",
     "registerTitle": "Votre prochain chapitre commence ici.",
-    "registerText": "Créez un compte candidat et vérifiez votre adresse e-mail.",
+    "registerText": "Créez votre compte avec votre adresse e-mail et un mot de passe.",
     "forgotTitle": "Retrouvez votre compte.",
     "forgotText": "Si un compte existe, un lien de récupération sera envoyé.",
     "resetTitle": "Choisissez un nouveau mot de passe.",
@@ -55,7 +55,8 @@
     "adult": "Je confirme avoir au moins 18 ans.",
     "acceptTerms": "J’accepte les conditions et reconnais avoir pris connaissance des informations de confidentialité.",
     "setup": "Ce service est en cours de configuration. Contactez ISG.",
-    "detailsEnglish": "Les informations détaillées et les formulaires sont actuellement en anglais. Contactez un conseiller pour une aide linguistique."
+    "detailsEnglish": "Les informations détaillées et les formulaires sont actuellement en anglais. Contactez un conseiller pour une aide linguistique.",
+    "confirmPassword": "Confirmer le mot de passe"
   },
   "home": {
     "eyebrow": "Études internationales. Conseils personnalisés.",
@@ -153,8 +154,8 @@
       "Non. Les organismes de bourses, universités et autorités d’immigration prennent leurs propres décisions. Une évaluation ne garantit ni financement, ni admission, ni visa."
     ],
     [
-      "Puis-je commencer sans compte ?",
-      "Oui. Remplissez la première évaluation en tant que visiteur. Vous pourrez créer un compte vérifié ensuite. Aucun document scolaire ou d’identité n’est demandé à cette étape."
+      "Faut-il un compte pour commencer ?",
+      "Oui. Créez un compte avec votre adresse e-mail et un mot de passe avant de commencer une consultation. La confirmation par e-mail n’est pas requise. Votre progression est enregistrée dans votre compte."
     ],
     [
       "Saurai-je où mes candidatures sont envoyées ?",

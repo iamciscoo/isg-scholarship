@@ -46,16 +46,8 @@ export async function getLead(db: SupabaseClient, id: string) {
   return { lead: result.data as unknown as Lead | null, error: result.error };
 }
 export async function getAdvisors(db: SupabaseClient) {
-  const roles = await db.from("user_roles").select("user_id").eq("role", "advisor");
-  if (roles.error || !roles.data?.length) return [];
-  const { data } = await db
-    .from("profiles")
-    .select("id,first_name,last_name")
-    .in(
-      "id",
-      roles.data.map((r) => r.user_id),
-    )
-    .eq("status", "active");
+  const { data, error } = await db.rpc("advisor_directory");
+  if (error) return [];
   return (data || []) as Advisor[];
 }
 export async function getLeadNotes(db: SupabaseClient, id: string) {

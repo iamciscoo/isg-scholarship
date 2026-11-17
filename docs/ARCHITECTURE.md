@@ -9,11 +9,11 @@ The supplied product brief is the requirements source. Its final instruction sta
 | Module            | Responsibility                                                                         | Dependencies                |
 | ----------------- | -------------------------------------------------------------------------------------- | --------------------------- |
 | public-site       | Public services, pathways, process, fees and policy information                        | brand assets                |
-| identity          | Verified email accounts, recovery, sessions, database-assigned staff roles, suspension | Supabase Auth               |
+| identity          | Email/password accounts, recovery, sessions, database-assigned staff roles, suspension | Supabase Auth               |
 | assessment-intake | Validated registered-user consultation assessments, consent, reference, lead           | database, Turnstile         |
 | lead-management   | Admin review, stage changes, advisor assignment, notes, audit                          | identity, assessment-intake |
 | notifications     | Durable email outbox with retries and delivery state                                   | assessment-intake, Resend   |
-| applicant-account | Own profile and verified-email assessment linking                                      | identity, assessment-intake |
+| applicant-account | Own profile and account-ID consultation ownership                                      | identity, assessment-intake |
 
 Build order: public-site → assessment-intake → identity → lead-management / applicant-account → notifications → packaging and verification.
 
@@ -21,13 +21,13 @@ Build order: public-site → assessment-intake → identity → lead-management 
 
 Next.js App Router, strict TypeScript, React, Tailwind and owned shadcn-style primitives form one modular monolith. Server components fetch private data, server actions perform authenticated mutations, and route handlers accept public intake and worker calls. Domain validation is shared without sharing server credentials.
 
-Supabase PostgreSQL owns profiles, roles, assessments, leads, consent, audit and the notification outbox. RLS checks current account status and verified database-assigned staff roles. Staff roles can be assigned by an authenticated administrator in the team settings, never through registration metadata. Advisors can read assigned leads only; only administrators assign staff. Applicants can read their own assessments only after verified-email linking. Sensitive writes are transactional database functions with explicit grants.
+Supabase PostgreSQL owns profiles, roles, assessments, leads, consent, audit and the notification outbox. RLS checks current account status and database-assigned staff roles. Staff roles can be assigned by an authenticated administrator in the team settings, never through registration metadata. Advisors can read assigned leads only; only administrators assign staff. Applicants read consultations attached to their authenticated account ID. Email matching cannot claim legacy records. Sensitive writes are transactional database functions with explicit grants.
 
 The `private` schema is not exposed through the Data API and holds internal lead notes, outbox payloads and abuse counters. Future scholarship research belongs there. No confidential scholarship dataset is shipped in public assets, seeded content, API responses or client bundles.
 
 Intake uses a server-only service key to call a narrowly scoped atomic function. Anonymous clients have no direct table insert or select access. Each submission requires schema validation, a same-origin request, body limits, honeypot, Turnstile verification, shared database rate limiting and idempotency. A repeated request must match the original payload. A reference alone does not grant record access.
 
-Supabase SSR uses validated users and refreshed sessions. Staff require an AAL2 TOTP session. Account status is read on every protected operation, rather than trusting role claims. Authorization is also enforced in RLS. Cookies are HttpOnly and SameSite=Lax, Secure over HTTPS.
+Supabase SSR uses validated users and refreshed sessions. The owner requested email/password login without mandatory TOTP or email confirmation. Recovery uses emailed links. Account status is read on every protected operation, rather than trusting role claims. Authorization is also enforced in RLS. Cookies are HttpOnly and SameSite=Lax, Secure over HTTPS.
 
 ## Threat model
 

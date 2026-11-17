@@ -3,15 +3,26 @@ import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Check, CheckCircle2, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, CircleCheck } from "lucide-react";
 import { assessmentFields, assessmentSchema, type AssessmentInput } from "@/lib/validation/assessment";
 import { Button } from "@/components/ui/button";
 import { Turnstile } from "@/components/forms/turnstile";
 import { steps } from "./fields";
 import { AssessmentReview } from "./assessment-review";
+import { saveConsultationDraft } from "@/features/consultations/actions";
 const titles = ["About you", "Your academics", "Your ambitions", "Review & consent"];
-export function AssessmentForm({ enabled, nonce }: { enabled: boolean; nonce?: string }) {
-  const [step, setStep] = useState(0);
+export function AssessmentForm({
+  enabled,
+  nonce,
+  initial = {},
+  initialStep = 0,
+}: {
+  enabled: boolean;
+  nonce?: string;
+  initial?: Partial<AssessmentInput>;
+  initialStep?: number;
+}) {
+  const [step, setStep] = useState(initialStep);
   const [key] = useState(() => crypto.randomUUID());
   const [token, setToken] = useState("");
   const onToken = useCallback((v: string) => setToken(v), []);
@@ -37,6 +48,7 @@ export function AssessmentForm({ enabled, nonce }: { enabled: boolean; nonce?: s
       processingConsent: false,
       marketingConsent: false,
       adultConfirmation: false,
+      ...initial,
     },
     mode: "onBlur",
   });
@@ -47,7 +59,25 @@ export function AssessmentForm({ enabled, nonce }: { enabled: boolean; nonce?: s
     requestAnimationFrame(() => heading.current?.focus());
   }
   async function advance() {
-    if (await form.trigger([...assessmentFields[step]], { shouldFocus: true })) move(step + 1);
+    if (!(await form.trigger([...assessmentFields[step]], { shouldFocus: true }))) return;
+    setPending(true);
+    try {
+      const names = assessmentFields.slice(0, step + 1).flat();
+      const values = form.getValues();
+      const result = await saveConsultationDraft(
+        Object.fromEntries(names.map((name) => [name, values[name]])),
+        step + 1,
+      );
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      move(step + 1);
+    } catch {
+      setError("Your progress could not be saved. Please try again.");
+    } finally {
+      setPending(false);
+    }
   }
   async function submit(data: AssessmentInput) {
     if (!enabled || !token) {
@@ -89,8 +119,8 @@ export function AssessmentForm({ enabled, nonce }: { enabled: boolean; nonce?: s
           eligibility. Your confirmation email is queued for delivery.
         </p>
         <Button asChild>
-          <Link href="/register">
-            Create an account <ArrowRight size={17} />
+          <Link href="/dashboard/consultations">
+            View my consultations <ArrowRight size={17} />
           </Link>
         </Button>
       </section>
@@ -111,7 +141,7 @@ export function AssessmentForm({ enabled, nonce }: { enabled: boolean; nonce?: s
           ))}
         </ol>
         <div className="notice">
-          <ShieldCheck size={22} className="mb-3" />
+          <CircleCheck size={22} className="mb-3" />
           Your assessment is private. It is reviewed by authorized ISG staff.
         </div>
       </aside>
@@ -165,6 +195,7 @@ export function AssessmentForm({ enabled, nonce }: { enabled: boolean; nonce?: s
                 ) : (
                   <input
                     id={field.name}
+                    readOnly={field.name === "email"}
                     {...form.register(field.name)}
                     type={["email", "tel", "number"].includes(field.type || "") ? field.type : "text"}
                     autoComplete={field.type && !["number"].includes(field.type) ? field.type : "off"}
@@ -248,7 +279,13 @@ export function AssessmentForm({ enabled, nonce }: { enabled: boolean; nonce?: s
             Back
           </Button>
           <Button type="submit" disabled={pending || (step === 3 && (!enabled || !token))}>
-            {pending ? "Submitting…" : step === 3 ? "Submit assessment" : "Continue"}
+            {pending
+              ? step === 3
+                ? "Submitting…"
+                : "Saving…"
+              : step === 3
+                ? "Submit consultation"
+                : "Continue"}
             <ArrowRight size={17} />
           </Button>
         </div>

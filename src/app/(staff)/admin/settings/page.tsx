@@ -32,7 +32,7 @@ export default async function Settings() {
       </section>
       <section className="workspace-panel">
         <h2>Account roles</h2>
-        <p>Only verified, active accounts can be assigned a staff role. Every change is audited.</p>
+        <p>Only active accounts can be assigned a staff role. Every change is audited.</p>
         {accounts.data.map((a: { id: string; email: string; role: string; status: string }) => (
           <form key={a.id} action={assignRole} className="workspace-action-row">
             <input type="hidden" name="user" value={a.id} />

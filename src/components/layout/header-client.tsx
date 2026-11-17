@@ -3,7 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { ArrowUpRight, Menu, UserRound, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
+import { AccountMenu } from "./account-menu";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "./language-selector";
 import { NotificationBell } from "@/features/notifications/bell";
@@ -59,29 +60,6 @@ export function HeaderClient({ account }: { account: AccountSummary }) {
               <ArrowUpRight size={16} />
             </Link>
           </Button>
-          <Link
-            className="account-link"
-            href={account?.href || "/login"}
-            aria-label={account ? `${t.workspace}: ${account.name}` : t.signIn}
-          >
-            {account ? (
-              <span className="account-avatar">
-                {account.avatar ? (
-                  <Image src={account.avatar} width={36} height={36} unoptimized alt="" />
-                ) : (
-                  account.initials
-                )}
-              </span>
-            ) : (
-              <UserRound size={20} />
-            )}
-            <span className="account-label">{account ? t.workspace : t.signIn}</span>
-          </Link>
-          {account && (
-            <Link href="/login" className="nav-sign-in">
-              {t.signIn}
-            </Link>
-          )}
           <button
             className="menu-toggle"
             aria-label={open ? t.closeMenu : t.openMenu}
@@ -91,6 +69,7 @@ export function HeaderClient({ account }: { account: AccountSummary }) {
           >
             {open ? <X /> : <Menu />}
           </button>
+          <AccountMenu account={account} />
         </div>
       </div>
       {open && (

@@ -4,6 +4,7 @@ import { authConfigured, intakeConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/session";
 import { AssessmentForm } from "@/features/assessments/assessment-form";
+import { restoreConsultationDraft } from "@/lib/validation/consultation-draft";
 export const metadata = { title: "Start consultation", robots: { index: false, follow: false } };
 export default async function Consultation() {
   if (!authConfigured()) redirect("/register?next=/consultation");
@@ -11,9 +12,29 @@ export default async function Consultation() {
   const {
     data: { user },
   } = await db.auth.getUser();
-  if (!user?.email_confirmed_at) redirect("/register?next=/consultation");
-  await requireUser();
+  if (!user) redirect("/register?next=/consultation");
+  const { profile } = await requireUser();
+  const { data: draft, error } = await db
+    .from("consultation_drafts")
+    .select("data,step")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (error) throw new Error("Consultation progress unavailable");
+  const restored = restoreConsultationDraft(draft?.data || {}, draft?.step);
   return (
-    <AssessmentForm enabled={intakeConfigured()} nonce={(await headers()).get("x-nonce") || undefined} />
+    <AssessmentForm
+      enabled={intakeConfigured()}
+      initialStep={restored.step}
+      initial={{
+        ...restored.data,
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        phone: profile.phone,
+        nationality: profile.nationality,
+        residence: profile.residence,
+        email: user.email || "",
+      }}
+      nonce={(await headers()).get("x-nonce") || undefined}
+    />
   );
 }

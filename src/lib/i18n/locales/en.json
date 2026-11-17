@@ -2,10 +2,10 @@
   "ui": {
     "contact": "Contact",
     "faq": "Help & FAQ",
-    "about": "About ISG",
-    "services": "Our services",
+    "about": "About us",
+    "services": "Services",
     "journey": "How it works",
-    "pathways": "Study pathways",
+    "pathways": "Study paths",
     "signIn": "Sign in",
     "profile": "My profile",
     "workspace": "My workspace",
@@ -40,7 +40,7 @@
     "authTitle": "Welcome back.",
     "authText": "Sign in to continue your journey with ISG.",
     "registerTitle": "Your next chapter starts here.",
-    "registerText": "Create an applicant account and verify your email to continue.",
+    "registerText": "Create your account with your email and a password.",
     "forgotTitle": "Let's get you back in.",
     "forgotText": "We'll send a recovery link if an account exists for your email.",
     "resetTitle": "Choose a new password.",
@@ -55,7 +55,8 @@
     "adult": "I confirm that I am 18 or older.",
     "acceptTerms": "I accept the terms and acknowledge the privacy information.",
     "setup": "This service is awaiting setup. Please contact ISG.",
-    "detailsEnglish": "Detailed guidance and application forms are currently available in English. Contact an advisor for language support."
+    "detailsEnglish": "Detailed guidance and application forms are currently available in English. Contact an advisor for language support.",
+    "confirmPassword": "Confirm password"
   },
   "home": {
     "eyebrow": "International education. Personal guidance.",
@@ -144,8 +145,8 @@
       "No. Scholarship providers, universities and immigration authorities make their own decisions. An initial assessment does not guarantee funding, admission or a visa."
     ],
     [
-      "Can I start without an account?",
-      "Yes. Complete the initial assessment as a guest. You can create a verified account later. No academic or identity documents are required at this stage."
+      "Do I need an account to start?",
+      "Yes. Create an account with your email and password before starting a consultation. Email confirmation is not required to register. Your progress is saved in your account."
     ],
     [
       "Will I know where applications are sent?",

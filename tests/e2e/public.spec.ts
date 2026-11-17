@@ -8,6 +8,7 @@ test("public pages and legacy redirects work", async ({ page, request }) => {
     "/services",
     "/how-it-works",
     "/pathways",
+    "/universities",
     "/faqs",
     "/pricing",
     "/contact",
@@ -32,10 +33,12 @@ test("unauthenticated private routes stay protected", async ({ page, request, ba
     "/admin",
     "/admin/audit",
     "/admin/enquiries",
+    "/admin/consultations",
     "/admin/notifications",
     "/advisor",
     "/dashboard",
     "/dashboard/profile",
+    "/dashboard/consultations",
   ]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/login/);

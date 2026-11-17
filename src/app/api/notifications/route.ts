@@ -7,7 +7,7 @@ export async function GET() {
   const {
     data: { user },
   } = await db.auth.getUser();
-  if (!user?.email_confirmed_at) return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "Sign in required" }, { status: 401 });
   const { data, error } = await db.rpc("account_notification_inbox");
   if (error) return NextResponse.json({ error: "Unavailable" }, { status: 503 });
   return NextResponse.json(data, { headers: { "Cache-Control": "private, no-store" } });

@@ -40,7 +40,7 @@
     "authTitle": "Te damos la bienvenida de nuevo.",
     "authText": "Inicia sesión para continuar tu camino con ISG.",
     "registerTitle": "Tu próximo capítulo empieza aquí.",
-    "registerText": "Crea una cuenta de solicitante y verifica tu correo electrónico.",
+    "registerText": "Crea tu cuenta con tu correo y una contraseña.",
     "forgotTitle": "Recupera tu cuenta.",
     "forgotText": "Si existe una cuenta, enviaremos un enlace de recuperación.",
     "resetTitle": "Elige una nueva contraseña.",
@@ -55,7 +55,8 @@
     "adult": "Confirmo que tengo al menos 18 años.",
     "acceptTerms": "Acepto las condiciones y reconozco la información de privacidad.",
     "setup": "Este servicio se está configurando. Contacta con ISG.",
-    "detailsEnglish": "Los detalles y formularios están actualmente en inglés. Contacta con un asesor para recibir ayuda con el idioma."
+    "detailsEnglish": "Los detalles y formularios están actualmente en inglés. Contacta con un asesor para recibir ayuda con el idioma.",
+    "confirmPassword": "Confirmar contraseña"
   },
   "home": {
     "eyebrow": "Educación internacional. Orientación personal.",
@@ -147,8 +148,8 @@
       "No. Los proveedores de becas, las universidades y las autoridades migratorias toman sus propias decisiones. La evaluación no garantiza financiación, admisión ni visado."
     ],
     [
-      "¿Puedo empezar sin cuenta?",
-      "Sí. Completa la evaluación inicial como visitante. Puedes crear una cuenta verificada después. No necesitas documentos académicos ni de identidad en esta fase."
+      "¿Necesito una cuenta para empezar?",
+      "Sí. Crea una cuenta con tu correo y una contraseña antes de iniciar una consulta. No necesitas confirmar el correo al registrarte. Tu progreso se guarda en tu cuenta."
     ],
     [
       "¿Sabré dónde se envían mis solicitudes?",

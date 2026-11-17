@@ -6,10 +6,11 @@ export default function About() {
   return (
     <>
       <PageHero
-        image="/images/study-1.jpg"
+        image="/images/university-campus-3.jpg"
+        imageAlt="University of Oklahoma campus in autumn"
         label="About ISG"
         title="Ambition deserves a way forward."
-        description="We help students make informed decisions about international education through personal guidance and practical application support."
+        description="We inform and support students throughout the international application process, from understanding their options to preparing applications and following up on the next steps."
       />
       <div className="container page-body">
         <h2>Guidance for the journey ahead.</h2>

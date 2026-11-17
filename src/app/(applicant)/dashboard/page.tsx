@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 export default async function Dashboard() {
   const { db, user, profile, role } = await requireUser();
   if (role !== "applicant") redirect(role === "admin" ? "/admin" : "/advisor");
-  const linked = await db.rpc("link_my_assessments");
   const { data: assessments, error } = await db
     .from("eligibility_assessments")
     .select("id,reference,study_level,preferred_fields,created_at")
@@ -37,7 +36,7 @@ export default async function Dashboard() {
           <strong>{error ? "Unavailable" : assessments?.length || 0}</strong>
         </div>
       </div>
-      {(error || linked.error) && (
+      {error && (
         <p role="alert" className="notice notice-error">
           We couldn’t load your assessment information. Please refresh or contact ISG.
         </p>
@@ -49,8 +48,8 @@ export default async function Dashboard() {
             <ClipboardList size={32} />
             <h3>Tell us where you want to go.</h3>
             <p>
-              Submit an initial assessment using your verified account email. Your assessment will appear here
-              after it is linked securely.
+              Submit an initial assessment using your account. Your assessment will appear here after you
+              submit it.
             </p>
             <Button asChild>
               <Link href="/consultation">Start consultation</Link>

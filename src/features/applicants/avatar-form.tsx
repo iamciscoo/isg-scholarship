@@ -1,31 +1,77 @@
 "use client";
 import Image from "next/image";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { Camera, Upload, UserRound } from "lucide-react";
 import { uploadAvatar } from "./avatar-actions";
 import { Button } from "@/components/ui/button";
 export function AvatarForm({ version }: { version: string | null }) {
   const [state, action, pending] = useActionState(uploadAvatar, {});
+  const [selection, setSelection] = useState<{ url: string; name: string } | null>(null);
+  const [error, setError] = useState("");
+  const input = useRef<HTMLInputElement>(null);
+  const objectUrl = useRef<string | null>(null);
+  useEffect(
+    () => () => {
+      if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
+    },
+    [],
+  );
+  const photo = selection?.url || (version ? `/api/profile/avatar?v=${encodeURIComponent(version)}` : null);
   return (
     <form action={action} className="form-stack avatar-form">
-      <h2>Profile photo</h2>
-      {version && (
-        <Image
-          src={`/api/profile/avatar?v=${encodeURIComponent(version)}`}
-          alt="Your profile photo"
-          width={80}
-          height={80}
-          unoptimized
-          className="profile-photo"
-        />
-      )}
-      <label>
-        Choose a photo
-        <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp" required />
-      </label>
-      <p>JPEG, PNG or WebP, up to 2 MB. Your photo stays private to your account.</p>
-      {state.error && (
+      <div className="avatar-editor">
+        <div className="avatar-preview">
+          {photo ? (
+            <Image unoptimized src={photo} width={104} height={104} alt="Profile photo preview" />
+          ) : (
+            <UserRound size={38} strokeWidth={1.4} />
+          )}
+        </div>
+        <div className="avatar-editor-copy">
+          <h2>Your profile photo</h2>
+          <p>Choose a clear photo of yourself. JPEG, PNG or WebP, up to 2 MB.</p>
+          <input
+            ref={input}
+            className="sr-only"
+            tabIndex={-1}
+            aria-label="Choose profile photo"
+            type="file"
+            name="avatar"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              setError("");
+              if (objectUrl.current) {
+                URL.revokeObjectURL(objectUrl.current);
+                objectUrl.current = null;
+              }
+              setSelection(null);
+              if (!file) return;
+              if (file.size > 2097152 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+                event.target.value = "";
+                setError("Choose a JPEG, PNG or WebP image under 2 MB.");
+                return;
+              }
+              objectUrl.current = URL.createObjectURL(file);
+              setSelection({ url: objectUrl.current, name: file.name });
+            }}
+          />
+          <div className="avatar-buttons">
+            <Button type="button" variant="outline" onClick={() => input.current?.click()} disabled={pending}>
+              <Camera size={17} />
+              {version ? "Change photo" : "Choose photo"}
+            </Button>
+            <Button disabled={!selection || pending}>
+              <Upload size={16} />
+              {pending ? "Saving…" : "Save photo"}
+            </Button>
+          </div>
+          {selection && <span className="avatar-file-name">{selection.name}</span>}
+        </div>
+      </div>
+      {(error || state.error) && (
         <p className="notice notice-error" role="alert">
-          {state.error}
+          {error || state.error}
         </p>
       )}
       {state.message && (
@@ -33,7 +79,6 @@ export function AvatarForm({ version }: { version: string | null }) {
           {state.message}
         </p>
       )}
-      <Button disabled={pending}>{pending ? "Uploading…" : "Save profile photo"}</Button>
     </form>
   );
 }

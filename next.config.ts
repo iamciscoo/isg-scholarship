@@ -8,7 +8,7 @@ const legacy: Record<string, string> = {
   "scholarships.html": "/pathways",
   "scholarship.html": "/pathways",
   "study-abroad.html": "/pathways",
-  "universities.html": "/pathways",
+  "universities.html": "/universities",
   "fellowships.html": "/pathways",
   "grants.html": "/pathways",
   "internships.html": "/pathways",

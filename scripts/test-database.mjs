@@ -32,15 +32,19 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   if (!ready) throw new Error("Test PostgreSQL did not become ready.");
+  const migrations = readdirSync("supabase/migrations")
+    .filter((f) => f.endsWith(".sql"))
+    .sort();
   const files = [
     "tests/fixtures/database-bootstrap.sql",
-    ...readdirSync("supabase/migrations")
-      .filter((f) => f.endsWith(".sql"))
-      .sort()
-      .map((f) => `supabase/migrations/${f}`),
+    ...migrations.filter((f) => f < "202611180010").map((f) => `supabase/migrations/${f}`),
     "tests/integration/database.sql",
     "tests/integration/account-updates.sql",
     "tests/integration/roles-and-alerts.sql",
+    ...migrations.filter((f) => f >= "202611180010").map((f) => `supabase/migrations/${f}`),
+    "tests/integration/consultations.sql",
+    "tests/integration/draft-sync.sql",
+    "tests/integration/advisor-directory.sql",
   ];
   for (const file of files) {
     docker(

@@ -30,5 +30,5 @@ export type Lead = {
   created_at: string;
   eligibility_assessments: Assessment;
 };
-export type Advisor = { id: string; first_name: string; last_name: string };
+export type Advisor = { id: string; first_name: string; last_name: string; email: string };
 export type LeadNote = { id: string; stage: string; reason: string; created_at: string };

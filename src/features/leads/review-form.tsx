@@ -31,7 +31,7 @@ export function ReviewForm({ lead, advisors, admin }: { lead: Lead; advisors: Ad
               <option value="">Not assigned</option>
               {advisors.map((advisor) => (
                 <option key={advisor.id} value={advisor.id}>
-                  {`${advisor.first_name} ${advisor.last_name}`.trim() || advisor.id}
+                  {`${advisor.first_name} ${advisor.last_name}`.trim() || advisor.email}
                 </option>
               ))}
             </select>

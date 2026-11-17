@@ -10,7 +10,7 @@ export async function requireUser() {
     data: { user },
     error,
   } = await db.auth.getUser();
-  if (error || !user || !user.email_confirmed_at) redirect("/login");
+  if (error || !user) redirect("/login");
   const { data: profile } = await db
     .from("profiles")
     .select("id,first_name,last_name,phone,nationality,residence,status,avatar_path,updated_at")

@@ -75,6 +75,18 @@ export function AuthForm({
       )}
       {mode === "register" && (
         <>
+          <div className="field">
+            <label htmlFor="auth-password-confirm">{t.confirmPassword}</label>
+            <input
+              id="auth-password-confirm"
+              name="confirmPassword"
+              type="password"
+              autoComplete="new-password"
+              minLength={12}
+              maxLength={128}
+              required
+            />
+          </div>
           <label className="checkbox-field">
             <input name="adult" type="checkbox" required />
             {t.adult}

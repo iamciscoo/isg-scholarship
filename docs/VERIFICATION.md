@@ -1,6 +1,6 @@
 # Current update
 
-See [18 November update](UPDATE-2026-11-18.md) for the current role-based login, nine migrations, integrations and validation. The record below describes the earlier Phase 1 baseline and is historical.
+See [account and consultation update](ACCOUNT-UX-UPDATE.md) for current registration, thirteen migrations and validation. [The earlier 18 November update](UPDATE-2026-11-18.md) records the integration setup. The Phase 1 record below is historical.
 
 # Verification record
 

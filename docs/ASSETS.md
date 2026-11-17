@@ -18,3 +18,11 @@ Presidential portraits were reused from the user-requested original site: `https
 - study-1.jpg: Tima Miroshnichenko, https://www.pexels.com/photo/friends-walking-near-library-catalogs-6549862/
 - study-2.jpg: Yan Krukau, https://www.pexels.com/photo/man-and-woman-in-library-8199613/
 - study-3.jpg: Kampus Production, https://www.pexels.com/photo/multiethnic-students-doing-research-together-in-library-5940844/
+
+## Account and university update, 18 November 2026
+
+The original universities page was reviewed for visual direction. New campus photos were selected through the authorized Pexels API. University names identify photographed campuses, not ISG partnerships; no scholarship details or rankings are published.
+
+- university-campus-1.jpg: Bruce Taylor, https://www.pexels.com/photo/facade-of-the-university-of-pretoria-engineering-1-building-pretoria-south-africa-19014974/
+- university-campus-2.jpg: Efrem Efre, https://www.pexels.com/photo/jonkoping-university-school-of-engineering-building-39289023/
+- university-campus-3.jpg: An Vuong, https://www.pexels.com/photo/the-university-of-oklahoma-in-autumn-19554793/

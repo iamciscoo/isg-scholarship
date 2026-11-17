@@ -9,7 +9,7 @@ export const getAccountSummary = cache(async (): Promise<AccountSummary> => {
   const {
     data: { user },
   } = await db.auth.getUser();
-  if (!user?.email_confirmed_at) return null;
+  if (!user) return null;
   const { data: p } = await db
     .from("profiles")
     .select("first_name,last_name,avatar_path,updated_at,status")

@@ -76,7 +76,7 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
                 <option value="">All advisors</option>
                 {advisors.map((a) => (
                   <option key={a.id} value={a.id}>
-                    {a.first_name} {a.last_name}
+                    {`${a.first_name} ${a.last_name}`.trim() || a.email}
                   </option>
                 ))}
               </select>

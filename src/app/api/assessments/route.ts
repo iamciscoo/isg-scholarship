@@ -26,13 +26,13 @@ export async function POST(request: Request) {
   const {
     data: { user },
   } = await session.auth.getUser();
-  if (!user?.email_confirmed_at)
+  if (!user)
     return NextResponse.json(
-      { error: "Register and verify your account before starting a consultation." },
+      { error: "Register and sign in to your account before starting a consultation." },
       { status: 401 },
     );
   if (data.email.toLowerCase() !== user.email?.toLowerCase())
-    return NextResponse.json({ error: "Use your verified account email." }, { status: 422 });
+    return NextResponse.json({ error: "Use your account email." }, { status: 422 });
   try {
     await guardIntake(request.headers, turnstileToken, "assessment");
   } catch (err) {
@@ -41,11 +41,12 @@ export async function POST(request: Request) {
       { status: 429 },
     );
   }
-  const result = await adminClient().rpc("submit_assessment", {
+  const result = await adminClient().rpc("submit_my_consultation", {
     p_data: data,
     p_key: idempotencyKey,
     p_hash: payloadHash(data),
     p_team_email: process.env.ISG_TEAM_EMAIL || "",
+    p_user: user.id,
   });
   if (result.error) {
     console.error("assessment_store_failed", { code: result.error.code });

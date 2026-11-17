@@ -6,7 +6,7 @@ export async function GET() {
   const {
     data: { user },
   } = await db.auth.getUser();
-  if (!user?.email_confirmed_at) return new Response(null, { status: 401 });
+  if (!user) return new Response(null, { status: 401 });
   const { data: profile } = await db.from("profiles").select("avatar_path,status").eq("id", user.id).single();
   if (!profile || profile.status !== "active" || !profile.avatar_path?.startsWith(`${user.id}/`))
     return new Response(null, { status: 404 });

@@ -1,0 +1,43 @@
+-- Verify the upgrade from legacy email-linked assessments to strict account ownership.
+set role service_role;
+select public.submit_assessment((select data||'{"email":"legacy@example.invalid"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000001','legacy-hash','');
+reset role;
+insert into auth.users(id,email,email_confirmed_at) values
+ ('00000000-0000-4000-8000-000000000201','legacy@example.invalid',null),
+ ('00000000-0000-4000-8000-000000000202','other-new@example.invalid',null);
+set role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000201","aal":"aal1"}',false);
+select public.link_my_assessments();
+select public.test_assert((select count(*)=0 from public.eligibility_assessments),'unverified address cannot claim legacy email-matched data');
+insert into public.consultation_drafts(user_id,data,step) values(auth.uid(),'{"firstName":"Draft"}',1);
+select public.test_assert((select count(*)=1 from public.consultation_drafts),'account can save its own draft');
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000202","aal":"aal1"}',false);
+select public.test_assert((select count(*)=0 from public.consultation_drafts),'other accounts cannot read drafts');
+do $$ begin insert into public.consultation_drafts(user_id) values('00000000-0000-4000-8000-000000000201');raise exception 'Cross-account draft permitted';exception when insufficient_privilege then null;end $$;
+do $$ begin perform public.submit_my_consultation('{}',gen_random_uuid(),'forged',auth.uid(),'');raise exception 'Direct privileged submission permitted';exception when insufficient_privilege then null;end $$;
+reset role;
+set role service_role;
+select set_config('test.consultation_reference',public.submit_my_consultation((select data||'{"email":"legacy@example.invalid","firstName":"Saved","lastName":"Applicant"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','own-hash','00000000-0000-4000-8000-000000000201',''),false);
+select public.submit_my_consultation((select data||'{"email":"legacy@example.invalid","firstName":"Saved","lastName":"Applicant"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','own-hash','00000000-0000-4000-8000-000000000201','');
+do $$ begin perform public.submit_my_consultation((select data||'{"email":"other-new@example.invalid"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','own-hash','00000000-0000-4000-8000-000000000202','');raise exception 'Cross-account retry attached';exception when raise_exception then if sqlerrm<>'Idempotency mismatch' then raise;end if;end $$;
+reset role;
+set role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000201","aal":"aal1"}',false);
+select public.test_assert((select count(*)=1 from public.my_consultations()),'owner sees only its submitted consultation');
+select public.test_assert((select first_name='Saved' from public.profiles where id=auth.uid()),'consultation details update the profile');
+select public.test_assert((select count(*)=0 from public.consultation_drafts),'submitted draft is removed atomically');
+update public.profiles set first_name='Newer',last_name='Profile',phone='+255711111111',nationality='Kenyan',residence='Kenya' where id=auth.uid();
+insert into public.consultation_drafts(user_id,data,step) values(auth.uid(),'{"firstName":"Next consultation"}',2);
+reset role;
+set role service_role;
+select public.test_assert(public.submit_my_consultation((select data||'{"email":"legacy@example.invalid","firstName":"Saved","lastName":"Applicant"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','own-hash','00000000-0000-4000-8000-000000000201','')=current_setting('test.consultation_reference'),'identical retry returns the original reference');
+do $$ begin perform public.submit_my_consultation((select data||'{"email":"legacy@example.invalid"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','changed-hash','00000000-0000-4000-8000-000000000201','');raise exception 'Changed retry hash permitted';exception when raise_exception then if sqlerrm<>'Idempotency mismatch' then raise;end if;end $$;
+reset role;
+set role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000201","aal":"aal1"}',false);
+select public.test_assert((select first_name='Newer' and last_name='Profile' and phone='+255711111111' and nationality='Kenyan' and residence='Kenya' from public.profiles where id=auth.uid()),'retry preserves newer profile details');
+select public.test_assert((select data='{"firstName":"Next consultation"}'::jsonb and step=2 from public.consultation_drafts where user_id=auth.uid()),'retry preserves the next consultation draft');
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000202","aal":"aal1"}',false);
+select public.test_assert((select count(*)=0 from public.my_consultations()),'other user cannot see consultation status');
+reset role;
+select 'CONSULTATION OWNERSHIP AND UPGRADE TESTS PASSED' as result;

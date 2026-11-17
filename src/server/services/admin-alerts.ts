@@ -23,7 +23,8 @@ export async function dispatchAdminAlerts() {
     failed = 0;
   for (const item of (data || []) as Event[]) {
     const labels: Record<string, string> = {
-      "account.verified": "A new ISG account has been verified.",
+      "account.verified": "An ISG account update is available.",
+      "account.created": "A new student account has been created.",
       "consultation.received": "A new consultation request has arrived.",
       "lead.updated": "An ISG lead has been updated.",
     };
