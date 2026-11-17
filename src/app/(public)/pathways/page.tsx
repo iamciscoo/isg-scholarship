@@ -25,8 +25,8 @@ export default function Pathways() {
                 <li key={detail}>{detail}</li>
               ))}
             </ul>
-            <Link className="text-link" href="/eligibility">
-              Check my eligibility <ArrowUpRight size={17} />
+            <Link className="text-link" href="/consultation">
+              Start consultation <ArrowUpRight size={17} />
             </Link>
           </section>
         ))}

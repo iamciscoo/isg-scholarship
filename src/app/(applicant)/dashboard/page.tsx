@@ -53,7 +53,7 @@ export default async function Dashboard() {
               after it is linked securely.
             </p>
             <Button asChild>
-              <Link href="/eligibility">Check my eligibility</Link>
+              <Link href="/consultation">Start consultation</Link>
             </Button>
           </div>
         ) : (
