@@ -39,6 +39,8 @@ try {
       .sort()
       .map((f) => `supabase/migrations/${f}`),
     "tests/integration/database.sql",
+    "tests/integration/account-updates.sql",
+    "tests/integration/roles-and-alerts.sql",
   ];
   for (const file of files) {
     docker(

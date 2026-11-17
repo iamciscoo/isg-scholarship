@@ -14,7 +14,7 @@ test("public pages and legacy redirects work", async ({ page, request }) => {
     "/privacy",
     "/terms",
     "/cookies",
-    "/eligibility",
+    "/consultation",
     "/login",
     "/register",
     "/forgot-password",
@@ -32,6 +32,7 @@ test("unauthenticated private routes stay protected", async ({ page, request, ba
     "/admin",
     "/admin/audit",
     "/admin/enquiries",
+    "/admin/notifications",
     "/advisor",
     "/dashboard",
     "/dashboard/profile",
@@ -77,7 +78,7 @@ test("FAQ works with the keyboard", async ({ page }) => {
   await expect(page.locator("details").first()).toHaveAttribute("open", "");
 });
 test("homepage and assessment have no serious accessibility violations", async ({ page }) => {
-  for (const path of ["/", "/eligibility", "/contact", "/login"]) {
+  for (const path of ["/", "/register", "/contact", "/login"]) {
     await page.goto(path);
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])

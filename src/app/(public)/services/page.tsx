@@ -33,6 +33,7 @@ export default function Services() {
   return (
     <>
       <PageHero
+        image="/images/study-2.jpg"
         label="Our services"
         title="The right support, at the right step."
         description="From understanding your options to preparing your application, choose guidance that fits where you are in your journey."

@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { dispatchNotifications } from "@/server/services/notifications";
+import { dispatchAdminAlerts } from "@/server/services/admin-alerts";
 export const maxDuration = 180;
 export async function GET(request: Request) {
   const expected = process.env.CRON_SECRET;
@@ -12,8 +13,8 @@ export async function GET(request: Request) {
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
-    const result = await dispatchNotifications();
-    return NextResponse.json(result, { status: result.configured ? 200 : 503 });
+    const [email, admin] = await Promise.all([dispatchNotifications(), dispatchAdminAlerts()]);
+    return NextResponse.json({ email, admin }, { status: email.configured || admin.configured ? 200 : 503 });
   } catch {
     console.error("notification_job_failed");
     return NextResponse.json({ error: "Delivery job unavailable" }, { status: 503 });

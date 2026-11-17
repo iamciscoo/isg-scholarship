@@ -2,17 +2,16 @@ import { expect, it } from "vitest";
 import { canReviewLead, canAssignAdvisor } from "@/lib/auth/permissions";
 import { safeNext, passwordSchema } from "@/lib/validation/auth";
 it("denies applicant access even to their own staff record", () =>
-  expect(canReviewLead("applicant", "a", "a", true, "aal2")).toBe(false));
-it("denies an unassigned advisor", () =>
-  expect(canReviewLead("advisor", "a", "b", true, "aal2")).toBe(false));
-it("denies staff without MFA", () => expect(canReviewLead("admin", "a", null, true, "aal1")).toBe(false));
-it("denies suspended administrators", () =>
-  expect(canReviewLead("admin", "a", null, false, "aal2")).toBe(false));
+  expect(canReviewLead("applicant", "a", "a", true)).toBe(false));
+it("denies an unassigned advisor", () => expect(canReviewLead("advisor", "a", "b", true)).toBe(false));
+it("permits database-assigned active administrators", () =>
+  expect(canReviewLead("admin", "a", null, true)).toBe(true));
+it("denies suspended administrators", () => expect(canReviewLead("admin", "a", null, false)).toBe(false));
 it("permits an active assigned advisor with MFA", () =>
-  expect(canReviewLead("advisor", "a", "a", true, "aal2")).toBe(true));
+  expect(canReviewLead("advisor", "a", "a", true)).toBe(true));
 it("reserves assignments for active MFA administrators", () => {
-  expect(canAssignAdvisor("advisor", true, "aal2")).toBe(false);
-  expect(canAssignAdvisor("admin", true, "aal2")).toBe(true);
+  expect(canAssignAdvisor("advisor", true)).toBe(false);
+  expect(canAssignAdvisor("admin", true)).toBe(true);
 });
 it.each([
   "https://example.com",

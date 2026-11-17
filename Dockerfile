@@ -25,6 +25,7 @@ RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 isg
 COPY --from=builder --chown=isg:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=isg:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=isg:nodejs /app/public ./public
+COPY --from=builder --chown=isg:nodejs /app/scripts/notification-worker.mjs ./scripts/notification-worker.mjs
 RUN mkdir -p .next/cache && chown -R isg:nodejs .next/cache
 USER isg
 EXPOSE 3000

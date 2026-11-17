@@ -2,15 +2,13 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/public/page-hero";
 import { FaqList } from "@/components/public/faq-list";
 import { Cta } from "@/components/public/cta";
+import { getMessages } from "@/lib/i18n/server";
 export const metadata: Metadata = { title: "Frequently asked questions", alternates: { canonical: "/faqs" } };
-export default function Faqs() {
+export default async function Faqs() {
+  const { ui, home } = await getMessages();
   return (
     <>
-      <PageHero
-        label="Common questions"
-        title="Start with a little clarity."
-        description="Understand how ISG works before you share your information or choose a service."
-      />
+      <PageHero label={ui.faq} title={home.faqTitle} description={home.faqText} />
       <div className="container page-body">
         <FaqList />
       </div>

@@ -1,21 +1,20 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-export function Cta() {
+import { getMessages } from "@/lib/i18n/server";
+export async function Cta() {
+  const { home: h, ui: t } = await getMessages();
   return (
     <section className="cta-section container">
       <div>
-        <span className="eyebrow">A world of possibility</span>
         <h2>
-          Your next chapter
-          <br />
-          starts with a conversation.
+          {h.ctaTitle}
         </h2>
-        <p>Bring your ambition. We’ll help you understand the path ahead.</p>
+        <p>{h.ctaText}</p>
       </div>
       <Button asChild>
-        <Link href="/eligibility">
-          Check my eligibility <ArrowUpRight size={19} />
+        <Link href="/consultation">
+          {t.myEligibility} <ArrowUpRight size={19} />
         </Link>
       </Button>
     </section>

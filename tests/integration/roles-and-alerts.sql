@@ -1,0 +1,41 @@
+update private.integration_settings set admin_emails=array['test@example.invalid'],whatsapp_group='123456789@g.us' where id=true;
+select private.queue_admin_event('account.verified','00000000-0000-4000-8000-000000000103');
+select private.queue_admin_event('consultation.received','00000000-0000-4000-8000-000000000103');
+set role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000103","aal":"aal1"}',false);
+select public.test_assert((select count(*)>0 from public.staff_accounts()),'password-authenticated admin can manage verified users');
+select public.assign_staff_role('00000000-0000-4000-8000-000000000102','advisor');
+select public.test_assert((select role='advisor' from public.user_roles where user_id='00000000-0000-4000-8000-000000000102'),'role assignment persisted');
+do $$ begin
+ perform public.assign_staff_role('00000000-0000-4000-8000-000000000103','applicant');raise exception 'Last administrator removed';
+exception when raise_exception then if sqlerrm<>'Keep at least one administrator' then raise; end if;end $$;
+select public.save_admin_alert_emails(array['approved@example.invalid']);
+select public.test_assert(public.admin_alert_settings()->'emails'= '["approved@example.invalid"]'::jsonb,'admin recipient settings persist');
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000102","aal":"aal1"}',false);
+do $$ begin
+ perform public.assign_staff_role(auth.uid(),'admin');raise exception 'Advisor escalated';
+exception when raise_exception then if sqlerrm<>'Access denied' then raise; end if;end $$;
+do $$ begin
+ perform public.save_admin_alert_emails(array['forged@example.invalid']);raise exception 'Advisor changed recipients';
+exception when raise_exception then if sqlerrm<>'Access denied' then raise; end if;end $$;
+reset role;
+select public.test_assert((select count(*)>0 from private.integration_events where event='account.verified'),'verified registration creates durable events');
+select public.test_assert((select count(*)>0 from private.integration_events where event='consultation.received'),'consultation creates durable events');
+set role anon;
+do $$ begin perform public.claim_integration_events(true,true);raise exception 'Anonymous worker allowed';exception when insufficient_privilege then null;end $$;
+reset role;
+set role service_role;
+reset role;
+create table public.test_alert_claims(id uuid primary key);
+grant select,insert on public.test_alert_claims to service_role;
+set role service_role;
+insert into public.test_alert_claims select id from public.claim_integration_events(false,true);
+select public.test_assert((select count(*)>0 from public.test_alert_claims),'worker claims WhatsApp events');
+select public.test_assert((select coalesce(bool_and(not exists(select 1 from public.test_alert_claims c where c.id=n.id)),true) from public.claim_integration_events(false,true) n),'concurrent worker claims do not overlap');
+reset role;
+update private.integration_events set lease_until=now()-interval '1 minute' where state='sending';
+set role service_role;
+select count(*) from public.claim_integration_events(false,true);
+reset role;
+select public.test_assert((select count(*)>0 from private.integration_events where state='uncertain'),'interrupted sends need review rather than duplicate sending');
+select 'ROLE AND ADMIN ALERT TESTS PASSED' as result;

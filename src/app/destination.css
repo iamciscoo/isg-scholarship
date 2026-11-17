@@ -1,0 +1,284 @@
+.hero-scene {
+  position: relative;
+  padding: 12px 12px 28px 0;
+  min-width: 0;
+}
+.hero-cream-plane {
+  position: absolute;
+  inset: 0 0 0 26px;
+  background: var(--cream);
+  border-radius: 110px 18px 90px 18px;
+  transform: rotate(3deg);
+}
+.hero-route-plaque {
+  position: absolute;
+  bottom: 12px;
+  inset-inline-start: -24px;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px 24px;
+  box-shadow: 0 8px 24px #0b23451c;
+  border-radius: 8px;
+  max-width: calc(100% - 12px);
+}
+.hero-route-plaque span {
+  font-size: 11px;
+  font-weight: 550;
+}
+.hero-route-plaque svg {
+  color: #e5c88d;
+  flex-shrink: 0;
+  transform: rotate(45deg);
+}
+.route-plaque-line {
+  width: 40px;
+  border-top: 1px dashed #d0b17c;
+}
+.destination-chapter {
+  padding-block: 72px;
+  background: #f6f3ec;
+}
+.destination-feature {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  align-items: center;
+  gap: 70px;
+}
+.destination-copy h2 {
+  margin-block: 22px;
+  max-width: 380px;
+}
+.destination-copy p {
+  font-size: 14px;
+  line-height: 1.85;
+  margin-bottom: 28px;
+}
+.destination-coordinate {
+  color: var(--gold-ink);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.destination-photo {
+  position: relative;
+  height: 410px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 5px 70px 5px 5px;
+  background: var(--navy);
+}
+.destination-photo img {
+  object-fit: cover;
+}
+.destination-photo figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  color: #fff;
+  background: linear-gradient(transparent, #061b36d9);
+  padding: 50px 24px 20px;
+  font-size: 11px;
+}
+.education-stories {
+  padding-top: 64px;
+}
+.education-stories > h2 {
+  font-size: 25px;
+  max-width: 540px;
+  margin-bottom: 28px;
+}
+.story-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+.education-story {
+  min-height: 280px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--navy);
+  display: flex;
+  align-items: flex-end;
+}
+.education-story img {
+  object-fit: cover;
+  transition: transform 600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.education-story::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #03162f05 0%, #03162f66 35%, #03162ff5 100%);
+}
+.education-story > div {
+  position: relative;
+  z-index: 1;
+  padding: 22px;
+}
+.education-story h3 {
+  color: #fff;
+  font-size: 17px;
+  line-height: 1.3;
+}
+.education-story p {
+  color: #f0f3f6;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+.flight-route {
+  height: 30px;
+  position: relative;
+  margin-bottom: 15px;
+  border-bottom: 1px dashed #d6c8b1;
+}
+.flight-route-line {
+  position: absolute;
+  bottom: -1px;
+  height: 2px;
+  width: 100%;
+  background: var(--gold);
+}
+.flight-plane {
+  position: absolute;
+  bottom: -13px;
+  inset-inline-start: 0;
+  color: var(--gold-ink);
+  background: #fff;
+  padding: 4px;
+  display: flex;
+}
+.flight-plane svg {
+  transform: rotate(45deg);
+}
+.desktop-nav a {
+  position: relative;
+}
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -8px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.desktop-nav a[aria-current]::after,
+.desktop-nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+.text-link svg,
+.button svg {
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.text-link:focus-visible svg,
+.button:focus-visible svg {
+  transform: translate(3px, -2px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .education-story:hover img {
+    transform: scale(1.05);
+  }
+  .desktop-nav a:hover::after {
+    transform: scaleX(1);
+  }
+  .text-link:hover svg,
+  .button:hover svg {
+    transform: translate(3px, -2px);
+  }
+}
+@media (max-width: 1023px) {
+  .destination-feature {
+    gap: 36px;
+  }
+  .destination-photo {
+    height: 360px;
+  }
+  .story-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .education-story {
+    min-height: 270px;
+  }
+}
+@media (max-width: 767px) {
+  .destination-chapter {
+    padding-block: 48px;
+  }
+  .destination-feature {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .destination-copy h2 {
+    max-width: none;
+    margin-top: 15px;
+  }
+  .destination-photo {
+    height: 320px;
+    border-start-end-radius: 45px;
+  }
+  .hero-scene {
+    padding: 8px 8px 22px 0;
+  }
+  .hero-route-plaque {
+    inset-inline-start: 10px;
+    bottom: 0;
+    padding: 15px 18px;
+  }
+  .education-stories {
+    padding-top: 42px;
+  }
+  .story-grid {
+    gap: 12px;
+  }
+  .education-story {
+    min-height: 275px;
+  }
+  .education-story > div {
+    padding: 18px;
+  }
+  .education-story h3 {
+    font-size: 16px;
+  }
+  .education-story p {
+    font-size: 11px;
+  }
+}
+@media (max-width: 500px) {
+  .story-grid {
+    grid-template-columns: 1fr;
+  }
+  .education-story {
+    min-height: 270px;
+  }
+  .education-story > div {
+    padding: 24px;
+    max-width: 90%;
+  }
+  .education-story h3 {
+    font-size: 20px;
+  }
+  .education-story p {
+    font-size: 13px;
+  }
+  .destination-photo {
+    height: 290px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .education-story img,
+  .desktop-nav a::after,
+  .text-link svg,
+  .button svg {
+    transition: none;
+  }
+  .education-story:hover img,
+  .text-link:hover svg,
+  .button:hover svg {
+    transform: none;
+  }
+}

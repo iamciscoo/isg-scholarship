@@ -13,7 +13,7 @@ export async function requireUser() {
   if (error || !user || !user.email_confirmed_at) redirect("/login");
   const { data: profile } = await db
     .from("profiles")
-    .select("id,first_name,last_name,phone,nationality,residence,status")
+    .select("id,first_name,last_name,phone,nationality,residence,status,avatar_path,updated_at")
     .eq("id", user.id)
     .single();
   if (!profile || profile.status !== "active") redirect("/login?account=unavailable");
@@ -24,7 +24,5 @@ export async function requireUser() {
 export async function requireStaff(adminOnly = false) {
   const context = await requireUser();
   if (context.role === "applicant" || (adminOnly && context.role !== "admin")) redirect("/dashboard");
-  const { data, error } = await context.db.auth.mfa.getAuthenticatorAssuranceLevel();
-  if (error || data?.currentLevel !== "aal2") redirect("/mfa");
   return context;
 }

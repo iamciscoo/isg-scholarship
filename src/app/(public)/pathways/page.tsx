@@ -9,6 +9,7 @@ export default function Pathways() {
   return (
     <>
       <PageHero
+        image="/images/study-1.jpg"
         label="Study pathways"
         title="There’s more than one way forward."
         description="Explore the broad routes into international education. A personal review helps put the possibilities in context."

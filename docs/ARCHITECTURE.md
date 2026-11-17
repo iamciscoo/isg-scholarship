@@ -2,18 +2,18 @@
 
 ## Delivery contract
 
-The supplied product brief is the requirements source. Its final instruction starts with Phase 1. This delivery implements that phase with an applicant account foundation and staff MFA, and records subsequent phases in ROADMAP.md. It does not publish or migrate the existing live site.
+The supplied product brief is the requirements source. Its final instruction starts with Phase 1. This delivery implements that phase with an applicant account foundation and database-assigned staff roles, and records subsequent phases in ROADMAP.md. It does not publish or migrate the existing live site.
 
 ## Modules and build order
 
-| Module            | Responsibility                                                     | Dependencies                |
-| ----------------- | ------------------------------------------------------------------ | --------------------------- |
-| public-site       | Public services, pathways, process, fees and policy information    | brand assets                |
-| identity          | Verified email accounts, recovery, sessions, staff MFA, suspension | Supabase Auth               |
-| assessment-intake | Validated guest assessments, consent, reference, lead              | database, Turnstile         |
-| lead-management   | Admin review, stage changes, advisor assignment, notes, audit      | identity, assessment-intake |
-| notifications     | Durable email outbox with retries and delivery state               | assessment-intake, Resend   |
-| applicant-account | Own profile and verified-email assessment linking                  | identity, assessment-intake |
+| Module            | Responsibility                                                                         | Dependencies                |
+| ----------------- | -------------------------------------------------------------------------------------- | --------------------------- |
+| public-site       | Public services, pathways, process, fees and policy information                        | brand assets                |
+| identity          | Verified email accounts, recovery, sessions, database-assigned staff roles, suspension | Supabase Auth               |
+| assessment-intake | Validated registered-user consultation assessments, consent, reference, lead           | database, Turnstile         |
+| lead-management   | Admin review, stage changes, advisor assignment, notes, audit                          | identity, assessment-intake |
+| notifications     | Durable email outbox with retries and delivery state                                   | assessment-intake, Resend   |
+| applicant-account | Own profile and verified-email assessment linking                                      | identity, assessment-intake |
 
 Build order: public-site → assessment-intake → identity → lead-management / applicant-account → notifications → packaging and verification.
 
@@ -21,7 +21,7 @@ Build order: public-site → assessment-intake → identity → lead-management 
 
 Next.js App Router, strict TypeScript, React, Tailwind and owned shadcn-style primitives form one modular monolith. Server components fetch private data, server actions perform authenticated mutations, and route handlers accept public intake and worker calls. Domain validation is shared without sharing server credentials.
 
-Supabase PostgreSQL owns profiles, roles, assessments, leads, consent, audit and the notification outbox. RLS checks current account status and verified staff MFA. Staff roles can be assigned only through a trusted database administrator, never through registration metadata. Advisors can read assigned leads only; only administrators assign staff. Applicants can read their own assessments only after verified-email linking. Sensitive writes are transactional database functions with explicit grants.
+Supabase PostgreSQL owns profiles, roles, assessments, leads, consent, audit and the notification outbox. RLS checks current account status and verified database-assigned staff roles. Staff roles can be assigned by an authenticated administrator in the team settings, never through registration metadata. Advisors can read assigned leads only; only administrators assign staff. Applicants can read their own assessments only after verified-email linking. Sensitive writes are transactional database functions with explicit grants.
 
 The `private` schema is not exposed through the Data API and holds internal lead notes, outbox payloads and abuse counters. Future scholarship research belongs there. No confidential scholarship dataset is shipped in public assets, seeded content, API responses or client bundles.
 

@@ -40,6 +40,7 @@ export default function HowItWorks() {
   return (
     <>
       <PageHero
+        image="/images/study-3.jpg"
         label="How it works"
         title="A clear path. One step at a time."
         description="Know what happens next, what we need from you and where your decisions fit into the process."

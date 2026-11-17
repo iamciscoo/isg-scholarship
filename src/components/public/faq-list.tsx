@@ -1,15 +1,16 @@
 import { Plus } from "lucide-react";
-import { faqs } from "@/config/content";
-export function FaqList({ limit }: { limit?: number }) {
+import { getMessages } from "@/lib/i18n/server";
+export async function FaqList({ limit }: { limit?: number }) {
+  const { faqs } = await getMessages();
   return (
     <div className="faq-list">
-      {faqs.slice(0, limit).map((item) => (
-        <details key={item.question}>
+      {faqs.slice(0, limit).map(([question, answer]) => (
+        <details key={question}>
           <summary>
-            {item.question}
+            {question}
             <Plus size={19} aria-hidden="true" />
           </summary>
-          <p>{item.answer}</p>
+          <p>{answer}</p>
         </details>
       ))}
     </div>

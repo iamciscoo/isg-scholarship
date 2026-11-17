@@ -6,6 +6,7 @@ export default function About() {
   return (
     <>
       <PageHero
+        image="/images/study-1.jpg"
         label="About ISG"
         title="Ambition deserves a way forward."
         description="We help students make informed decisions about international education through personal guidance and practical application support."

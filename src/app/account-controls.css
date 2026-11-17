@@ -1,0 +1,300 @@
+.utility-strip {
+  background: var(--navy);
+  color: #fff;
+}
+.utility-inner,
+.utility-links,
+.utility-controls {
+  display: flex;
+  align-items: center;
+}
+.utility-inner {
+  min-height: 36px;
+  justify-content: space-between;
+  gap: 12px;
+}
+.utility-links {
+  gap: 24px;
+  font-size: 11px;
+}
+.utility-links a {
+  padding-block: 9px;
+}
+.utility-controls {
+  gap: 12px;
+}
+.bell-trigger,
+.language-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  min-height: 32px;
+  padding: 5px 8px;
+  position: relative;
+}
+.language-trigger {
+  font-size: 11px;
+  font-weight: 700;
+}
+.language-trigger img,
+.language-option img {
+  object-fit: cover;
+  border-radius: 1px;
+}
+.bell-trigger {
+  min-width: 36px;
+}
+.notification-count {
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  font-size: 9px;
+  min-width: 15px;
+  padding: 1px 3px;
+  background: var(--gold);
+  color: var(--navy);
+  border-radius: 20px;
+  font-weight: 800;
+}
+.language-menu,
+.notification-popover {
+  z-index: 80;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 12px 40px #13274420;
+  transform-origin: var(--radix-popover-content-transform-origin);
+  animation: panel-in 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.language-menu {
+  min-width: 180px;
+  padding: 6px;
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+}
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  outline: none;
+}
+.language-option[data-highlighted] {
+  background: var(--cream);
+}
+.language-option > span:nth-child(2) {
+  flex: 1;
+}
+.account-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.account-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+  min-height: 44px;
+}
+.account-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--cream);
+  color: var(--navy);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-size: 12px;
+  border: 1px solid var(--line);
+}
+.account-avatar img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+.notification-popover {
+  width: min(370px, calc(100vw - 24px));
+  overflow: hidden;
+}
+.notification-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding: 16px 20px;
+}
+.notification-heading h2 {
+  font-size: 16px;
+}
+.notification-heading button {
+  display: grid;
+  place-items: center;
+  min-height: 32px;
+  min-width: 32px;
+  border: 0;
+  background: var(--cream);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.notification-empty {
+  padding: 24px 20px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.notification-empty .text-link {
+  margin-top: 12px;
+}
+.notification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: min(460px, 65dvh);
+  overflow: auto;
+}
+.notification-list li {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.notification-list li.is-unread {
+  background: #f9f6ef;
+  border-inline-start: 3px solid var(--gold);
+}
+.notification-list h3 {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.notification-list p {
+  font-size: 12px;
+  margin-block: 8px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.notification-list time {
+  font-size: 10px;
+  color: var(--muted);
+}
+.notification-list li > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 8px;
+}
+.notification-list a,
+.notification-list li button {
+  color: var(--navy);
+  font-size: 11px;
+  border: 0;
+  background: none;
+  padding: 5px 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.whatsapp-floater {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 40;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: #168443;
+  border: 3px solid #fff;
+  box-shadow: 0 6px 20px #092c4326;
+  transition:
+    transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
+    background 200ms;
+}
+.whatsapp-floater:active {
+  transform: scale(0.95);
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .whatsapp-floater:hover {
+    transform: translateY(-3px);
+    background: #106b35;
+  }
+  .account-link:hover {
+    color: var(--gold-ink);
+  }
+  .utility-links a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+@media (max-width: 1200px) {
+  .header-eligibility {
+    display: none;
+  }
+}
+@media (max-width: 1023px) {
+  .account-actions {
+    gap: 8px;
+  }
+  .notification-admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 767px) {
+  .utility-links {
+    gap: 16px;
+    font-size: 10px;
+  }
+  .utility-controls {
+    gap: 6px;
+  }
+  .account-label {
+    display: none;
+  }
+  .account-link {
+    min-width: 36px;
+    justify-content: center;
+  }
+  .whatsapp-floater {
+    bottom: 18px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+  }
+  .header-inner {
+    gap: 10px;
+  }
+  .header-inner .brand {
+    width: 210px;
+  }
+  .menu-toggle {
+    padding: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .language-menu,
+  .notification-popover {
+    animation: none;
+  }
+  .whatsapp-floater {
+    transition: none;
+  }
+}

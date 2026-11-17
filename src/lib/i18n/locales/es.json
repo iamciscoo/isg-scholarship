@@ -1,0 +1,166 @@
+{
+  "ui": {
+    "contact": "Contacto",
+    "faq": "Ayuda y preguntas",
+    "about": "Sobre ISG",
+    "services": "Servicios",
+    "journey": "Cómo funciona",
+    "pathways": "Opciones de estudio",
+    "signIn": "Iniciar sesión",
+    "profile": "Mi perfil",
+    "workspace": "Mi espacio",
+    "eligibility": "Iniciar consulta",
+    "myEligibility": "Iniciar consulta",
+    "advisor": "Hablar con un asesor",
+    "language": "Idioma",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "home": "Inicio de ISG",
+    "skip": "Ir al contenido",
+    "return": "Volver al sitio",
+    "whatsapp": "Contactar con ISG por WhatsApp",
+    "notifications": "Notificaciones",
+    "guestNotifications": "Inicia sesión para ver las novedades de ISG.",
+    "emptyNotifications": "Estás al día. Las novedades de ISG aparecerán aquí.",
+    "markAll": "Marcar todas como leídas",
+    "markRead": "Marcar como leída",
+    "readMore": "Ver detalles",
+    "unread": "sin leer",
+    "retry": "No se pudieron cargar las novedades. Inténtalo de nuevo.",
+    "fees": "Tarifas",
+    "allQuestions": "Todas las preguntas",
+    "wait": "Espera un momento…",
+    "backSignIn": "Volver al inicio de sesión",
+    "createAccount": "Crear una cuenta",
+    "forgot": "¿Olvidaste tu contraseña?",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "authTitle": "Te damos la bienvenida de nuevo.",
+    "authText": "Inicia sesión para continuar tu camino con ISG.",
+    "registerTitle": "Tu próximo capítulo empieza aquí.",
+    "registerText": "Crea una cuenta de solicitante y verifica tu correo electrónico.",
+    "forgotTitle": "Recupera tu cuenta.",
+    "forgotText": "Si existe una cuenta, enviaremos un enlace de recuperación.",
+    "resetTitle": "Elige una nueva contraseña.",
+    "resetText": "Usa una contraseña segura que no hayas utilizado en otro sitio.",
+    "recover": "Enviar enlace",
+    "updatePassword": "Actualizar contraseña",
+    "authStory": "Un mundo de posibilidades. Tu propio camino.",
+    "authStoryText": "Explora opciones de estudio, prepárate con un asesor y sigue tus próximos pasos.",
+    "authPoint1": "Orientación adaptada a tus objetivos",
+    "authPoint2": "Tu perfil en un espacio privado",
+    "authPoint3": "Novedades de tu equipo ISG",
+    "adult": "Confirmo que tengo al menos 18 años.",
+    "acceptTerms": "Acepto las condiciones y reconozco la información de privacidad.",
+    "setup": "Este servicio se está configurando. Contacta con ISG.",
+    "detailsEnglish": "Los detalles y formularios están actualmente en inglés. Contacta con un asesor para recibir ayuda con el idioma."
+  },
+  "home": {
+    "eyebrow": "Educación internacional. Orientación personal.",
+    "title1": "Tu próximo capítulo,",
+    "title2": "sin fronteras.",
+    "description": "Orientación sobre becas y apoyo con tus solicitudes, desde la primera pregunta hasta el próximo gran paso.",
+    "promises": [
+      "Orientación pensada para ti",
+      "Tus datos permanecen privados",
+      "Pasos claros. Decisiones informadas."
+    ],
+    "introTitle": "Grandes metas. Un comienzo bien pensado.",
+    "introText": "Estudiar en el extranjero puede parecer complicado. ISG te ayuda a entender las opciones y a prepararte con un propósito.",
+    "aboutLink": "Conoce ISG",
+    "services": [
+      [
+        "Encuentra tu dirección",
+        "Comprende tu perfil académico y las opciones de estudio que podrían encajar con tus objetivos."
+      ],
+      [
+        "Prepárate con confianza",
+        "Recibe apoyo práctico con documentos, cartas de motivación y requisitos de solicitud."
+      ],
+      [
+        "Un asesor a tu lado",
+        "Trabaja con alguien que te ayude a comprender tus decisiones y los próximos pasos."
+      ]
+    ],
+    "pathTitle": "¿Hasta dónde te llevarán tus metas?",
+    "pathText": "Un primer título, una especialidad o una contribución original. Empieza por el camino que encaje contigo.",
+    "degrees": [
+      ["Tu primer título", "Grado universitario"],
+      ["Tu próxima especialidad", "Máster"],
+      ["Tu contribución original", "Doctorado e investigación"]
+    ],
+    "pathNote": "La financiación y los requisitos varían. Cada camino empieza por tus circunstancias personales.",
+    "processTitle": "Un poco de claridad ayuda mucho.",
+    "processText": "No tienes que resolverlo todo a la vez. Así avanzamos juntos.",
+    "steps": [
+      [
+        "Cuéntanos tus objetivos",
+        "Comparte tu formación y lo que deseas estudiar en una evaluación inicial."
+      ],
+      [
+        "Recibe una revisión personal",
+        "Un asesor revisa tus datos y comenta contigo los próximos pasos realistas."
+      ],
+      [
+        "Prepara tu plan",
+        "Acuerda el alcance, las tarifas y las oportunidades antes de preparar documentos."
+      ],
+      [
+        "Avanza con información",
+        "Revisa y autoriza tus solicitudes; después sigue las novedades con tu asesor."
+      ]
+    ],
+    "fullJourney": "Ver todo el recorrido",
+    "cityTitle": "Nuevos lugares. Nuevas perspectivas.",
+    "cityText": "Estudiar fuera empieza por conocer el lugar y el programa. Explora el destino, los requisitos de idioma y la vida cotidiana junto con tus opciones académicas.",
+    "cityCaption": "Catedral de San Basilio, Moscú, Rusia",
+    "cityLink": "Explora tus opciones de estudio",
+    "storyTitle": "La educación conecta mucho más que aulas.",
+    "stories": [
+      ["Diplomacia de las becas", "Descubre cómo el estudio internacional conecta comunidades e ideas."],
+      ["Aulas globales", "Aprende junto a personas con experiencias y perspectivas distintas."],
+      ["Más allá de las fronteras", "Conoce los lugares, idiomas e instituciones detrás de tus decisiones."],
+      ["La próxima generación", "Construye conocimientos para el siguiente capítulo de tu vida."]
+    ],
+    "careTitle": "Tu futuro. Tu decisión informada.",
+    "careText": "Una buena orientación empieza con honestidad. Comprende el apoyo, los costes y las oportunidades antes de decidir.",
+    "carePoints": [
+      "Sin promesas de becas garantizadas",
+      "Ninguna solicitud se envía sin tu autorización",
+      "Sin documentos sensibles en la primera evaluación"
+    ],
+    "careLink": "Descubre nuestro apoyo",
+    "faqTitle": "Algunas preguntas que quizá tengas.",
+    "faqText": "Respuestas claras antes de dar el próximo paso.",
+    "ctaTitle": "Tu próximo capítulo empieza con una conversación.",
+    "ctaText": "Trae tus metas. Te ayudaremos a entender el camino que tienes por delante."
+  },
+  "faqs": [
+    [
+      "¿En qué me ayuda ISG?",
+      "Te ayudamos a entender opciones de estudio, revisar tu perfil y preparar solicitudes. El apoyo y las tarifas se acuerdan antes del trabajo de pago."
+    ],
+    [
+      "¿ISG garantiza una beca?",
+      "No. Los proveedores de becas, las universidades y las autoridades migratorias toman sus propias decisiones. La evaluación no garantiza financiación, admisión ni visado."
+    ],
+    [
+      "¿Puedo empezar sin cuenta?",
+      "Sí. Completa la evaluación inicial como visitante. Puedes crear una cuenta verificada después. No necesitas documentos académicos ni de identidad en esta fase."
+    ],
+    [
+      "¿Sabré dónde se envían mis solicitudes?",
+      "Sí. Recibirás los datos del proveedor, los requisitos, los costes y la información sobre los datos compartidos antes de autorizar una solicitud."
+    ],
+    [
+      "¿Cuánto cuesta el servicio?",
+      "Las tarifas y el alcance se confirman por escrito antes de comprometerte. Las tarifas de ISG son independientes de las universitarias, de exámenes y de visado."
+    ],
+    [
+      "¿Cómo se usan mis datos?",
+      "Se usan para revisar tus objetivos y contactarte. El consentimiento de marketing es opcional. Tu perfil no se publica ni comparte con una institución sin la autorización correspondiente."
+    ]
+  ]
+}

@@ -86,3 +86,28 @@
   color: var(--navy);
   text-decoration: underline;
 }
+
+.page-hero-with-photo {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.page-hero-photo {
+  position: relative;
+  height: 320px;
+  overflow: hidden;
+  border-radius: 12px 60px 12px 12px;
+}
+.page-hero-photo img {
+  object-fit: cover;
+}
+@media (max-width: 767px) {
+  .page-hero-with-photo {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .page-hero-photo {
+    height: 260px;
+  }
+}

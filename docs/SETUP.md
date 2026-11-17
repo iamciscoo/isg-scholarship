@@ -1,61 +1,29 @@
-# Service setup and launch handoff
+# Setup and launch
 
-## Supabase
+Updated 18 November 2026. The owner requested password-only staff access. The main administrator is hello@isgscholarship.com; the supplied password is held by Supabase Auth and is never committed. Verified email, active status and database roles protect staff data. Administrators manage roles at /admin/settings, with audited changes and last-administrator protection.
 
-Use a separate Supabase project for production and development. The connected project currently has no applicant records. Public collection stays disabled until the business and provider setup is complete.
+Start consultation requires a registered, verified account. /eligibility redirects to /consultation. The API checks the verified session and matching account email.
 
-1. Keep the `private` schema out of exposed Data API schemas. Its functions are used internally for RLS, but its tables have no anonymous/authenticated grants.
-2. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and the server-only `SUPABASE_SERVICE_ROLE_KEY`. The last variable accepts the current `sb_secret_` key as well as an appropriate legacy service-role key. Prefer the current key format.
-3. Enable email/password authentication and require email confirmation. Disable anonymous sign-in. Configure a short JWT lifetime (for example 10 minutes), refresh-token rotation and the session controls supported by your plan. Global sign-out revokes refresh sessions; already-issued access tokens can remain valid until expiration.
-4. Configure the Auth site URL and allowlisted redirects for each environment. Local: `http://localhost:3002/auth/callback` and `http://localhost:3002/auth/callback?next=/reset-password`. Production must use its actual HTTPS origin. Never use wildcard production redirects.
-5. Configure custom SMTP using a verified sending domain. Supabase owns verification/recovery email; the application Resend outbox handles assessment and staff alert messages. The default development mail restrictions are not suitable for public launch.
-6. Enable TOTP MFA for staff. Both server checks and database policies require AAL2 for administrator/advisor access. Test enrollment, sign-out, next sign-in, challenge and recovery procedures before launch.
-7. Configure Cloudflare Turnstile as the Supabase Auth CAPTCHA provider. Auth calls pass the CAPTCHA token to Supabase for one-time verification. Do not also consume that same token separately in the application. The guest intake validates its own Turnstile tokens server-side.
+## Local integrations
 
-The application never lets registration metadata set a staff role. Choose a real staff account, verify its email, then promote it through a trusted SQL administrator. Replace the placeholder only after checking the user UUID belongs to the intended person:
+The existing .env.local was preserved. Additional credentials are in ignored files. Run:
 
-```sql
-begin;
-update public.user_roles set role = 'admin'
-where user_id = 'REPLACE_WITH_VERIFIED_STAFF_UUID';
-insert into public.audit_logs(actor_id, action, entity_id, metadata)
-values (null, 'staff.role_assigned', 'REPLACE_WITH_VERIFIED_STAFF_UUID', '{"role":"admin","source":"trusted bootstrap"}');
-commit;
+```powershell
+docker compose --env-file .env.local -f compose.yaml -f compose.integrations.yaml up --build -d
 ```
 
-Use `advisor` for an advisor account and record the same change accurately in the audit event. No staff roles were granted automatically. Suspensions use `profiles.status='suspended'` and must be audit logged by the trusted administrator until the later staff-management module exists.
+The overlay reads .env.integrations.local, .env.green-api.local and .env.sender-testing.local. Recreate these through a secret manager for another environment: RESEND_API_KEY, RESEND_FROM_EMAIL, ADMIN_EMAIL_ENABLED, GREEN_API_URL, GREEN_API_INSTANCE_ID, GREEN_API_TOKEN and CRON_SECRET. Never commit credentials. The basic compose.yaml app can run without the optional files.
 
-## Turnstile and intake
+Resend currently uses onboarding@resend.dev and delivers only to the authorized account-owner email the account-owner address approved in this session. The setup email was accepted by Resend; inbox delivery is not implied. The domain isgscholarship.com was added but DNS verification was deferred by the owner. Other recipients require a verified sender domain and an updated RESEND_FROM_EMAIL.
 
-Create an approved Turnstile site for the actual domains. Configure `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and server-only `TURNSTILE_SECRET_KEY`. Do not put test or always-pass keys into production. The backend verifies success, hostname and action (`assessment` or `contact`). Auth uses action `auth`, with verification performed by Supabase.
+Green API instance 710722779815 was authorized at https://7107.api.greenapi.com on its DEVELOPER plan. The requested API Testing group (with Russian flag) was resolved exactly to the privately configured group ID. No unsolicited group test message was sent. Plan restrictions still apply.
 
-Generate a random `RATE_LIMIT_SECRET` (32 bytes or more). The shared PostgreSQL limiter stores a hashed network identity, not a raw IP. Leave `TRUST_PROXY=false` until the deployment's trusted proxy is configured to replace untrusted forwarded headers. Without a trusted proxy, a conservative shared direct-client bucket is used. Tune limits with production traffic evidence.
+/admin/settings manages future admin email recipients and account roles. Alerts cover verified registration, consultation receipt and lead changes. Messages contain an event notice and workspace link, without names, emails, phone numbers or academic records. The local scheduler calls /api/jobs/notifications every minute with CRON_SECRET. Hosted deployments need their own equivalent scheduler. Resend uses idempotency keys. Ambiguous or interrupted Green API requests become uncertain for manual review rather than risking duplicate messages.
 
-Approve privacy/controller information, retention periods and transfer arrangements; confirm the adult-only self-service entry policy and the alternative guardian-assisted process. Confirm service descriptions, contact details, prices and service terms. Only then set `INTAKE_ENABLED=true` and rebuild/redeploy as needed. Do not collect passports, transcripts or detailed financial information through Phase 1 forms.
+## Remaining public launch setup
 
-## Resend and worker
+Public intake remains disabled with INTAKE_ENABLED=false until Turnstile, Supabase Auth SMTP/email verification, approved business/privacy information and production HTTPS origin are configured. Supabase Auth verification and the admin Resend alert integration are separate services. Default Supabase development email limits are unsuitable for public launch.
 
-Verify the sending domain and configure `RESEND_API_KEY`, `RESEND_FROM_EMAIL` and approved `ISG_TEAM_EMAIL`. Configure Supabase's SMTP separately. No emails are sent merely by rendering a page.
+Configure the Supabase site URL and callback allowlist for each environment, including /auth/callback?next=/consultation and recovery callbacks. Keep the private schema out of exposed Data API schemas. Configure proxy trust, backups and recovery procedures. No DNS or production website deployment was performed.
 
-Set a random server-only `CRON_SECRET`. Schedule an HTTPS GET to `/api/jobs/notifications` with `Authorization: Bearer <CRON_SECRET>` every minute using your hosting scheduler or a secure external scheduler. Never put the secret in a query string, Git-tracked file or browser code.
-
-The worker leases up to 10 pending messages, uses the outbox UUID as the Resend idempotency key, and retries up to five times with backoff. A provider acceptance is recorded as `sent`; this does not prove inbox delivery. Provider delivery/bounce webhooks and WhatsApp are later-phase work. Monitor failed rows through admin delivery counts and a trusted database operator. Exhausted crashed leases become failed for review. Avoid manually replaying provider-accepted messages after the provider's idempotency retention window.
-
-## Production deployment
-
-Vercel: import the private GitHub repository, configure the real environment values, choose the appropriate region and deploy only after the readiness checklist. Public values require a rebuild. Docker: build with the public variables as build arguments; inject server secrets at runtime using the environment file or your secret manager. The Docker build context excludes `.env*` files. The final image runs as UID 1001 and exposes only the application.
-
-Readiness:
-
-- Verify assessment storage, confirmation delivery, team alert and authorized review on a separate integration project.
-- Test two applicants, two advisors, MFA and suspended accounts; verify the actual hosted RLS behavior with real sessions.
-- Test recovery links on another device and decide whether to support token-hash email confirmation templates for cross-device flows. The current PKCE callback requires the browser that started the flow.
-- Confirm domain/canonical origin, HTTPS, Turnstile hostnames, SMTP, provider limits, auth redirect allowlists and worker scheduling.
-- Approve business and privacy text, retention jobs, data-request procedures and transfer arrangements before enabling intake.
-- Configure a backup plan appropriate to the Supabase subscription, and test restoration to an isolated project. Free-plan projects do not imply production backup coverage.
-- Add monitoring with PII redaction. This release logs event codes, not applicant payloads. Sentry and optional analytics are not configured.
-- Preserve the old live site and DNS until an authorized cutover, and review retired scholarship URLs and indexing.
-
-## Rollback
-
-For application code, redeploy the preceding Git commit or image. These initial migrations are additive; do not drop production tables as a rollback. Snapshot and review forward corrective migrations. A restore must be tested in isolation and checked for data written after the backup. Never run the disposable database tests against the hosted project.
+Migrations create empty notification recipient settings in new environments. Configure approved email addresses and a verified WhatsApp group through an authorized administrator before enabling the worker. The current hosted project was configured separately, without publishing personal recipients in source control.

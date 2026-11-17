@@ -1,0 +1,25 @@
+# Optional local integration overlay. Secrets remain in ignored files.
+services:
+  web:
+    env_file:
+      - path: .env.local
+      - path: .env.integrations.local
+      - path: .env.green-api.local
+      - path: .env.sender-testing.local
+  notifications:
+    image: isg-scholarship:local
+    command: ["node", "scripts/notification-worker.mjs"]
+    env_file:
+      - path: .env.local
+    environment:
+      NOTIFICATION_JOB_URL: http://web:3000
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      disable: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]

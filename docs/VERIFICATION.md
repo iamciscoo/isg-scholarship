@@ -1,3 +1,7 @@
+# Current update
+
+See [18 November update](UPDATE-2026-11-18.md) for the current role-based login, nine migrations, integrations and validation. The record below describes the earlier Phase 1 baseline and is historical.
+
 # Verification record
 
 Observed on 17 November 2026. Launch configuration is distinguished from local and hosted checks.

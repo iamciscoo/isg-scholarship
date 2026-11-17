@@ -7,145 +7,141 @@ import {
   Compass,
   FileCheck2,
   GraduationCap,
+  Plane,
   ShieldCheck,
   UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FaqList } from "@/components/public/faq-list";
 import { Cta } from "@/components/public/cta";
-import { pathways, processSteps } from "@/config/content";
+import { HomeMotion } from "@/components/public/home-motion";
+import { DestinationStories } from "@/components/public/destination-stories";
+import { getMessages } from "@/lib/i18n/server";
+import { Leaders } from "@/components/public/leaders";
 export const metadata: Metadata = { alternates: { canonical: "/" } };
-export default function Home() {
+export default async function Home() {
+  const { home: h, ui: t } = await getMessages();
   return (
-    <>
+    <div data-home>
       <section className="hero container" data-home-hero>
         <div className="hero-copy">
-          <div className="eyebrow">International education. Personal guidance.</div>
+          <div className="eyebrow">{h.eyebrow}</div>
           <h1>
-            Your next chapter,
+            {h.title1}
             <br />
-            <span>without borders.</span>
+            <span>{h.title2}</span>
           </h1>
-          <p>
-            Personalized scholarship guidance and application support. From your first question to your next
-            big step.
-          </p>
+          <p>{h.description}</p>
           <div className="hero-actions">
             <Button asChild>
-              <Link href="/eligibility">
-                Check my eligibility <ArrowUpRight size={18} />
+              <Link href="/consultation">
+                {t.myEligibility}
+                <ArrowUpRight size={18} />
               </Link>
             </Button>
             <Link className="text-link" href="/contact">
-              Speak with an advisor <ArrowRight size={17} />
+              {t.advisor}
+              <ArrowRight size={17} />
             </Link>
           </div>
         </div>
-        <div className="hero-visual">
-          <Image
-            src="/images/study-together.jpg"
-            alt="Students sharing ideas while studying together outdoors"
-            fill
-            sizes="(max-width: 767px) 100vw, 50vw"
-            priority
-            className="hero-photo"
-          />
-          <div className="hero-image-edge" aria-hidden="true" />
+        <div className="hero-scene">
+          <div className="hero-cream-plane" aria-hidden="true" />
+          <div className="hero-visual">
+            <Image
+              src="/images/study-together.jpg"
+              alt="Students sharing ideas while studying together outdoors"
+              fill
+              sizes="(max-width: 767px) 100vw, 50vw"
+              priority
+              className="hero-photo"
+            />
+            <div className="hero-image-edge" aria-hidden="true" />
+          </div>
+          <div className="hero-route-plaque">
+            <Plane size={19} />
+            <span>{h.promises[0]}</span>
+            <span className="route-plaque-line" aria-hidden="true" />
+          </div>
         </div>
       </section>
       <div className="promise-strip container">
-        <div>
-          <Compass size={20} />
-          <span>Guidance shaped around you</span>
-        </div>
-        <div>
-          <ShieldCheck size={20} />
-          <span>Your information stays private</span>
-        </div>
-        <div>
-          <FileCheck2 size={20} />
-          <span>Clear steps. Informed decisions.</span>
-        </div>
+        {h.promises.map((text, i) => {
+          const Icon = [Compass, ShieldCheck, FileCheck2][i];
+          return (
+            <div key={text}>
+              <Icon size={20} />
+              <span>{text}</span>
+            </div>
+          );
+        })}
       </div>
       <section className="section container intro-section">
         <div className="intro-heading">
-          <span className="eyebrow">More than finding a scholarship</span>
-          <h2>
-            Big ambitions.
-            <br />A clearer way forward.
-          </h2>
-          <p>
-            International study can feel complicated. ISG helps you make sense of the options and prepare with
-            purpose.
-          </p>
+          <h2>{h.introTitle}</h2>
+          <p>{h.introText}</p>
           <Link className="text-link" href="/about">
-            Get to know ISG <ArrowUpRight size={18} />
+            {h.aboutLink}
+            <ArrowUpRight size={18} />
           </Link>
         </div>
         <div className="service-list">
-          {[
-            {
-              icon: Compass,
-              title: "Find your direction",
-              text: "Understand your academic profile and explore study pathways that could suit your goals.",
-            },
-            {
-              icon: FileCheck2,
-              title: "Prepare with confidence",
-              text: "Get practical support with documents, personal statements and application requirements.",
-            },
-            {
-              icon: UsersRound,
-              title: "Have someone in your corner",
-              text: "Work with an advisor who helps you navigate decisions and understand your next steps.",
-            },
-          ].map(({ icon: Icon, title, text }) => (
-            <div key={title} className="service-item">
-              <span className="icon-box">
-                <Icon size={23} strokeWidth={1.5} />
-              </span>
-              <div>
-                <h3>{title}</h3>
-                <p>{text}</p>
+          {h.services.map(([title, text], i) => {
+            const Icon = [Compass, FileCheck2, UsersRound][i];
+            return (
+              <div key={title} className="service-item">
+                <span className="icon-box">
+                  <Icon size={23} strokeWidth={1.5} />
+                </span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
+      <Leaders />
+      <DestinationStories />
       <section className="pathways-section section">
         <div className="container">
           <div className="section-heading">
-            <h2>Where will your ambition take you?</h2>
-            <p>
-              A first degree, a new specialism or an original contribution. Start with the pathway that feels
-              like you.
-            </p>
+            <h2>{h.pathTitle}</h2>
+            <p>{h.pathText}</p>
           </div>
           <div className="pathway-grid">
-            {pathways.map((path, i) => (
-              <Link href={`/pathways#${path.slug}`} className={`pathway-tile pathway-${i}`} key={path.slug}>
+            {h.degrees.map(([degree, title], i) => (
+              <Link
+                href={`/pathways#${["undergraduate", "masters", "doctoral"][i]}`}
+                className={`pathway-tile pathway-${i}`}
+                key={title}
+              >
                 <GraduationCap size={29} strokeWidth={1.4} />
                 <div>
-                  <span>{path.degree}</span>
-                  <h3>{path.title}</h3>
+                  <span>{degree}</span>
+                  <h3>{title}</h3>
                 </div>
                 <ArrowUpRight className="pathway-arrow" size={23} />
               </Link>
             ))}
           </div>
-          <p className="pathway-note">
-            Every pathway begins with your individual circumstances. Funding availability and provider
-            requirements vary.
-          </p>
+          <p className="pathway-note">{h.pathNote}</p>
         </div>
       </section>
       <section className="section container process-section">
         <div className="section-heading">
-          <h2>A little clarity goes a long way.</h2>
-          <p>You don’t have to figure everything out at once. Here’s how we move forward together.</p>
+          <h2>{h.processTitle}</h2>
+          <p>{h.processText}</p>
+        </div>
+        <div className="flight-route" aria-hidden="true">
+          <div className="flight-route-line" />
+          <span className="flight-plane">
+            <Plane size={22} />
+          </span>
         </div>
         <ol className="process-grid">
-          {processSteps.map(([title, text], i) => (
+          {h.steps.map(([title, text], i) => (
             <li key={title}>
               <span className="step-number">{String(i + 1).padStart(2, "0")}</span>
               <h3>{title}</h3>
@@ -154,54 +150,47 @@ export default function Home() {
           ))}
         </ol>
         <Link className="text-link" href="/how-it-works">
-          See the full journey <ArrowRight size={18} />
+          {h.fullJourney}
+          <ArrowRight size={18} />
         </Link>
       </section>
       <section className="care-section container">
         <div className="care-image">
           <Image
             src="/images/campus-life.jpg"
-            alt="Students walking together in a university corridor"
+            alt="Students together in a university corridor"
             fill
             sizes="(max-width: 767px) 100vw, 45vw"
           />
         </div>
         <div className="care-copy">
           <ShieldCheck size={30} strokeWidth={1.4} />
-          <h2>
-            Your future.
-            <br />
-            Your informed choice.
-          </h2>
-          <p>
-            We believe good guidance starts with honesty. You’ll understand the support, the costs and the
-            opportunities before deciding how to proceed.
-          </p>
+          <h2>{h.careTitle}</h2>
+          <p>{h.careText}</p>
           <ul>
-            <li>No promises of guaranteed scholarships</li>
-            <li>No applications sent without your authorization</li>
-            <li>No sensitive documents in your first assessment</li>
+            {h.carePoints.map((text) => (
+              <li key={text}>{text}</li>
+            ))}
           </ul>
           <Link href="/services" className="text-link">
-            Explore our support <ArrowUpRight size={18} />
+            {h.careLink}
+            <ArrowUpRight size={18} />
           </Link>
         </div>
       </section>
       <section className="section container faq-section">
         <div>
-          <h2>
-            A few things
-            <br />
-            you might be wondering.
-          </h2>
-          <p>Clear answers before you take your next step.</p>
+          <h2>{h.faqTitle}</h2>
+          <p>{h.faqText}</p>
           <Link className="text-link" href="/faqs">
-            All questions <ArrowRight size={18} />
+            {t.allQuestions}
+            <ArrowRight size={18} />
           </Link>
         </div>
         <FaqList limit={4} />
       </section>
       <Cta />
-    </>
+      <HomeMotion />
+    </div>
   );
 }

@@ -10,18 +10,18 @@ import { clientIdentity, sameOrigin } from "@/lib/security/request";
 import { requireUser } from "@/lib/auth/session";
 export type AuthState = { error?: string; message?: string };
 export async function authenticate(_previous: AuthState, fd: FormData): Promise<AuthState> {
-  if (
-    !authConfigured() ||
-    !process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-  )
+  if (!authConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY)
     return { error: "Account services are awaiting setup. Please contact ISG." };
   const requestHeaders = await headers();
   if (!sameOrigin(requestHeaders.get("origin"))) return { error: "Request origin is not allowed." };
   const mode = z.enum(["login", "register", "forgot-password"]).safeParse(fd.get("mode"));
+  const captchaRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
   const email = z.email().trim().toLowerCase().max(254).safeParse(fd.get("email"));
-  const captchaToken = z.string().min(1).max(2048).safeParse(fd.get("captcha"));
-  if (!mode.success || !email.success || !captchaToken.success)
+  const captchaToken = z
+    .string()
+    .max(2048)
+    .safeParse(fd.get("captcha") || "");
+  if (!mode.success || !email.success || !captchaToken.success || (captchaRequired && !captchaToken.data))
     return { error: "Check your email and complete the security check." };
   const rate = await adminClient().rpc("consume_rate_limit", {
     p_key: `auth:${clientIdentity(requestHeaders)}`,
@@ -50,7 +50,10 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
       return { error: "Confirm you are 18 or older and accept the terms and privacy information." };
     const { error } = await db.auth.signUp({
       ...credentials.data,
-      options: { emailRedirectTo: `${url}/auth/callback`, captchaToken: captchaToken.data },
+      options: {
+        emailRedirectTo: `${url}/auth/callback?next=/consultation`,
+        ...(captchaRequired ? { captchaToken: captchaToken.data } : {}),
+      },
     });
     if (error)
       return {
@@ -62,12 +65,18 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
         "Check your email to verify your account. If you already have an account, sign in or use password recovery.",
     };
   }
-  const { error } = await db.auth.signInWithPassword({
+  const { data, error } = await db.auth.signInWithPassword({
     ...credentials.data,
-    options: { captchaToken: captchaToken.data },
+    options: captchaRequired ? { captchaToken: captchaToken.data } : undefined,
   });
   if (error) return { error: "We couldn’t sign you in. Check your details and verify your email first." };
-  redirect(safeNext(String(fd.get("next") || "")));
+  const requested = String(fd.get("next") || "");
+  if (!requested && data.user) {
+    const { data: role } = await db.from("user_roles").select("role").eq("user_id", data.user.id).single();
+    if (role?.role === "admin") redirect("/admin");
+    if (role?.role === "advisor") redirect("/advisor");
+  }
+  redirect(safeNext(requested));
 }
 export async function signOut() {
   const db = await createClient();

@@ -1,0 +1,163 @@
+{
+  "ui": {
+    "contact": "Contact",
+    "faq": "Help & FAQ",
+    "about": "About ISG",
+    "services": "Our services",
+    "journey": "How it works",
+    "pathways": "Study pathways",
+    "signIn": "Sign in",
+    "profile": "My profile",
+    "workspace": "My workspace",
+    "eligibility": "Start consultation",
+    "myEligibility": "Start consultation",
+    "advisor": "Speak with an advisor",
+    "language": "Language",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "home": "ISG home",
+    "skip": "Skip to content",
+    "return": "Return to website",
+    "whatsapp": "Chat with ISG on WhatsApp",
+    "notifications": "Notifications",
+    "guestNotifications": "Sign in to see updates from ISG.",
+    "emptyNotifications": "You're all caught up. Updates from ISG will appear here.",
+    "markAll": "Mark all as read",
+    "markRead": "Mark as read",
+    "readMore": "View details",
+    "unread": "unread",
+    "retry": "We couldn't load your updates. Please try again.",
+    "fees": "Service fees",
+    "allQuestions": "All questions",
+    "wait": "Please wait…",
+    "backSignIn": "Back to sign in",
+    "createAccount": "Create an account",
+    "forgot": "Forgot password?",
+    "email": "Email address",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "authTitle": "Welcome back.",
+    "authText": "Sign in to continue your journey with ISG.",
+    "registerTitle": "Your next chapter starts here.",
+    "registerText": "Create an applicant account and verify your email to continue.",
+    "forgotTitle": "Let's get you back in.",
+    "forgotText": "We'll send a recovery link if an account exists for your email.",
+    "resetTitle": "Choose a new password.",
+    "resetText": "Use a strong password you haven't used elsewhere.",
+    "recover": "Send recovery link",
+    "updatePassword": "Update password",
+    "authStory": "A world of possibility. A path that's yours.",
+    "authStoryText": "Explore study pathways, prepare with an advisor and keep your next steps in view.",
+    "authPoint1": "Guidance shaped around your goals",
+    "authPoint2": "Your profile, privately in one place",
+    "authPoint3": "Updates directly from your ISG team",
+    "adult": "I confirm that I am 18 or older.",
+    "acceptTerms": "I accept the terms and acknowledge the privacy information.",
+    "setup": "This service is awaiting setup. Please contact ISG.",
+    "detailsEnglish": "Detailed guidance and application forms are currently available in English. Contact an advisor for language support."
+  },
+  "home": {
+    "eyebrow": "International education. Personal guidance.",
+    "title1": "Your next chapter,",
+    "title2": "without borders.",
+    "description": "Personalized scholarship guidance and application support. From your first question to your next big step.",
+    "promises": [
+      "Guidance shaped around you",
+      "Your information stays private",
+      "Clear steps. Informed decisions."
+    ],
+    "introTitle": "Big ambitions. A thoughtful starting point.",
+    "introText": "International study can feel complicated. ISG helps you make sense of the options and prepare with purpose.",
+    "aboutLink": "Get to know ISG",
+    "services": [
+      [
+        "Find your direction",
+        "Understand your academic profile and explore study pathways that could suit your goals."
+      ],
+      [
+        "Prepare with confidence",
+        "Get practical support with documents, personal statements and application requirements."
+      ],
+      [
+        "Have someone in your corner",
+        "Work with an advisor who helps you navigate decisions and understand your next steps."
+      ]
+    ],
+    "pathTitle": "Where will your ambition take you?",
+    "pathText": "A first degree, a new specialism or an original contribution. Start with the pathway that feels like you.",
+    "degrees": [
+      ["Your first degree", "Undergraduate"],
+      ["Your next specialism", "Master’s"],
+      ["Your original contribution", "PhD & research"]
+    ],
+    "pathNote": "Funding availability and provider requirements vary. Every pathway begins with your individual circumstances.",
+    "processTitle": "A little clarity goes a long way.",
+    "processText": "You don't have to figure everything out at once. Here's how we move forward together.",
+    "steps": [
+      [
+        "Tell us your goals",
+        "Share your academic background and what you hope to study in an initial assessment."
+      ],
+      [
+        "Get a personal review",
+        "An advisor reviews your information and discusses realistic next steps with you."
+      ],
+      [
+        "Build your application plan",
+        "Agree on the scope, fees and selected opportunities before preparing documents."
+      ],
+      ["Move forward, informed", "Review and authorize applications, then follow updates with your advisor."]
+    ],
+    "fullJourney": "See the full journey",
+    "cityTitle": "New places. New perspectives.",
+    "cityText": "Study abroad starts with understanding the place as well as the programme. Explore your destination, language requirements and everyday life alongside your academic options.",
+    "cityCaption": "Saint Basil's Cathedral, Moscow, Russia",
+    "cityLink": "Explore your study pathway",
+    "storyTitle": "Education connects more than classrooms.",
+    "stories": [
+      ["Scholarship diplomacy", "Explore how international study can connect communities and ideas."],
+      ["Global classrooms", "Learn alongside people with different experiences and perspectives."],
+      ["Beyond borders", "Understand the places, languages and institutions behind your study choices."],
+      ["The next generation", "Build knowledge you can carry into the next chapter of your life."]
+    ],
+    "careTitle": "Your future. Your informed choice.",
+    "careText": "Good guidance starts with honesty. Understand the support, the costs and the opportunities before deciding how to proceed.",
+    "carePoints": [
+      "No promises of guaranteed scholarships",
+      "No applications sent without your authorization",
+      "No sensitive documents in your first assessment"
+    ],
+    "careLink": "Explore our support",
+    "faqTitle": "A few things you might be wondering.",
+    "faqText": "Clear answers before you take your next step.",
+    "ctaTitle": "Your next chapter starts with a conversation.",
+    "ctaText": "Bring your ambition. We'll help you understand the path ahead."
+  },
+  "faqs": [
+    [
+      "What does ISG help me with?",
+      "We help you understand study pathways, review your academic profile and prepare applications. The support and any fees are agreed before paid work begins."
+    ],
+    [
+      "Does ISG guarantee a scholarship?",
+      "No. Scholarship providers, universities and immigration authorities make their own decisions. An initial assessment does not guarantee funding, admission or a visa."
+    ],
+    [
+      "Can I start without an account?",
+      "Yes. Complete the initial assessment as a guest. You can create a verified account later. No academic or identity documents are required at this stage."
+    ],
+    [
+      "Will I know where applications are sent?",
+      "Yes. You receive provider details, requirements, relevant costs and data-sharing information before authorizing an application."
+    ],
+    [
+      "How much does the service cost?",
+      "Fees and scope are confirmed in writing before you commit. ISG service fees are separate from university, examination and visa charges."
+    ],
+    [
+      "How is my information used?",
+      "Your information is used to review your goals and contact you. Marketing consent is optional. Your profile is not published or shared with an institution without appropriate authorization."
+    ]
+  ]
+}

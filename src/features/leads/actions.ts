@@ -16,9 +16,9 @@ export async function reviewLead(_state: ReviewState, fd: FormData): Promise<Rev
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const data = parsed.data;
   const { data: lead } = await db.from("leads").select("advisor_id").eq("id", data.id).single();
-  if (!lead || !canReviewLead(role, user.id, lead.advisor_id, true, "aal2"))
+  if (!lead || !canReviewLead(role, user.id, lead.advisor_id, true))
     return { error: "You no longer have permission to review this lead." };
-  if ((data.advisorId || null) !== lead.advisor_id && !canAssignAdvisor(role, true, "aal2"))
+  if ((data.advisorId || null) !== lead.advisor_id && !canAssignAdvisor(role, true))
     return { error: "Only administrators can change advisor assignments." };
   const { error } = await db.rpc("review_lead", {
     p_id: data.id,

@@ -25,6 +25,7 @@ const config: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   output: "standalone",
   poweredByHeader: false,
+  experimental: { serverActions: { bodySizeLimit: "3mb" } },
   async redirects() {
     return Object.entries(legacy).map(([source, destination]) => ({
       source: `/${source}`,

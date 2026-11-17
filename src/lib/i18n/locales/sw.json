@@ -1,0 +1,157 @@
+{
+  "ui": {
+    "contact": "Mawasiliano",
+    "faq": "Msaada na maswali",
+    "about": "Kuhusu ISG",
+    "services": "Huduma zetu",
+    "journey": "Jinsi inavyofanya kazi",
+    "pathways": "Njia za masomo",
+    "signIn": "Ingia",
+    "profile": "Wasifu wangu",
+    "workspace": "Akaunti yangu",
+    "eligibility": "Anza ushauri",
+    "myEligibility": "Anza ushauri",
+    "advisor": "Zungumza na mshauri",
+    "language": "Lugha",
+    "openMenu": "Fungua menyu",
+    "closeMenu": "Funga menyu",
+    "home": "Mwanzo wa ISG",
+    "skip": "Nenda kwenye maudhui",
+    "return": "Rudi kwenye tovuti",
+    "whatsapp": "Wasiliana na ISG kupitia WhatsApp",
+    "notifications": "Arifa",
+    "guestNotifications": "Ingia ili kuona taarifa kutoka ISG.",
+    "emptyNotifications": "Hakuna taarifa mpya. Taarifa kutoka ISG zitaonekana hapa.",
+    "markAll": "Weka zote kuwa zimesomwa",
+    "markRead": "Weka kuwa imesomwa",
+    "readMore": "Tazama maelezo",
+    "unread": "hazijasomwa",
+    "retry": "Hatukuweza kupakia taarifa zako. Jaribu tena.",
+    "fees": "Ada za huduma",
+    "allQuestions": "Maswali yote",
+    "wait": "Tafadhali subiri…",
+    "backSignIn": "Rudi kuingia",
+    "createAccount": "Fungua akaunti",
+    "forgot": "Umesahau nenosiri?",
+    "email": "Barua pepe",
+    "password": "Nenosiri",
+    "showPassword": "Onyesha nenosiri",
+    "hidePassword": "Ficha nenosiri",
+    "authTitle": "Karibu tena.",
+    "authText": "Ingia ili kuendelea na safari yako na ISG.",
+    "registerTitle": "Sura yako mpya inaanzia hapa.",
+    "registerText": "Fungua akaunti ya mwombaji na uthibitishe barua pepe yako.",
+    "forgotTitle": "Rudi kwenye akaunti yako.",
+    "forgotText": "Tutakutumia kiungo cha kurejesha akaunti ikiwa ipo kwa barua pepe hii.",
+    "resetTitle": "Chagua nenosiri jipya.",
+    "resetText": "Tumia nenosiri imara ambalo hujatumia kwingine.",
+    "recover": "Tuma kiungo cha kurejesha",
+    "updatePassword": "Badilisha nenosiri",
+    "authStory": "Dunia ya fursa. Njia iliyo yako.",
+    "authStoryText": "Chunguza njia za masomo, jiandae pamoja na mshauri na ufuatilie hatua zinazofuata.",
+    "authPoint1": "Ushauri unaozingatia malengo yako",
+    "authPoint2": "Wasifu wako katika eneo la faragha",
+    "authPoint3": "Taarifa moja kwa moja kutoka timu ya ISG",
+    "adult": "Ninathibitisha kuwa nina miaka 18 au zaidi.",
+    "acceptTerms": "Ninakubali masharti na ninatambua taarifa za faragha.",
+    "setup": "Huduma hii inaandaliwa. Tafadhali wasiliana na ISG.",
+    "detailsEnglish": "Maelezo ya kina na fomu kwa sasa ziko kwa Kiingereza. Wasiliana na mshauri kwa msaada wa lugha."
+  },
+  "home": {
+    "eyebrow": "Elimu ya kimataifa. Ushauri binafsi.",
+    "title1": "Sura yako inayofuata,",
+    "title2": "bila mipaka.",
+    "description": "Ushauri kuhusu ufadhili wa masomo na msaada wa maombi, kuanzia swali lako la kwanza hadi hatua yako kubwa inayofuata.",
+    "promises": [
+      "Ushauri unaokufaa",
+      "Taarifa zako zinabaki za faragha",
+      "Hatua wazi. Maamuzi yenye taarifa."
+    ],
+    "introTitle": "Malengo makubwa. Mwanzo uliofikiriwa vizuri.",
+    "introText": "Kusoma nje ya nchi kunaweza kuonekana kugumu. ISG hukusaidia kuelewa chaguo na kujiandaa kwa kusudi.",
+    "aboutLink": "Ifahamu ISG",
+    "services": [
+      [
+        "Tafuta mwelekeo wako",
+        "Elewa wasifu wako wa kitaaluma na njia za masomo zinazoweza kuendana na malengo yako."
+      ],
+      ["Jiandae kwa kujiamini", "Pata msaada wa nyaraka, barua za maelezo binafsi na mahitaji ya maombi."],
+      [
+        "Mshauri akiwa upande wako",
+        "Shirikiana na mshauri anayekusaidia kufanya maamuzi na kuelewa hatua zinazofuata."
+      ]
+    ],
+    "pathTitle": "Malengo yako yatakupeleka wapi?",
+    "pathText": "Shahada ya kwanza, utaalamu mpya au mchango wa kipekee. Anza na njia inayokufaa.",
+    "degrees": [
+      ["Shahada yako ya kwanza", "Shahada ya kwanza"],
+      ["Utaalamu wako unaofuata", "Shahada ya uzamili"],
+      ["Mchango wako wa kipekee", "Uzamivu na utafiti"]
+    ],
+    "pathNote": "Ufadhili na masharti hutofautiana. Kila njia huanza kwa kuzingatia hali yako binafsi.",
+    "processTitle": "Uwazi kidogo huleta tofauti kubwa.",
+    "processText": "Si lazima ujue kila kitu kwa wakati mmoja. Hivi ndivyo tunavyoendelea pamoja.",
+    "steps": [
+      [
+        "Tuambie malengo yako",
+        "Shiriki historia yako ya elimu na unachotaka kusoma kupitia tathmini ya awali."
+      ],
+      ["Pata mapitio binafsi", "Mshauri anapitia taarifa zako na kujadili hatua zinazowezekana."],
+      ["Jenga mpango wa maombi", "Kubalianeni kuhusu huduma, ada na fursa kabla ya kuandaa nyaraka."],
+      ["Songa mbele ukiwa na taarifa", "Pitia na idhinisha maombi, kisha fuatilia taarifa na mshauri wako."]
+    ],
+    "fullJourney": "Tazama safari nzima",
+    "cityTitle": "Maeneo mapya. Mitazamo mipya.",
+    "cityText": "Kusoma nje ya nchi huanza kwa kuelewa mahali pamoja na programu. Chunguza nchi, mahitaji ya lugha na maisha ya kila siku pamoja na chaguo za kitaaluma.",
+    "cityCaption": "Kanisa Kuu la Mtakatifu Basil, Moscow, Urusi",
+    "cityLink": "Chunguza njia yako ya masomo",
+    "storyTitle": "Elimu huunganisha zaidi ya madarasa.",
+    "stories": [
+      [
+        "Diplomasia ya ufadhili",
+        "Chunguza jinsi masomo ya kimataifa yanavyoweza kuunganisha jamii na mawazo."
+      ],
+      ["Madarasa ya kimataifa", "Jifunze pamoja na watu wenye uzoefu na mitazamo tofauti."],
+      ["Zaidi ya mipaka", "Elewa maeneo, lugha na taasisi zinazohusiana na chaguo zako."],
+      ["Kizazi kijacho", "Jenga maarifa utakayobeba katika sura inayofuata ya maisha yako."]
+    ],
+    "careTitle": "Mustakabali wako. Chaguo lako lenye taarifa.",
+    "careText": "Ushauri mzuri huanza kwa uaminifu. Elewa msaada, gharama na fursa kabla ya kuamua kuendelea.",
+    "carePoints": [
+      "Hakuna ahadi ya uhakika wa ufadhili",
+      "Hakuna maombi yanayotumwa bila idhini yako",
+      "Hakuna nyaraka nyeti katika tathmini ya kwanza"
+    ],
+    "careLink": "Chunguza msaada wetu",
+    "faqTitle": "Baadhi ya maswali unayoweza kuwa nayo.",
+    "faqText": "Majibu wazi kabla ya hatua yako inayofuata.",
+    "ctaTitle": "Sura yako mpya inaanza kwa mazungumzo.",
+    "ctaText": "Leta malengo yako. Tutakusaidia kuelewa njia iliyo mbele."
+  },
+  "faqs": [
+    [
+      "ISG itanisaidiaje?",
+      "Tunakusaidia kuelewa njia za masomo, kupitia wasifu wako wa kitaaluma na kuandaa maombi. Huduma na ada hukubaliwa kabla ya kazi ya kulipiwa kuanza."
+    ],
+    [
+      "Je, ISG inahakikisha ufadhili?",
+      "Hapana. Watoa ufadhili, vyuo na mamlaka za uhamiaji hufanya maamuzi yao. Tathmini ya awali haihakikishi ufadhili, udahili au visa."
+    ],
+    [
+      "Naweza kuanza bila akaunti?",
+      "Ndiyo. Jaza tathmini ya awali kama mgeni. Unaweza kufungua akaunti iliyothibitishwa baadaye. Hakuna nyaraka za elimu au utambulisho zinazohitajika sasa."
+    ],
+    [
+      "Nitajua maombi yanatumwa wapi?",
+      "Ndiyo. Utapata maelezo ya mtoa huduma, masharti, gharama na ushirikishaji wa taarifa kabla ya kuidhinisha maombi."
+    ],
+    [
+      "Huduma inagharimu kiasi gani?",
+      "Ada na huduma huthibitishwa kwa maandishi kabla ya kujifunga. Ada za ISG ni tofauti na ada za chuo, mitihani na visa."
+    ],
+    [
+      "Taarifa zangu zinatumikaje?",
+      "Hutumiwa kupitia malengo yako na kuwasiliana nawe. Idhini ya matangazo ni ya hiari. Wasifu wako hauchapishwi wala kushirikiwa na taasisi bila idhini inayofaa."
+    ]
+  ]
+}

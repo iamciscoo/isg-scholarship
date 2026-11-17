@@ -55,7 +55,7 @@ select public.test_assert((select count(*)=1 from public.eligibility_assessments
 select public.review_lead((select id from public.leads limit 1),'under_review','Reviewed test qualifications','00000000-0000-4000-8000-000000000003',null);
 do $$ begin perform public.review_lead((select id from public.leads limit 1),'qualified','Forged reassignment',null,null); raise exception 'Advisor reassignment permitted'; exception when raise_exception then if sqlerrm<>'Only administrators assign advisors' then raise; end if; end $$;
 select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000004","aal":"aal1"}',false);
-select public.test_assert((select count(*)=0 from public.leads),'admin without MFA is denied');
+select public.test_assert((select count(*)=2 from public.leads),'password-authenticated administrator can read leads');
 select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000004","aal":"aal2"}',false);
 select public.test_assert((select count(*)=2 from public.leads),'MFA administrator can review all leads');
 select public.test_assert((select count(*)>=1 from public.audit_logs where action='lead.reviewed'),'review writes an audit record');

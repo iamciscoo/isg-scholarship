@@ -16,6 +16,7 @@ export default async function Contact({ searchParams }: { searchParams: Promise<
   return (
     <>
       <PageHero
+        image="/images/study-2.jpg"
         label="Let’s talk"
         title="Every journey starts with a question."
         description="Tell us what’s on your mind. We’ll help you understand your next step."

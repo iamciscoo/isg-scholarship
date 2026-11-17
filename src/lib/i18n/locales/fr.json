@@ -1,0 +1,172 @@
+{
+  "ui": {
+    "contact": "Contact",
+    "faq": "Aide et FAQ",
+    "about": "À propos d’ISG",
+    "services": "Nos services",
+    "journey": "Comment ça marche",
+    "pathways": "Parcours d’études",
+    "signIn": "Se connecter",
+    "profile": "Mon profil",
+    "workspace": "Mon espace",
+    "eligibility": "Commencer une consultation",
+    "myEligibility": "Commencer une consultation",
+    "advisor": "Parler à un conseiller",
+    "language": "Langue",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "home": "Accueil ISG",
+    "skip": "Aller au contenu",
+    "return": "Retour au site",
+    "whatsapp": "Contacter ISG sur WhatsApp",
+    "notifications": "Notifications",
+    "guestNotifications": "Connectez-vous pour consulter les nouvelles d’ISG.",
+    "emptyNotifications": "Vous êtes à jour. Les nouvelles d’ISG apparaîtront ici.",
+    "markAll": "Tout marquer comme lu",
+    "markRead": "Marquer comme lu",
+    "readMore": "Voir les détails",
+    "unread": "non lues",
+    "retry": "Impossible de charger les nouvelles. Réessayez.",
+    "fees": "Tarifs",
+    "allQuestions": "Toutes les questions",
+    "wait": "Veuillez patienter…",
+    "backSignIn": "Retour à la connexion",
+    "createAccount": "Créer un compte",
+    "forgot": "Mot de passe oublié ?",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "authTitle": "Heureux de vous revoir.",
+    "authText": "Connectez-vous pour poursuivre votre parcours avec ISG.",
+    "registerTitle": "Votre prochain chapitre commence ici.",
+    "registerText": "Créez un compte candidat et vérifiez votre adresse e-mail.",
+    "forgotTitle": "Retrouvez votre compte.",
+    "forgotText": "Si un compte existe, un lien de récupération sera envoyé.",
+    "resetTitle": "Choisissez un nouveau mot de passe.",
+    "resetText": "Utilisez un mot de passe fort et unique.",
+    "recover": "Envoyer le lien",
+    "updatePassword": "Modifier le mot de passe",
+    "authStory": "Un monde de possibilités. Votre propre chemin.",
+    "authStoryText": "Explorez les parcours d’études, préparez-vous avec un conseiller et suivez les prochaines étapes.",
+    "authPoint1": "Des conseils adaptés à vos objectifs",
+    "authPoint2": "Votre profil dans un espace privé",
+    "authPoint3": "Les nouvelles de votre équipe ISG",
+    "adult": "Je confirme avoir au moins 18 ans.",
+    "acceptTerms": "J’accepte les conditions et reconnais avoir pris connaissance des informations de confidentialité.",
+    "setup": "Ce service est en cours de configuration. Contactez ISG.",
+    "detailsEnglish": "Les informations détaillées et les formulaires sont actuellement en anglais. Contactez un conseiller pour une aide linguistique."
+  },
+  "home": {
+    "eyebrow": "Études internationales. Conseils personnalisés.",
+    "title1": "Votre prochain chapitre,",
+    "title2": "sans frontières.",
+    "description": "Des conseils sur les bourses et un accompagnement pour vos candidatures, de la première question à la prochaine grande étape.",
+    "promises": [
+      "Des conseils adaptés à vous",
+      "Vos informations restent privées",
+      "Des étapes claires. Des choix éclairés."
+    ],
+    "introTitle": "De grandes ambitions. Un point de départ réfléchi.",
+    "introText": "Étudier à l’étranger peut sembler compliqué. ISG vous aide à comprendre les possibilités et à vous préparer.",
+    "aboutLink": "Découvrir ISG",
+    "services": [
+      [
+        "Trouvez votre direction",
+        "Comprenez votre profil académique et les parcours qui pourraient correspondre à vos objectifs."
+      ],
+      [
+        "Préparez-vous avec confiance",
+        "Recevez une aide pratique pour les documents, lettres de motivation et conditions de candidature."
+      ],
+      [
+        "Un conseiller à vos côtés",
+        "Avancez avec quelqu’un qui vous aide à comprendre vos choix et les prochaines étapes."
+      ]
+    ],
+    "pathTitle": "Où vos ambitions vous mèneront-elles ?",
+    "pathText": "Un premier diplôme, une spécialisation ou une contribution originale. Choisissez votre point de départ.",
+    "degrees": [
+      ["Votre premier diplôme", "Licence"],
+      ["Votre spécialisation", "Master"],
+      ["Votre contribution originale", "Doctorat et recherche"]
+    ],
+    "pathNote": "Les financements et conditions varient. Chaque parcours dépend de votre situation personnelle.",
+    "processTitle": "Un peu de clarté change beaucoup.",
+    "processText": "Vous n’avez pas à tout décider d’un coup. Voici comment nous avançons ensemble.",
+    "steps": [
+      [
+        "Présentez vos objectifs",
+        "Partagez votre parcours scolaire et vos projets lors d’une première évaluation."
+      ],
+      [
+        "Recevez un avis personnel",
+        "Un conseiller examine vos informations et échange avec vous sur les prochaines étapes réalistes."
+      ],
+      [
+        "Construisez votre plan",
+        "Convenez du périmètre, des frais et des possibilités avant de préparer les documents."
+      ],
+      [
+        "Avancez en connaissance de cause",
+        "Vérifiez et autorisez vos candidatures, puis suivez les nouvelles avec votre conseiller."
+      ]
+    ],
+    "fullJourney": "Voir le parcours complet",
+    "cityTitle": "De nouveaux lieux. De nouvelles perspectives.",
+    "cityText": "Un projet d’études à l’étranger commence aussi par la découverte du lieu. Explorez la destination, les exigences linguistiques et la vie quotidienne.",
+    "cityCaption": "Cathédrale Saint-Basile, Moscou, Russie",
+    "cityLink": "Explorer votre parcours d’études",
+    "storyTitle": "L’éducation relie bien plus que des salles de classe.",
+    "stories": [
+      [
+        "Diplomatie des bourses",
+        "Découvrez comment les études internationales rapprochent communautés et idées."
+      ],
+      [
+        "Des classes mondiales",
+        "Apprenez aux côtés de personnes aux expériences et perspectives différentes."
+      ],
+      ["Au-delà des frontières", "Comprenez les lieux, les langues et les établissements liés à vos choix."],
+      ["La prochaine génération", "Construisez des connaissances pour le prochain chapitre de votre vie."]
+    ],
+    "careTitle": "Votre avenir. Votre choix éclairé.",
+    "careText": "Un bon accompagnement commence par l’honnêteté. Comprenez les services, les frais et les possibilités avant de choisir.",
+    "carePoints": [
+      "Aucune promesse de bourse garantie",
+      "Aucune candidature envoyée sans votre autorisation",
+      "Aucun document sensible lors de la première évaluation"
+    ],
+    "careLink": "Découvrir notre accompagnement",
+    "faqTitle": "Les questions que vous vous posez peut-être.",
+    "faqText": "Des réponses claires avant votre prochaine étape.",
+    "ctaTitle": "Votre prochain chapitre commence par une conversation.",
+    "ctaText": "Apportez votre ambition. Nous vous aiderons à comprendre la suite."
+  },
+  "faqs": [
+    [
+      "Comment ISG peut-il m’aider ?",
+      "Nous vous aidons à comprendre les parcours d’études, à examiner votre profil et à préparer vos candidatures. Services et frais sont convenus avant le début du travail payant."
+    ],
+    [
+      "ISG garantit-il une bourse ?",
+      "Non. Les organismes de bourses, universités et autorités d’immigration prennent leurs propres décisions. Une évaluation ne garantit ni financement, ni admission, ni visa."
+    ],
+    [
+      "Puis-je commencer sans compte ?",
+      "Oui. Remplissez la première évaluation en tant que visiteur. Vous pourrez créer un compte vérifié ensuite. Aucun document scolaire ou d’identité n’est demandé à cette étape."
+    ],
+    [
+      "Saurai-je où mes candidatures sont envoyées ?",
+      "Oui. Vous recevez les coordonnées du prestataire, les conditions, les coûts et les informations sur le partage des données avant d’autoriser une candidature."
+    ],
+    [
+      "Combien coûte le service ?",
+      "Les frais et services sont confirmés par écrit avant votre engagement. Les frais d’ISG sont distincts des frais universitaires, d’examen et de visa."
+    ],
+    [
+      "Comment mes informations sont-elles utilisées ?",
+      "Elles servent à étudier vos objectifs et à vous contacter. Le consentement marketing est facultatif. Votre profil n’est pas publié ou transmis à un établissement sans autorisation appropriée."
+    ]
+  ]
+}

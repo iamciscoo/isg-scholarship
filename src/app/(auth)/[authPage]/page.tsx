@@ -4,6 +4,7 @@ import { AuthForm } from "@/features/auth/auth-form";
 import { authConfigured } from "@/lib/supabase/config";
 import { safeNext } from "@/lib/validation/auth";
 import { requireUser } from "@/lib/auth/session";
+import { getMessages } from "@/lib/i18n/server";
 const pages = {
   login: ["Welcome back.", "Sign in to continue your journey with ISG."],
   register: [
@@ -31,11 +32,18 @@ export default async function AuthPage({
   if (!(authPage in pages)) notFound();
   const mode = authPage as keyof typeof pages;
   const query = await searchParams;
+  const { ui: t } = await getMessages();
+  const copy = {
+    login: [t.authTitle, t.authText],
+    register: [t.registerTitle, t.registerText],
+    "forgot-password": [t.forgotTitle, t.forgotText],
+    "reset-password": [t.resetTitle, t.resetText],
+  };
   if (mode === "reset-password") await requireUser();
   return (
     <>
-      <h1>{pages[mode][0]}</h1>
-      <p>{pages[mode][1]}</p>
+      <h1>{copy[mode][0]}</h1>
+      <p>{copy[mode][1]}</p>
       {query.account && (
         <p className="notice notice-error mb-5">Your account is unavailable. Please contact ISG.</p>
       )}
@@ -46,11 +54,9 @@ export default async function AuthPage({
       )}
       <AuthForm
         mode={mode}
-        configured={
-          authConfigured() &&
-          Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
-        }
-        next={safeNext(query.next)}
+        configured={authConfigured() && Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY)}
+        next={query.next ? safeNext(query.next) : undefined}
+        captchaRequired={Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)}
         nonce={(await headers()).get("x-nonce") || undefined}
       />
     </>

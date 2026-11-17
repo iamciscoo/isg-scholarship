@@ -4,6 +4,7 @@ import { sameOrigin, readJson } from "@/lib/security/request";
 import { intakeConfigured } from "@/lib/supabase/config";
 import { adminClient } from "@/lib/supabase/admin";
 import { guardIntake, payloadHash } from "@/server/services/intake";
+import { createClient } from "@/lib/supabase/server";
 export async function POST(request: Request) {
   if (!sameOrigin(request.headers.get("origin")))
     return NextResponse.json({ error: "Request origin is not allowed." }, { status: 403 });
@@ -21,6 +22,17 @@ export async function POST(request: Request) {
   if (!input.success || input.data.website)
     return NextResponse.json({ error: "Please check the information in your assessment." }, { status: 422 });
   const { data, idempotencyKey, turnstileToken } = input.data;
+  const session = await createClient();
+  const {
+    data: { user },
+  } = await session.auth.getUser();
+  if (!user?.email_confirmed_at)
+    return NextResponse.json(
+      { error: "Register and verify your account before starting a consultation." },
+      { status: 401 },
+    );
+  if (data.email.toLowerCase() !== user.email?.toLowerCase())
+    return NextResponse.json({ error: "Use your verified account email." }, { status: 422 });
   try {
     await guardIntake(request.headers, turnstileToken, "assessment");
   } catch (err) {

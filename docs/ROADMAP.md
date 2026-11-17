@@ -2,7 +2,7 @@
 
 ## Phase 1 delivered in this repository
 
-Public website and brand, guest assessment, consent, lead storage, authentication foundation, applicant contact account, staff MFA, admin/advisor lead workspace, private notes, contact inbox, audit and durable email outbox. External service setup and configured end-to-end validation remain launch gates, not simulated features.
+Public website and brand, registered consultation assessment, consent, lead storage, authentication foundation, applicant contact account, database-assigned staff roles, admin/advisor lead workspace, private notes, contact inbox, audit and durable email outbox. External service setup and configured end-to-end validation remain launch gates, not simulated features.
 
 ## Phase 2: applicant operations
 
