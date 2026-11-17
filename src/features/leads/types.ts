@@ -1,0 +1,34 @@
+export type Assessment = {
+  id: string;
+  reference: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  nationality: string;
+  residence: string;
+  qualification: string;
+  education_status: string;
+  field_of_study: string;
+  performance: string;
+  graduation_year: number;
+  english_status: string;
+  study_level: string;
+  preferred_fields: string;
+  destinations: string;
+  intake: string;
+  funding: string;
+  constraints_note: string;
+  created_at: string;
+};
+export type Lead = {
+  id: string;
+  assessment_id: string;
+  stage: string;
+  advisor_id: string | null;
+  follow_up: string | null;
+  created_at: string;
+  eligibility_assessments: Assessment;
+};
+export type Advisor = { id: string; first_name: string; last_name: string };
+export type LeadNote = { id: string; stage: string; reason: string; created_at: string };
