@@ -1,0 +1,12 @@
+node_modules
+.next
+.next-e2e
+.git
+.env*
+!.env.example
+artifacts
+playwright-report
+test-results
+coverage
+*.tsbuildinfo
+.codex

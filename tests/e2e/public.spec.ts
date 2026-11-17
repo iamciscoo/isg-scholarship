@@ -27,7 +27,7 @@ test("public pages and legacy redirects work", async ({ page, request }) => {
   expect(legacy.status()).toBe(308);
   expect(legacy.headers().location).toBe("/");
 });
-test("unauthenticated private routes stay protected", async ({ page, request }) => {
+test("unauthenticated private routes stay protected", async ({ page, request, baseURL }) => {
   for (const path of [
     "/admin",
     "/admin/audit",
@@ -47,7 +47,7 @@ test("unauthenticated private routes stay protected", async ({ page, request }) 
   expect(result.status()).toBe(403);
   expect(
     (
-      await request.post("/api/assessments", { headers: { origin: "http://localhost:3004" }, data: {} })
+      await request.post("/api/assessments", { headers: { origin: new URL(baseURL!).origin }, data: {} })
     ).status(),
   ).toBe(503);
 });
@@ -67,6 +67,7 @@ for (const width of [320, 768, 1024, 1440])
     expect(errors).toEqual([]);
     await mkdir("artifacts", { recursive: true });
     await page.screenshot({ path: `artifacts/home-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `artifacts/home-${width}-viewport.png`, fullPage: false });
   });
 test("FAQ works with the keyboard", async ({ page }) => {
   await page.goto("/faqs");
