@@ -1,0 +1,46 @@
+.auth-shell {
+  min-height: 85dvh;
+  background: var(--cream);
+  display: grid;
+  place-items: center;
+  padding: 48px 20px;
+}
+.auth-card {
+  width: min(460px, 100%);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 36px;
+}
+.auth-brand {
+  display: block;
+  margin: 0 auto 30px;
+  width: 280px;
+  max-width: 100%;
+}
+.auth-brand img {
+  max-width: 100%;
+  height: auto;
+}
+.auth-card h1 {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.auth-card > p {
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.auth-card .button {
+  width: 100%;
+}
+.auth-links {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 22px;
+  font-size: 12px;
+}
+.auth-links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

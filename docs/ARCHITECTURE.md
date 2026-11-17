@@ -6,14 +6,14 @@ The supplied product brief is the requirements source. Its final instruction sta
 
 ## Modules and build order
 
-| Module | Responsibility | Dependencies |
-| --- | --- | --- |
-| public-site | Public services, pathways, process, fees and policy information | brand assets |
-| identity | Verified email accounts, recovery, sessions, staff MFA, suspension | Supabase Auth |
-| assessment-intake | Validated guest assessments, consent, reference, lead | database, Turnstile |
-| lead-management | Admin review, stage changes, advisor assignment, notes, audit | identity, assessment-intake |
-| notifications | Durable email outbox with retries and delivery state | assessment-intake, Resend |
-| applicant-account | Own profile and verified-email assessment linking | identity, assessment-intake |
+| Module            | Responsibility                                                     | Dependencies                |
+| ----------------- | ------------------------------------------------------------------ | --------------------------- |
+| public-site       | Public services, pathways, process, fees and policy information    | brand assets                |
+| identity          | Verified email accounts, recovery, sessions, staff MFA, suspension | Supabase Auth               |
+| assessment-intake | Validated guest assessments, consent, reference, lead              | database, Turnstile         |
+| lead-management   | Admin review, stage changes, advisor assignment, notes, audit      | identity, assessment-intake |
+| notifications     | Durable email outbox with retries and delivery state               | assessment-intake, Resend   |
+| applicant-account | Own profile and verified-email assessment linking                  | identity, assessment-intake |
 
 Build order: public-site → assessment-intake → identity → lead-management / applicant-account → notifications → packaging and verification.
 

@@ -1,4 +1,38 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/public/page-hero";
 export const metadata: Metadata = { title: "Cookie information", alternates: { canonical: "/cookies" } };
-export default function Cookies() { return <><PageHero label="Cookie information" title="Only what the platform needs." description="A straightforward explanation of the storage used by this release." /><article className="container page-body legal-copy"><h2>Essential account cookies</h2><p>When authentication is configured, Supabase session cookies keep you signed in and support secure session renewal. Signing out removes the current session. The assessment form keeps its temporary progress in component memory; it does not save your personal details in browser storage.</p><h2>Abuse prevention</h2><p>Cloudflare Turnstile is used on public submissions and authentication when configured. It processes security signals to assess automated abuse. See Cloudflare’s Turnstile privacy information for details.</p><h2>Optional tracking</h2><p>This release does not include advertising cookies or optional analytics. A separate consent choice must be implemented before adding any tracking that requires it.</p><h2>Your browser controls</h2><p>You can clear cookies in your browser settings. Blocking essential account cookies may prevent sign-in from working.</p></article></>; }
+export default function Cookies() {
+  return (
+    <>
+      <PageHero
+        label="Cookie information"
+        title="Only what the platform needs."
+        description="A straightforward explanation of the storage used by this release."
+      />
+      <article className="container page-body legal-copy">
+        <h2>Essential account cookies</h2>
+        <p>
+          When authentication is configured, Supabase session cookies keep you signed in and support secure
+          session renewal. Signing out removes the current session. The assessment form keeps its temporary
+          progress in component memory; it does not save your personal details in browser storage.
+        </p>
+        <h2>Abuse prevention</h2>
+        <p>
+          Cloudflare Turnstile is used on public submissions and authentication when configured. It processes
+          security signals to assess automated abuse. See Cloudflare’s Turnstile privacy information for
+          details.
+        </p>
+        <h2>Optional tracking</h2>
+        <p>
+          This release does not include advertising cookies or optional analytics. A separate consent choice
+          must be implemented before adding any tracking that requires it.
+        </p>
+        <h2>Your browser controls</h2>
+        <p>
+          You can clear cookies in your browser settings. Blocking essential account cookies may prevent
+          sign-in from working.
+        </p>
+      </article>
+    </>
+  );
+}

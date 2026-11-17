@@ -1,0 +1,122 @@
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  margin: 0 0 36px;
+  padding: 0;
+  list-style: none;
+}
+.step-number {
+  color: var(--gold-ink);
+  font-size: 12px;
+  font-weight: 700;
+  display: block;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #d9c6a2;
+  margin-bottom: 22px;
+}
+.process-grid h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.process-grid p {
+  font-size: 12px;
+  line-height: 1.9;
+}
+.care-section {
+  display: grid;
+  grid-template-columns: 0.95fr 1fr;
+  gap: 70px;
+  align-items: center;
+  padding: 0 0 10px;
+}
+.care-image {
+  position: relative;
+  height: 430px;
+  border-radius: 16px 80px 16px 16px;
+  overflow: hidden;
+}
+.care-image img {
+  object-fit: cover;
+}
+.care-copy > svg {
+  color: var(--gold-ink);
+  margin-bottom: 20px;
+}
+.care-copy p {
+  margin: 22px 0;
+  max-width: 450px;
+  font-size: 14px;
+}
+.care-copy ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+}
+.care-copy li {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.care-copy li::before {
+  content: "✓";
+  color: var(--gold-ink);
+  font-weight: bold;
+}
+.faq-section {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 70px;
+}
+.faq-section > div > p {
+  margin: 18px 0 24px;
+  font-size: 13px;
+}
+.faq-list details {
+  border-bottom: 1px solid var(--line);
+}
+.faq-list details:first-child {
+  border-top: 1px solid var(--line);
+}
+.faq-list summary {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 22px 0;
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 650;
+}
+.faq-list summary::-webkit-details-marker {
+  display: none;
+}
+.faq-list summary svg {
+  flex-shrink: 0;
+}
+.faq-list details[open] summary svg {
+  transform: rotate(45deg);
+}
+.faq-list details p {
+  padding: 0 32px 22px 0;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.cta-section {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--cream);
+  border-radius: var(--radius);
+  padding: 52px 60px;
+  margin-bottom: 80px;
+}
+.cta-section h2 {
+  margin: 14px 0 18px;
+}
+.cta-section p {
+  font-size: 13px;
+}
