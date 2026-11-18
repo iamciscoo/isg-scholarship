@@ -14,6 +14,9 @@ export default async function Consultation() {
   } = await db.auth.getUser();
   if (!user) redirect("/register?next=/consultation");
   const { profile } = await requireUser();
+  const existing = await db.from("consultation_cases").select("user_id").eq("user_id", user.id).maybeSingle();
+  if (existing.error) throw Error("Consultation access unavailable");
+  if (existing.data) redirect("/dashboard/consultations");
   const { data: draft, error } = await db
     .from("consultation_drafts")
     .select("data,step")

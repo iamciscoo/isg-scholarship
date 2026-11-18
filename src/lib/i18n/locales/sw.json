@@ -56,13 +56,14 @@
     "acceptTerms": "Ninakubali masharti na ninatambua taarifa za faragha.",
     "setup": "Huduma hii inaandaliwa. Tafadhali wasiliana na ISG.",
     "detailsEnglish": "Maelezo ya kina na fomu kwa sasa ziko kwa Kiingereza. Wasiliana na mshauri kwa msaada wa lugha.",
-    "confirmPassword": "Thibitisha nenosiri"
+    "confirmPassword": "Thibitisha nenosiri",
+    "needHelp": "Unahitaji msaada?"
   },
   "home": {
     "eyebrow": "Elimu ya kimataifa. Ushauri binafsi.",
-    "title1": "Sura yako inayofuata,",
-    "title2": "bila mipaka.",
-    "description": "Ushauri kuhusu ufadhili wa masomo na msaada wa maombi, kuanzia swali lako la kwanza hadi hatua yako kubwa inayofuata.",
+    "title1": "Soma nje ya nchi.",
+    "title2": "Kwa mpango ulio wazi.",
+    "description": "ISG inakusaidia kuchunguza chaguo za masomo ya kimataifa, kuandaa maombi na kufuatilia hatua zako pamoja na mshauri. Anza na ushauri binafsi, kisha fuatilia kila hatua kwenye akaunti yako.",
     "promises": [
       "Ushauri unaokufaa",
       "Taarifa zako zinabaki za faragha",
@@ -94,12 +95,21 @@
     "processText": "Si lazima ujue kila kitu kwa wakati mmoja. Hivi ndivyo tunavyoendelea pamoja.",
     "steps": [
       [
-        "Tuambie malengo yako",
-        "Shiriki historia yako ya elimu na unachotaka kusoma kupitia tathmini ya awali."
+        "Eleza malengo yako",
+        "Fungua akaunti na ujaze fomu fupi ya ushauri. Huhitaji nyaraka katika hatua hii."
       ],
-      ["Pata mapitio binafsi", "Mshauri anapitia taarifa zako na kujadili hatua zinazowezekana."],
-      ["Jenga mpango wa maombi", "Kubalianeni kuhusu huduma, ada na fursa kabla ya kuandaa nyaraka."],
-      ["Songa mbele ukiwa na taarifa", "Pitia na idhinisha maombi, kisha fuatilia taarifa na mshauri wako."]
+      [
+        "Thibitisha malipo ya ushauri",
+        "Lipa TZS 50,000 mara moja na pakia risiti kwa faragha. Kiasi hiki kinahesabiwa kwenye kifurushi chako cha ISG."
+      ],
+      [
+        "Kutana na mshauri",
+        "Panga mkutano uliothibitishwa, kisha jaza taarifa kamili na nyaraka zilizoombwa. Maswali ya kufuatilia yamejumuishwa."
+      ],
+      [
+        "Idhinisha na fuatilia maombi",
+        "Pitia mtoa nafasi halisi, idhinisha kila ombi na ufuatilie maendeleo yake kivyake."
+      ]
     ],
     "fullJourney": "Tazama safari nzima",
     "cityTitle": "Maeneo mapya. Mitazamo mipya.",
@@ -127,7 +137,9 @@
     "faqTitle": "Baadhi ya maswali unayoweza kuwa nayo.",
     "faqText": "Majibu wazi kabla ya hatua yako inayofuata.",
     "ctaTitle": "Sura yako mpya inaanza kwa mazungumzo.",
-    "ctaText": "Leta malengo yako. Tutakusaidia kuelewa njia iliyo mbele."
+    "ctaText": "Leta malengo yako. Tutakusaidia kuelewa njia iliyo mbele.",
+    "destinationLabel": "Anza na nchi unayopendelea",
+    "destinations": ["Urusi", "Uingereza", "Ujerumani", "Kanada"]
   },
   "faqs": [
     [
@@ -148,7 +160,7 @@
     ],
     [
       "Huduma inagharimu kiasi gani?",
-      "Ada na huduma huthibitishwa kwa maandishi kabla ya kujifunga. Ada za ISG ni tofauti na ada za chuo, mitihani na visa."
+      "Ushauri ni TZS 50,000 mara moja, zinazohesabiwa kwenye kifurushi cha ISG baadaye. Maswali na maombi ya mikutano ya ziada yamejumuishwa kulingana na ratiba. Ada za chuo, visa na usafiri ni tofauti."
     ],
     [
       "Taarifa zangu zinatumikaje?",

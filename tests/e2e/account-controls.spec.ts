@@ -19,12 +19,12 @@ test("utility bar, guest notifications and WhatsApp contact work", async ({ page
 test("six languages change content and persist; Arabic uses RTL", async ({ page }) => {
   await page.goto("/");
   for (const [name, locale, title] of [
-    ["Français", "fr", "sans frontières."],
-    ["Kiswahili", "sw", "bila mipaka."],
-    ["Русский", "ru", "без границ."],
-    ["Español", "es", "sin fronteras."],
-    ["العربية", "ar", "بلا حدود."],
-    ["English", "en", "without borders."],
+    ["Français", "fr", "Avec un plan clair."],
+    ["Kiswahili", "sw", "Kwa mpango ulio wazi."],
+    ["Русский", "ru", "С понятным планом."],
+    ["Español", "es", "Con un plan claro."],
+    ["العربية", "ar", "بخطة واضحة."],
+    ["English", "en", "With a clear plan."],
   ]) {
     await page.locator(".language-trigger").click();
     await page.getByRole("menuitemradio", { name }).click();

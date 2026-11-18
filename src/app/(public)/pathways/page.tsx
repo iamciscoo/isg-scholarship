@@ -1,46 +1,26 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 import { PageHero } from "@/components/public/page-hero";
 import { Cta } from "@/components/public/cta";
-import { pathways } from "@/config/content";
-export const metadata: Metadata = { title: "Study pathways", alternates: { canonical: "/pathways" } };
-export default function Pathways() {
+import { StudyPaths } from "@/features/consultations/study-paths";
+import { UniversityLife } from "@/components/public/university-life";
+export const metadata: Metadata = { title: "Study paths", alternates: { canonical: "/pathways" } };
+export default async function Pathways({
+  searchParams,
+}: {
+  searchParams: Promise<{ level?: string; field?: string; destination?: string }>;
+}) {
   return (
     <>
       <PageHero
-        image="/images/study-1.jpg"
-        label="Study pathways"
-        title="There’s more than one way forward."
-        description="Explore the broad routes into international education. A personal review helps put the possibilities in context."
+        image="/images/university-campus-2.jpg"
+        imageAlt="Jönköping University School of Engineering, Sweden"
+        label="Study paths"
+        title="Find your study path."
+        description="Explore programmes, destinations and campus life with guidance through every stage of your application."
       />
-      <div className="container page-body">
-        {pathways.map((path) => (
-          <section id={path.slug} key={path.slug} className="content-panel pathway-detail">
-            <p>{path.degree}</p>
-            <h2>{path.title}</h2>
-            <p>{path.description}</p>
-            <ul>
-              {path.details.map((detail) => (
-                <li key={detail}>{detail}</li>
-              ))}
-            </ul>
-            <Link className="text-link" href="/consultation">
-              Start consultation <ArrowUpRight size={17} />
-            </Link>
-          </section>
-        ))}
-        <h2>Understand the funding.</h2>
-        <p>
-          Support may include tuition awards, partial funding, living-cost support or research funding.
-          Coverage, eligibility and obligations vary by provider. A funded place may still involve costs you
-          need to plan for.
-        </p>
-        <p>
-          Destinations and individual opportunities are discussed in the context of your profile. ISG’s
-          curated research is private; details of any proposed application are shared with you before
-          authorization.
-        </p>
+      <StudyPaths query={await searchParams} />
+      <div id="campus-life">
+        <UniversityLife withinPaths />
       </div>
       <Cta />
     </>

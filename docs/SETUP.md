@@ -1,5 +1,7 @@
 ## Registration update
 
+For the new payment, meeting, full-form, application and opportunity workflows, use [Applicant operations setup](APPLICANT-OPERATIONS.md). This includes the private scanner overlay and the remaining provider/launch configuration.
+
 Email confirmation is disabled in the connected Supabase project at the owner's explicit request. Registration accepts email, password and confirmation, then starts a normal authenticated session. Configure the same Sign In / Providers setting for a new Supabase project. Password recovery continues to use emailed recovery links. Never match unverified email addresses to legacy consultation records: new submissions are attached atomically to authenticated account IDs.
 
 # Setup and launch

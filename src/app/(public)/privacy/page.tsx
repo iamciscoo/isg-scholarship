@@ -24,16 +24,29 @@ export default function Privacy() {
         </p>
         <h2>Accounts and access</h2>
         <p>
-          If you create an account, Supabase Auth manages your email verification, credentials and session.
-          Assessment records can be linked only after email ownership is verified. Authorized administrators
-          and assigned advisors can review records for the purposes of the service.
+          If you create an account, Supabase Auth manages your credentials, recovery links and session. Email
+          confirmation is not required for registration. Records are attached to your authenticated account
+          ID; an email match cannot claim someone else’s records. Authorized administrators and assigned
+          advisors can review records for the purposes of the service.
         </p>
         <h2>Service providers</h2>
         <p>
           When configured, Supabase hosts the database and authentication, Resend delivers service emails, and
           Cloudflare Turnstile checks submissions for abuse. The hosting provider processes requests needed to
           serve the platform. Student-life imagery is stored locally from Pexels; loading it does not call the
-          Pexels API. Optional analytics and WhatsApp integrations are not enabled in this release.
+          Pexels API. GREEN-API can deliver generic event notifications to ISG’s private staff group. Raw
+          receipts, applicant documents and sensitive personal details are excluded from group alerts; staff
+          links require authorized sign-in.
+        </p>
+        <h2>Later application and payment records</h2>
+        <p>
+          After consultation submission, you can upload a private payment receipt for administrator
+          verification. After a completed consultation, the full application stage asks for the documents and
+          guardian or nominated-contact details needed for the agreed work. Inform your nominated contact
+          before sharing their details. Submitted declarations record their version, acceptance time and an
+          immutable copy of your answers. Individual provider applications require your separate approval of
+          the disclosed opportunity. PDF files require malware scanning; images are decoded and re-encoded
+          before storage.
         </p>
         <h2>Consent and communications</h2>
         <p>

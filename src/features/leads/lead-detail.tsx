@@ -47,6 +47,11 @@ export async function LeadDetail({ id, admin }: { id: string; admin: boolean }) 
       <p>
         {a.reference} • <span className="badge">{stageLabel(lead.stage)}</span>
       </p>
+      {a.applicant_id && (
+        <Link className="text-link" href={`/${admin ? "admin" : "advisor"}/cases/${a.applicant_id}`}>
+          Consultation, meetings and documents →
+        </Link>
+      )}
       <div className="detail-grid">
         <section className="workspace-panel">
           <h2>Initial assessment</h2>
@@ -54,7 +59,7 @@ export async function LeadDetail({ id, admin }: { id: string; admin: boolean }) 
             {details.map(([label, value]) => (
               <div key={label}>
                 <dt>{label}</dt>
-                <dd>{value}</dd>
+                <dd>{value || "Not collected at consultation"}</dd>
               </div>
             ))}
           </dl>

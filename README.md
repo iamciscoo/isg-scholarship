@@ -1,5 +1,7 @@
 # ISG Scholarship Platform
 
+The latest [applicant operations update](docs/APPLICANT-OPERATIONS.md) adds one-time consultation payments, private receipts/documents, advisor meetings, full application declarations/PDFs, independent application tracking and private opportunities/public promotions. Use the scanner overlay documented there for raw PDF uploads.
+
 Next.js, React, TypeScript and Supabase with the supplied Flight Ribbon identity. Includes public pages, six-language home/auth/navigation, registered consultation intake, applicant profiles and avatars, admin/advisor workspaces, account notifications and Resend/Green API admin alerts.
 
 The existing live website is unchanged. There are no fabricated students, testimonials, scholarship awards or outcomes. Detailed forms and service/legal content remain English, with language-support notices.
@@ -14,7 +16,7 @@ npm run dev -- --port 3002
 Use .env.example for another environment. Never commit real environment files. Configured Docker preview:
 
 ```powershell
-docker compose --env-file .env.local -f compose.yaml -f compose.integrations.yaml up --build -d
+docker compose --env-file .env.local -f compose.yaml -f compose.integrations.yaml -f compose.scanning.yaml up --build -d
 ```
 
 Open http://localhost:3002. The admin dashboard is /admin; /admin/consultations handles submitted consultations; /dashboard/consultations shows a user’s drafts and request status; /admin/settings manages roles and notification recipients. Consultation requires registration. Public intake remains disabled pending the remaining provider setup. compose.yaml alone runs the basic app without optional integration files. The image runs non-root; hosted Supabase supplies database, Auth and Storage.
@@ -33,10 +35,10 @@ npm audit --omit=dev --audit-level=high
 
 Database fixtures run only in disposable PostgreSQL containers. Browser checks use an isolated production build with external credentials disabled. To check Docker, set PLAYWRIGHT_BASE_URL=http://localhost:3002.
 
-The full audit reports unpatched development-tool advisory GHSA-fc5q-39xc-vjpf in picomatch. The production audit is clean. The existing full-audit CI gate is retained and will report this upstream finding until resolved.
+The current full dependency audit reports zero vulnerabilities. The production audit is also clean; the full-audit CI gate remains enabled.
 
 ## GitHub and hosting
 
 Origin: https://github.com/iamciscoo/isg-scholarship.git. Future updates use git push. Configure hosting secrets separately. GitHub Pages cannot run this application's server-side authentication and API routes; use a Next.js host or Docker behind HTTPS with an authenticated notification scheduler.
 
-[Latest UX update](docs/ACCOUNT-UX-UPDATE.md) | [Setup](docs/SETUP.md) | [Architecture](docs/ARCHITECTURE.md) | [Verification](docs/VERIFICATION.md) | [Assets](docs/ASSETS.md) | [Roadmap](docs/ROADMAP.md)
+[Applicant operations](docs/APPLICANT-OPERATIONS.md) | [Setup](docs/SETUP.md) | [Architecture](docs/ARCHITECTURE.md) | [Verification](docs/VERIFICATION.md) | [Assets](docs/ASSETS.md) | [Roadmap](docs/ROADMAP.md)

@@ -1,5 +1,7 @@
 # Product phases
 
+The November 18 [applicant operations delivery](APPLICANT-OPERATIONS.md) implements the consultation-payment, meeting, private document, full application, opportunity/promotion, service-credit and independent application workflows. The phase descriptions below are the original roadmap, retained for context; advanced availability, automated provider submissions, banking settlement, refunds, delivery webhooks and operational retention remain future work.
+
 ## Phase 1 delivered in this repository
 
 Public website and brand, registered consultation assessment, consent, lead storage, authentication foundation, applicant contact account, database-assigned staff roles, admin/advisor lead workspace, private notes, contact inbox, audit and durable email outbox. External service setup and configured end-to-end validation remain launch gates, not simulated features.

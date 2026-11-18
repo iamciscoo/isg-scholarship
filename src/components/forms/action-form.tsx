@@ -15,7 +15,12 @@ export function ActionForm({
 }) {
   const [state, submit, pending] = useActionState(action, {});
   return (
-    <form action={submit} className={className} aria-busy={pending}>
+    <form
+      action={submit}
+      className={className}
+      aria-busy={pending}
+      onReset={(event) => event.preventDefault()}
+    >
       <fieldset disabled={pending} className="action-fields">
         {children}
       </fieldset>

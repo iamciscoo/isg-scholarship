@@ -1,5 +1,6 @@
 export type Assessment = {
   id: string;
+  applicant_id: string | null;
   reference: string;
   first_name: string;
   last_name: string;
@@ -11,7 +12,7 @@ export type Assessment = {
   education_status: string;
   field_of_study: string;
   performance: string;
-  graduation_year: number;
+  graduation_year: number | null;
   english_status: string;
   study_level: string;
   preferred_fields: string;

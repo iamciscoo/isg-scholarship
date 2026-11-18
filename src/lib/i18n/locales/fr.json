@@ -56,13 +56,14 @@
     "acceptTerms": "J’accepte les conditions et reconnais avoir pris connaissance des informations de confidentialité.",
     "setup": "Ce service est en cours de configuration. Contactez ISG.",
     "detailsEnglish": "Les informations détaillées et les formulaires sont actuellement en anglais. Contactez un conseiller pour une aide linguistique.",
-    "confirmPassword": "Confirmer le mot de passe"
+    "confirmPassword": "Confirmer le mot de passe",
+    "needHelp": "Besoin d’aide ?"
   },
   "home": {
     "eyebrow": "Études internationales. Conseils personnalisés.",
-    "title1": "Votre prochain chapitre,",
-    "title2": "sans frontières.",
-    "description": "Des conseils sur les bourses et un accompagnement pour vos candidatures, de la première question à la prochaine grande étape.",
+    "title1": "Étudiez à l’étranger.",
+    "title2": "Avec un plan clair.",
+    "description": "ISG vous aide à explorer les possibilités d’études, préparer vos candidatures et avancer avec un conseiller. Commencez par une consultation personnelle et suivez vos démarches dans votre espace.",
     "promises": [
       "Des conseils adaptés à vous",
       "Vos informations restent privées",
@@ -98,19 +99,19 @@
     "steps": [
       [
         "Présentez vos objectifs",
-        "Partagez votre parcours scolaire et vos projets lors d’une première évaluation."
+        "Créez votre compte et remplissez le court formulaire de consultation. Aucun document n’est requis à ce stade."
       ],
       [
-        "Recevez un avis personnel",
-        "Un conseiller examine vos informations et échange avec vous sur les prochaines étapes réalistes."
+        "Faites vérifier votre paiement",
+        "Payez une seule fois 50 000 TZS et déposez un reçu privé. Ce montant est déduit de votre forfait ISG."
       ],
       [
-        "Construisez votre plan",
-        "Convenez du périmètre, des frais et des possibilités avant de préparer les documents."
+        "Rencontrez votre conseiller",
+        "Convenez d’un rendez-vous, puis complétez vos informations et documents. Les échanges de suivi sont inclus."
       ],
       [
-        "Avancez en connaissance de cause",
-        "Vérifiez et autorisez vos candidatures, puis suivez les nouvelles avec votre conseiller."
+        "Autorisez et suivez vos candidatures",
+        "Examinez le prestataire réel, autorisez chaque candidature et suivez son évolution."
       ]
     ],
     "fullJourney": "Voir le parcours complet",
@@ -142,7 +143,9 @@
     "faqTitle": "Les questions que vous vous posez peut-être.",
     "faqText": "Des réponses claires avant votre prochaine étape.",
     "ctaTitle": "Votre prochain chapitre commence par une conversation.",
-    "ctaText": "Apportez votre ambition. Nous vous aiderons à comprendre la suite."
+    "ctaText": "Apportez votre ambition. Nous vous aiderons à comprendre la suite.",
+    "destinationLabel": "Choisissez une destination",
+    "destinations": ["Russie", "Royaume-Uni", "Allemagne", "Canada"]
   },
   "faqs": [
     [
@@ -163,7 +166,7 @@
     ],
     [
       "Combien coûte le service ?",
-      "Les frais et services sont confirmés par écrit avant votre engagement. Les frais d’ISG sont distincts des frais universitaires, d’examen et de visa."
+      "La consultation coûte 50 000 TZS une seule fois, déduits d’un forfait ISG ultérieur. Les questions et demandes de rendez-vous supplémentaires sont incluses, selon les disponibilités. Les frais universitaires, de visa et de voyage sont distincts."
     ],
     [
       "Comment mes informations sont-elles utilisées ?",

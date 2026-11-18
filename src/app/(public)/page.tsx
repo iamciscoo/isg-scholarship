@@ -45,6 +45,20 @@ export default async function Home() {
               <ArrowRight size={17} />
             </Link>
           </div>
+          <div className="hero-destinations">
+            <span>{h.destinationLabel}</span>
+            <div>
+              {h.destinations.map((name, i) => (
+                <Link
+                  key={name}
+                  href={`/pathways?destination=${encodeURIComponent(["Russia", "United Kingdom", "Germany", "Canada"][i])}`}
+                >
+                  {name}
+                  <ArrowUpRight size={12} />
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
         <div className="hero-scene">
           <div className="hero-cream-plane" aria-hidden="true" />
@@ -115,7 +129,7 @@ export default async function Home() {
           <div className="pathway-grid">
             {h.degrees.map(([degree, title], i) => (
               <Link
-                href={`/pathways#${["undergraduate", "masters", "doctoral"][i]}`}
+                href={`/pathways?level=${encodeURIComponent(["Undergraduate", "Master's", "PhD / Research"][i])}#programmes`}
                 className={`pathway-tile pathway-${i}`}
                 key={title}
               >

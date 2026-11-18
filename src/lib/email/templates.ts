@@ -6,9 +6,48 @@ export function escapeHtml(value: string) {
 }
 export function notificationTemplate(
   event: string,
-  payload: { firstName?: string; reference: string },
+  payload: { firstName?: string; reference: string; meetUrl?: string; startsAt?: string },
   siteUrl: string,
 ) {
+  const updates: Record<string, string> = {
+    payment_update:
+      "Your consultation payment status has changed. Open your workspace for its verification status.",
+    meeting_scheduled: "Your advisor has scheduled a Google Meet consultation.",
+    meeting_completed: "Your consultation is complete and your full application form is unlocked.",
+    meeting_cancelled:
+      "A consultation meeting has been cancelled. You can request another meeting without paying the consultation fee again.",
+    consultation_reply: "Your ISG advisor replied to your consultation question.",
+    document_request: "Your advisor has updated your document requests.",
+    document_update: "A document review is available in your workspace.",
+    application_update: "Your application has a new update.",
+    opportunity_proposed:
+      "ISG has proposed an opportunity. Review the actual provider and details, then approve or decline in your workspace before submission.",
+    package_accepted:
+      "Your ISG service-package quote and consultation credit are recorded in your workspace.",
+  };
+  if (updates[event]) {
+    const meet =
+      event === "meeting_scheduled" &&
+      /^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/.test(payload.meetUrl || "")
+        ? payload.meetUrl!
+        : "";
+    const start =
+      payload.startsAt && !Number.isNaN(Date.parse(payload.startsAt))
+        ? new Date(payload.startsAt).toISOString()
+        : "";
+    const url =
+      siteUrl +
+      (event === "document_request" || event === "document_update"
+        ? "/dashboard/application"
+        : "/dashboard/consultations");
+    const text = `${updates[event]}${meet ? `\nTime (UTC): ${start}\nGoogle Meet: ${meet}` : ""}\nYour private workspace: ${url}\nInternational Scholarship Gateway`;
+    return {
+      subject:
+        event === "meeting_scheduled" ? "Your ISG Google Meet consultation" : "Your ISG workspace update",
+      text,
+      html: `<html><body style="font-family:Arial,sans-serif;color:#0d2c62"><h1>Your ISG update</h1><p>${escapeHtml(updates[event])}</p>${meet ? `<p>Time (UTC): ${escapeHtml(start)}</p><p><a href="${escapeHtml(meet)}">Join Google Meet</a></p>` : ""}<p><a href="${escapeHtml(url)}">Open your private workspace</a></p></body></html>`,
+    };
+  }
   const reference = escapeHtml(payload.reference);
   const name = escapeHtml(payload.firstName || "there");
   const url = escapeHtml(siteUrl);

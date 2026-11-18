@@ -13,11 +13,19 @@ Owner setup remains separate: Turnstile, Supabase Auth SMTP, Resend, staff ident
 
 ## Applicant operations continuation
 
-- [ ] Consultation/payment schema and private upload authorization; one fee/credit per student. Test cross-user access and repeated verification/credit.
-- [ ] Payment instructions, applicant receipt/status UI and staff verification. Verify genuine pending/approved states without test production payments.
-- [ ] Follow-up questions, meeting requests/history, real Meet link scheduling and email/workspace updates. Test payment/unlock gates and assigned-advisor scope.
-- [ ] Full application drafts, later document/guardian fields, declaration version/time and downloadable PDF. Verify lock, prefill and private download access; compare reference files when supplied.
-- [ ] Multiple applications, applicant approval, workflow/provider decision separation and dated status history. Test independent outcomes and immutable approvals.
-- [ ] Admin private opportunities/packages and broad public promotions. Test anonymous data minimization and single-use consultation credit.
-- [ ] Study Paths merger, homepage, help hover/tap and responsive loading/form polish. Browser/a11y checks at 320/390/768/1024/1440.
+- [x] Consultation/payment schema and private upload authorization; one fee/credit per student. Test cross-user access and repeated verification/credit.
+- [x] Payment instructions, applicant receipt/status UI and staff verification. Verify genuine pending/approved states without test production payments.
+- [x] Follow-up questions, meeting requests/history, real Meet link scheduling and email/workspace updates. Test payment/unlock gates and assigned-advisor scope.
+- [x] Full application drafts, later document/guardian fields, declaration version/time and downloadable PDF. Lock/prefill/private download verified; supplied references reviewed.
+- [x] Multiple applications, applicant approval, workflow/provider decision separation and dated status history. Independent outcomes and immutable approvals verified.
+- [x] Admin private opportunities/packages and broad public promotions. Anonymous data minimization and single-use consultation credit verified.
+- [x] Study Paths merger, homepage, help hover/tap and responsive loading/form polish. Browser/a11y checks at 320/390/768/1024/1440.
 - [ ] Final independent review, database tests, Docker, docs/configuration/rollback report and Git push.
+
+## November 19 UI continuation
+
+- [ ] Larger destination flags, shorter hero copy, remove plaque line, logo feedback and home scroll behavior.
+- [ ] Login/register fit with accessible short-screen scrolling and compact mobile composition; no auth behavior regressions.
+- [ ] Fixed desktop workspace sidebar/header with content scrolling and explicit link prefetch; mobile swipe rows and tighter section spacing.
+- [ ] Original-site image references, thumbnail choices and safe public marketing image uploads; admin homepage image selection.
+- [ ] Styled progressive-enhancement select pickers and final mobile/desktop/browser/security review; complete final verification/push above.

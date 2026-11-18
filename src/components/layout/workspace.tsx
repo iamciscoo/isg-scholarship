@@ -30,12 +30,26 @@ export function Workspace({
         ...(role === "admin"
           ? [
               { href: "/admin/payments", label: "Payments", icon: ClipboardList, id: "payments" },
+              {
+                href: "/admin/opportunities",
+                label: "Private opportunities",
+                icon: ClipboardList,
+                id: "opportunities",
+              },
+              {
+                href: "/admin/promotions",
+                label: "Public promotions",
+                icon: ClipboardList,
+                id: "promotions",
+              },
+              { href: "/admin/packages", label: "Service packages", icon: ClipboardList, id: "packages" },
               { href: "/admin/enquiries", label: "Contact enquiries", icon: Mail, id: "enquiries" },
               { href: "/admin/audit", label: "Activity & delivery", icon: CircleCheck, id: "audit" },
               { href: "/admin/notifications", label: "User notifications", icon: Bell, id: "notifications" },
               { href: "/admin/settings", label: "Team & notifications", icon: CircleCheck, id: "settings" },
             ]
           : []),
+        { href: `${base}/applications`, label: "Applications", icon: ClipboardList, id: "applications" },
         { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" },
       ]
     : [
@@ -47,6 +61,13 @@ export function Workspace({
           id: "consultations",
         },
         { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" },
+        {
+          href: "/dashboard/application",
+          label: "Application details",
+          icon: ClipboardList,
+          id: "application",
+        },
+        { href: "/dashboard/applications", label: "Applications", icon: ClipboardList, id: "applications" },
       ];
   return (
     <div className="workspace">

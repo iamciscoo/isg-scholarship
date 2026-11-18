@@ -5,19 +5,19 @@ export const metadata: Metadata = { title: "How it works", alternates: { canonic
 const journey = [
   [
     "Share your starting point",
-    "Complete the guest eligibility assessment. Tell us about your qualifications, preferred level and goals. No documents are required at this stage.",
+    "Register with your email and password, then complete the short consultation form. Tell us about your education, study interests and questions. No documents or guardian details are required at this stage.",
   ],
   [
-    "Receive an initial review",
-    "An advisor reviews your information and contacts you about your circumstances and possible next steps. Additional information may be requested.",
+    "Pay once for consultation",
+    "Your workspace shows the TZS 50,000 fee and ISG payment instructions. Upload a private receipt and wait for administrator verification. The consultation fee is credited toward a later ISG package.",
   ],
   [
     "Discuss your options",
-    "Where appropriate, arrange a consultation to talk about the pathways, preparation and support that may be relevant to you.",
+    "Once payment is verified, request an advisor meeting. ISG confirms a time and Google Meet link in your workspace and queues an email. Follow-up questions and additional meeting requests are included, subject to scheduling.",
   ],
   [
     "Complete your profile",
-    "Create a verified account and confirm your personal and academic information. Provide only the information needed for the agreed work.",
+    "After a completed consultation, your full application form unlocks with known details prefilled. Save drafts, provide requested documents and guardian contact information, then accept the electronic declaration and download your submitted PDF.",
   ],
   [
     "Agree on a plan",
@@ -33,7 +33,7 @@ const journey = [
   ],
   [
     "Follow the outcome",
-    "Keep in contact about requests, provider decisions and next steps. The awarding institution makes the final decision.",
+    "Track each application independently, including dates, notes and next steps. ISG workflow updates are separate from official provider decisions. After acceptance, confirm your chosen place; rejected applications remain in history and your advisor can start another.",
   ],
 ];
 export default function HowItWorks() {

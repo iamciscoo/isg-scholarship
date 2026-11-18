@@ -19,3 +19,8 @@ it("keeps applicant PII out of staff alerts", () => {
   expect(template.html).not.toContain("Private Name");
   expect(template.text).toContain("ISG-TEST");
 });
+it.each(["document_request", "document_update"])("links %s directly to the document workspace", (event) => {
+  const template = notificationTemplate(event, { reference: "ISG consultation" }, "https://isg.example");
+  expect(template.text).toContain("https://isg.example/dashboard/application");
+  expect(template.html).toContain('href="https://isg.example/dashboard/application"');
+});

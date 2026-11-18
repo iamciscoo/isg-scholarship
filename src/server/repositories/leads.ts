@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { leadStages } from "@/lib/validation/leads";
 import type { Advisor, Lead, LeadNote } from "@/features/leads/types";
 export const assessmentColumns =
-  "id,reference,first_name,last_name,email,phone,nationality,residence,qualification,education_status,field_of_study,performance,graduation_year,english_status,study_level,preferred_fields,destinations,intake,funding,constraints_note,created_at";
+  "id,applicant_id,reference,first_name,last_name,email,phone,nationality,residence,qualification,education_status,field_of_study,performance,graduation_year,english_status,study_level,preferred_fields,destinations,intake,funding,constraints_note,created_at";
 export async function listLeads(
   db: SupabaseClient,
   query: { stage?: string; level?: string; page?: string; advisor?: string; from?: string; to?: string },

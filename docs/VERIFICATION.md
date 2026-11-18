@@ -1,5 +1,9 @@
 # Current update
 
+The current delivery is [applicant operations](APPLICANT-OPERATIONS.md): 19 migrations, real private scanner, consultation/payment, meetings/full forms, applications and private catalogue/public promotion separation. The records below are historical snapshots.
+
+Current checkpoint: 56 unit tests, 29 isolated production-browser tests, all database integration suites, typecheck, ESLint and Docker production build passed. Generated application PDF text and both rendered pages were inspected. Real ClamAV scanned the generated fixture successfully. Existing-admin browser checks confirmed the new empty-state flows and 32 private-page width checks (320/390/768/1440) without horizontal overflow. No real applicant, payment or provider outcome was invented for QA. The current full dependency audit reports zero vulnerabilities, superseding the earlier tooling advisory record. Authenticated private-data RPC advisory flags are intentional role/ownership-guarded functions; raw private tables retain deny-by-default policies. Public launch configuration and actual provider acceptance remain separate from these checks.
+
 See [account and consultation update](ACCOUNT-UX-UPDATE.md) for current registration, thirteen migrations and validation. [The earlier 18 November update](UPDATE-2026-11-18.md) records the integration setup. The Phase 1 record below is historical.
 
 # Verification record

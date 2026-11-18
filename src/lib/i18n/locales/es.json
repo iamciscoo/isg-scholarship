@@ -56,13 +56,14 @@
     "acceptTerms": "Acepto las condiciones y reconozco la información de privacidad.",
     "setup": "Este servicio se está configurando. Contacta con ISG.",
     "detailsEnglish": "Los detalles y formularios están actualmente en inglés. Contacta con un asesor para recibir ayuda con el idioma.",
-    "confirmPassword": "Confirmar contraseña"
+    "confirmPassword": "Confirmar contraseña",
+    "needHelp": "¿Necesitas ayuda?"
   },
   "home": {
     "eyebrow": "Educación internacional. Orientación personal.",
-    "title1": "Tu próximo capítulo,",
-    "title2": "sin fronteras.",
-    "description": "Orientación sobre becas y apoyo con tus solicitudes, desde la primera pregunta hasta el próximo gran paso.",
+    "title1": "Estudia en el extranjero.",
+    "title2": "Con un plan claro.",
+    "description": "ISG te ayuda a explorar opciones de estudios internacionales, preparar solicitudes y avanzar con un asesor. Empieza con una consulta personal y sigue cada paso desde tu espacio.",
     "promises": [
       "Orientación pensada para ti",
       "Tus datos permanecen privados",
@@ -98,19 +99,19 @@
     "steps": [
       [
         "Cuéntanos tus objetivos",
-        "Comparte tu formación y lo que deseas estudiar en una evaluación inicial."
+        "Crea tu cuenta y completa el formulario breve de consulta. Todavía no necesitas documentos."
       ],
       [
-        "Recibe una revisión personal",
-        "Un asesor revisa tus datos y comenta contigo los próximos pasos realistas."
+        "Verifica tu pago",
+        "Paga 50.000 TZS una sola vez y sube un recibo privado. Se descuenta de tu paquete ISG."
       ],
       [
-        "Prepara tu plan",
-        "Acuerda el alcance, las tarifas y las oportunidades antes de preparar documentos."
+        "Habla con tu asesor",
+        "Acuerda una reunión y después completa tus datos y documentos. Las preguntas de seguimiento están incluidas."
       ],
       [
-        "Avanza con información",
-        "Revisa y autoriza tus solicitudes; después sigue las novedades con tu asesor."
+        "Aprueba y sigue tus solicitudes",
+        "Revisa el proveedor real, autoriza cada solicitud y sigue sus actualizaciones independientes."
       ]
     ],
     "fullJourney": "Ver todo el recorrido",
@@ -136,7 +137,9 @@
     "faqTitle": "Algunas preguntas que quizá tengas.",
     "faqText": "Respuestas claras antes de dar el próximo paso.",
     "ctaTitle": "Tu próximo capítulo empieza con una conversación.",
-    "ctaText": "Trae tus metas. Te ayudaremos a entender el camino que tienes por delante."
+    "ctaText": "Trae tus metas. Te ayudaremos a entender el camino que tienes por delante.",
+    "destinationLabel": "Empieza por un destino",
+    "destinations": ["Rusia", "Reino Unido", "Alemania", "Canadá"]
   },
   "faqs": [
     [
@@ -157,7 +160,7 @@
     ],
     [
       "¿Cuánto cuesta el servicio?",
-      "Las tarifas y el alcance se confirman por escrito antes de comprometerte. Las tarifas de ISG son independientes de las universitarias, de exámenes y de visado."
+      "La consulta cuesta 50.000 TZS una sola vez y se descuenta de un paquete ISG posterior. Las preguntas y solicitudes de más reuniones están incluidas, según disponibilidad. Las tasas de proveedores, universidades, visados y viajes son independientes."
     ],
     [
       "¿Cómo se usan mis datos?",

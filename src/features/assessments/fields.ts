@@ -1,5 +1,16 @@
 import type { AssessmentInput } from "@/lib/validation/assessment";
 import { qualifications, studyLevels } from "@/lib/validation/assessment";
+export const consentFields = [
+  { name: "adultConfirmation", text: "I confirm that I am 18 years of age or older." },
+  {
+    name: "processingConsent",
+    text: "I consent to ISG processing my information to review this assessment and contact me about it.",
+  },
+  {
+    name: "marketingConsent",
+    text: "Optional: I would like occasional study guidance and service updates by email.",
+  },
+] as const;
 export type AssessmentField = {
   name: keyof AssessmentInput;
   label: string;
@@ -24,23 +35,6 @@ export const steps: AssessmentField[][] = [
       options: ["Currently studying", "Graduated", "Working", "Other"],
     },
     { name: "fieldOfStudy", label: "Current / most recent field of study" },
-    {
-      name: "performance",
-      label: "Academic performance range",
-      options: [
-        "Distinction / A range",
-        "Upper second / B range",
-        "Lower second / C range",
-        "Other grading system",
-        "Results pending",
-      ],
-    },
-    { name: "graduationYear", label: "Graduation year (actual or expected)", type: "number" },
-    {
-      name: "englishStatus",
-      label: "English-language proficiency",
-      options: ["Test completed", "Test planned", "Studied in English", "Not yet assessed"],
-    },
   ],
   [
     { name: "studyLevel", label: "Desired study level", options: studyLevels },
@@ -58,8 +52,8 @@ export const steps: AssessmentField[][] = [
     },
     {
       name: "constraints",
-      label: "Anything else to consider? (optional)",
-      help: "Keep this general. Do not include financial account details or sensitive personal information.",
+      label: "Questions for your advisor (optional)",
+      help: "You can mention language preferences, timing or travel readiness. Do not include passport numbers, financial account details or sensitive information.",
     },
   ],
 ];

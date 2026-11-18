@@ -7,7 +7,7 @@ import { ArrowRight, Check, CheckCircle2, CircleCheck } from "lucide-react";
 import { assessmentFields, assessmentSchema, type AssessmentInput } from "@/lib/validation/assessment";
 import { Button } from "@/components/ui/button";
 import { Turnstile } from "@/components/forms/turnstile";
-import { steps } from "./fields";
+import { steps, consentFields } from "./fields";
 import { AssessmentReview } from "./assessment-review";
 import { saveConsultationDraft } from "@/features/consultations/actions";
 const titles = ["About you", "Your academics", "Your ambitions", "Review & consent"];
@@ -42,6 +42,8 @@ export function AssessmentForm({
       residence: "",
       fieldOfStudy: "",
       graduationYear: "",
+      performance: "",
+      englishStatus: "",
       preferredFields: "",
       destinations: "",
       constraints: "",
@@ -115,8 +117,9 @@ export function AssessmentForm({
         </p>
         <div className="reference">{reference}</div>
         <p>
-          An advisor will review your information. This is an initial review, not confirmation of scholarship
-          eligibility. Your confirmation email is queued for delivery.
+          Your next step is the one-time TZS 50,000 consultation fee. Payment instructions and private receipt
+          upload are in your workspace. The fee is credited toward your later ISG package. Your confirmation
+          email is queued for delivery.
         </p>
         <Button asChild>
           <Link href="/dashboard/consultations">
@@ -230,19 +233,7 @@ export function AssessmentForm({
               </Link>
               .
             </p>
-            {(
-              [
-                { name: "adultConfirmation", text: "I confirm that I am 18 years of age or older." },
-                {
-                  name: "processingConsent",
-                  text: "I consent to ISG processing my information to review this assessment and contact me about it.",
-                },
-                {
-                  name: "marketingConsent",
-                  text: "Optional: I would like occasional study guidance and service updates by email.",
-                },
-              ] as const
-            ).map((item) => (
+            {consentFields.map((item) => (
               <div key={item.name}>
                 <label className="checkbox-field">
                   <input type="checkbox" {...form.register(item.name)} />

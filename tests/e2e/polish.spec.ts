@@ -17,7 +17,8 @@ test("university content follows the presidents without exposing scholarship lis
   await expect(page.locator(".university-scenes article")).toHaveCount(3);
   for (const img of await page.locator(".university-scenes img").all()) await expect(img).toBeVisible();
   await page.goto("/universities");
-  await expect(page.locator("h1")).toHaveText("A place for your next chapter.");
+  await expect(page.locator("h1")).toHaveText("Find your study path.");
+  await expect(page).toHaveURL(/\/pathways#campus-life/);
   await expect(page.getByRole("link", { name: /view scholarships/i })).toHaveCount(0);
 });
 for (const width of [320, 390, 768, 1440])
@@ -32,8 +33,9 @@ for (const width of [320, 390, 768, 1440])
     }
   });
 test("university and registration pages meet accessibility checks", async ({ page }) => {
-  for (const path of ["/universities", "/register"]) {
+  for (const path of ["/pathways", "/register"]) {
     await page.goto(path);
+    await expect(page.locator("h1")).toBeVisible();
     const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
     expect(result.violations).toEqual([]);
   }

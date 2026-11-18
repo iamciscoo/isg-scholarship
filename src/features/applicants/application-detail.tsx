@@ -1,0 +1,188 @@
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { z } from "zod";
+import { requireUser, requireStaff } from "@/lib/auth/session";
+import { Workspace } from "@/components/layout/workspace";
+import { ActionForm } from "@/components/forms/action-form";
+import { applicationStatuses, providerDecisions, proposalSchema } from "@/lib/validation/opportunities";
+import { approveApplication, updateApplication, commitPlace } from "./tracking-actions";
+export async function ApplicationDetail({
+  id,
+  historyPage = 1,
+  staff = false,
+  admin = false,
+}: {
+  id: string;
+  historyPage?: number;
+  staff?: boolean;
+  admin?: boolean;
+}) {
+  const { db, user, role } = staff ? await requireStaff(admin) : await requireUser();
+  if (!z.uuid().safeParse(id).success) notFound();
+  const { data: a, error } = await db.from("study_applications").select("*").eq("id", id).maybeSingle();
+  if (error) throw Error("Application unavailable");
+  if (!a || (!staff && a.user_id !== user.id)) notFound();
+  const p = proposalSchema.safeParse(a.proposal);
+  if (!p.success) throw Error("Proposal details unavailable");
+  const page = Math.max(1, Math.min(100000, Math.floor(historyPage) || 1));
+  const history = await db
+    .from("study_application_history")
+    .select("id,status,provider_decision,note,created_at", { count: "exact" })
+    .eq("application_id", id)
+    .order("created_at", { ascending: false })
+    .order("id")
+    .range((page - 1) * 20, page * 20 - 1);
+  if (history.error) throw Error("Application history unavailable");
+  const base = staff ? (admin ? "/admin/applications" : "/advisor/applications") : "/dashboard/applications";
+  return (
+    <Workspace role={role} email={user.email || ""} active="applications">
+      <Link href={base} className="text-link">
+        ← All applications
+      </Link>
+      <h1>{p.data.name}</h1>
+      <p>
+        {p.data.provider} · {p.data.destination} · {p.data.studyLevel}
+      </p>
+      <div className="operation-grid">
+        <section className="workspace-panel">
+          <span className="status-pill">{a.status}</span>
+          <h2>The actual opportunity</h2>
+          <p>Field: {p.data.field}</p>
+          <p>Provider deadline: {p.data.deadline || "Confirm with advisor"}</p>
+          <p className="preserve-lines">{p.data.requirements}</p>
+          <a className="text-link" href={p.data.sourceUrl} target="_blank" rel="noopener noreferrer">
+            Provider source ↗
+          </a>
+          <h3>Provider / university fee</h3>
+          <p>
+            {p.data.providerFee === null
+              ? "Not confirmed. Ask your advisor before authorizing any charge."
+              : `${p.data.providerCurrency} ${p.data.providerFee.toLocaleString("en")}`}
+          </p>
+          <p>
+            These charges are separate from ISG’s service package. No funding, admission or visa outcome is
+            guaranteed.
+          </p>
+          <p>
+            Approval: {a.approval}
+            {a.approved_at ? ` · ${new Date(a.approved_at).toISOString()}` : ""} · Proposal version{" "}
+            {a.proposal_version}
+          </p>
+          {!staff && a.approval === "pending" && (
+            <ActionForm action={approveApplication} label="Record my decision">
+              <input type="hidden" name="id" value={id} />
+              <label>
+                Decision
+                <select name="approve">
+                  <option value="">Select decision</option>
+                  <option value="true">
+                    Approve this opportunity for application preparation and submission
+                  </option>
+                  <option value="false">Decline this opportunity</option>
+                </select>
+              </label>
+              <p>
+                Approval applies to this disclosed provider and requirement snapshot. Submit your full
+                application declaration first.
+              </p>
+            </ActionForm>
+          )}
+        </section>
+        <section className="workspace-panel">
+          <h2>Official provider decision</h2>
+          <strong>{a.provider_decision}</strong>
+          <p>{a.provider_decision_date || "No official decision date recorded."}</p>
+          <p className="preserve-lines">{a.provider_evidence}</p>
+          <h3>Next steps</h3>
+          <p>{a.next_step || "Your advisor will confirm the next step."}</p>
+          {a.next_date && <p>Next action date: {a.next_date}</p>}
+          {!staff && a.status === "Accepted" && (
+            <ActionForm action={commitPlace} label="Confirm my commitment">
+              <input type="hidden" name="id" value={id} />
+              <label className="checkbox-field">
+                <input name="confirm" type="checkbox" required />I confirm that I am committing to this
+                accepted place.
+              </label>
+              <label className="checkbox-field">
+                <input name="closeOthers" type="checkbox" />
+                Close my other active ISG application workflows. ISG must confirm any separate provider
+                withdrawals.
+              </label>
+            </ActionForm>
+          )}
+        </section>
+      </div>
+      {staff && (
+        <section className="workspace-panel">
+          <h2>Record a workflow update</h2>
+          <ActionForm action={updateApplication} label="Save dated update">
+            <input type="hidden" name="id" value={id} />
+            <div className="form-grid">
+              <label>
+                ISG workflow
+                <select name="status" defaultValue={a.status}>
+                  {applicationStatuses.map((s) => (
+                    <option key={s} disabled={s === "Completed" && a.status !== "Completed"}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Official provider decision
+                <select name="decision" defaultValue={a.provider_decision}>
+                  {providerDecisions.map((s) => (
+                    <option key={s}>{s}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Official decision date
+                <input name="decisionDate" type="date" defaultValue={a.provider_decision_date || ""} />
+              </label>
+              <label>
+                Next action date
+                <input name="nextDate" type="date" defaultValue={a.next_date || ""} />
+              </label>
+            </div>
+            <label>
+              Official decision source / evidence summary
+              <textarea name="evidence" defaultValue={a.provider_evidence} maxLength={2000} />
+            </label>
+            <label>
+              History note visible to applicant
+              <textarea name="note" minLength={3} maxLength={2000} required />
+            </label>
+            <label>
+              Next step
+              <textarea name="next" defaultValue={a.next_step} maxLength={1000} />
+            </label>
+            <p>
+              Official outcomes must be supported by the provider’s decision. Only applicants can mark a place
+              Completed by confirming commitment.
+            </p>
+          </ActionForm>
+        </section>
+      )}
+      <section className="workspace-panel">
+        <h2>Application history</h2>
+        <ol className="notification-history">
+          {history.data?.map((h) => (
+            <li key={h.id}>
+              <strong>{h.status}</strong>
+              <p>{h.note}</p>
+              <p>Provider: {h.provider_decision}</p>
+              <time>{new Date(h.created_at).toISOString()}</time>
+            </li>
+          ))}
+        </ol>
+        <div className="pagination">
+          {page > 1 && <Link href={`${base}/${id}?page=${page - 1}`}>← Previous</Link>}
+          {page * 20 < (history.count || 0) && (
+            <Link href={`${base}/${id}?page=${page + 1}`}>Older updates →</Link>
+          )}
+        </div>
+      </section>
+    </Workspace>
+  );
+}

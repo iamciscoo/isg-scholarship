@@ -56,13 +56,14 @@
     "acceptTerms": "I accept the terms and acknowledge the privacy information.",
     "setup": "This service is awaiting setup. Please contact ISG.",
     "detailsEnglish": "Detailed guidance and application forms are currently available in English. Contact an advisor for language support.",
-    "confirmPassword": "Confirm password"
+    "confirmPassword": "Confirm password",
+    "needHelp": "Need help?"
   },
   "home": {
     "eyebrow": "International education. Personal guidance.",
-    "title1": "Your next chapter,",
-    "title2": "without borders.",
-    "description": "Personalized scholarship guidance and application support. From your first question to your next big step.",
+    "title1": "Study abroad.",
+    "title2": "With a clear plan.",
+    "description": "ISG helps you explore international study options, prepare applications and navigate decisions with an advisor. Start with a personal consultation, then follow every next step in your workspace.",
     "promises": [
       "Guidance shaped around you",
       "Your information stays private",
@@ -98,17 +99,20 @@
     "steps": [
       [
         "Tell us your goals",
-        "Share your academic background and what you hope to study in an initial assessment."
+        "Create your account and complete the short consultation form. No documents are needed yet."
       ],
       [
-        "Get a personal review",
-        "An advisor reviews your information and discusses realistic next steps with you."
+        "Verify your consultation payment",
+        "Pay TZS 50,000 once and upload a private receipt. The fee is credited toward your ISG package."
       ],
       [
-        "Build your application plan",
-        "Agree on the scope, fees and selected opportunities before preparing documents."
+        "Meet your advisor",
+        "Book a confirmed meeting, then complete your full details and requested documents. Follow-ups are included."
       ],
-      ["Move forward, informed", "Review and authorize applications, then follow updates with your advisor."]
+      [
+        "Approve and follow applications",
+        "Review the actual provider, approve each application and follow its independent updates."
+      ]
     ],
     "fullJourney": "See the full journey",
     "cityTitle": "New places. New perspectives.",
@@ -133,7 +137,9 @@
     "faqTitle": "A few things you might be wondering.",
     "faqText": "Clear answers before you take your next step.",
     "ctaTitle": "Your next chapter starts with a conversation.",
-    "ctaText": "Bring your ambition. We'll help you understand the path ahead."
+    "ctaText": "Bring your ambition. We'll help you understand the path ahead.",
+    "destinationLabel": "Start with a destination",
+    "destinations": ["Russia", "United Kingdom", "Germany", "Canada"]
   },
   "faqs": [
     [
@@ -154,7 +160,7 @@
     ],
     [
       "How much does the service cost?",
-      "Fees and scope are confirmed in writing before you commit. ISG service fees are separate from university, examination and visa charges."
+      "Consultation costs TZS 50,000 once and is credited toward a later ISG service package. Follow-up questions and further meeting requests are included, subject to scheduling. ISG package prices are separate from university, provider, visa and travel fees."
     ],
     [
       "How is my information used?",

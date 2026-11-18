@@ -5,6 +5,7 @@ import { Workspace } from "@/components/layout/workspace";
 import { Button } from "@/components/ui/button";
 import { stageLabel } from "@/lib/validation/leads";
 import { PaymentPanel } from "@/features/consultations/payment-panel";
+import { CaseSupport } from "@/features/consultations/case-support";
 type Consultation = {
   id: string;
   reference: string;
@@ -47,6 +48,7 @@ export default async function Consultations() {
       {payment.data && (
         <PaymentPanel record={payment.data} files={files.data || []} instructions={instructions.data || ""} />
       )}
+      {payment.data&&<CaseSupport record={payment.data}/>}
       {draft.data && (
         <section className="workspace-panel consultation-draft">
           <span className="status-pill">In progress</span>

@@ -11,7 +11,7 @@ export const qualifications = [
 ] as const;
 export const assessmentFields = [
   ["firstName", "lastName", "email", "phone", "nationality", "residence"],
-  ["qualification", "educationStatus", "fieldOfStudy", "performance", "graduationYear", "englishStatus"],
+  ["qualification", "educationStatus", "fieldOfStudy"],
   ["studyLevel", "preferredFields", "destinations", "intake", "funding", "constraints"],
   ["processingConsent", "adultConfirmation"],
 ] as const;
@@ -31,17 +31,23 @@ export const assessmentSchema = z
     qualification: z.enum(qualifications),
     educationStatus: z.enum(["Currently studying", "Graduated", "Working", "Other"]),
     fieldOfStudy: text(150),
-    performance: z.enum([
-      "Distinction / A range",
-      "Upper second / B range",
-      "Lower second / C range",
-      "Other grading system",
-      "Results pending",
+    performance: z.union([
+      z.literal(""),
+      z.enum([
+        "Distinction / A range",
+        "Upper second / B range",
+        "Lower second / C range",
+        "Other grading system",
+        "Results pending",
+      ]),
     ]),
     graduationYear: z
       .string()
-      .regex(/^(19[5-9]\d|20\d\d)$/, "Enter a four-digit year between 1950 and 2099."),
-    englishStatus: z.enum(["Test completed", "Test planned", "Studied in English", "Not yet assessed"]),
+      .regex(/^(19[5-9]\d|20\d\d)?$/, "Enter a four-digit year between 1950 and 2099."),
+    englishStatus: z.union([
+      z.literal(""),
+      z.enum(["Test completed", "Test planned", "Studied in English", "Not yet assessed"]),
+    ]),
     studyLevel: z.enum(studyLevels),
     preferredFields: text(200),
     destinations: z.string().trim().max(200),

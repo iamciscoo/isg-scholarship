@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { adminClient } from "@/lib/supabase/admin";
+import { authConfigured } from "@/lib/supabase/config";
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  if (!authConfigured()) return new Response(null, { status: 503 });
   if (!z.uuid().safeParse(id).success) return new Response(null, { status: 404 });
   const db = await createClient();
   const {

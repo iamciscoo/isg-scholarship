@@ -1,0 +1,35 @@
+# Optional private PDF scanner. No host port or real applicant file mount.
+services:
+  web:
+    environment:
+      CLAMAV_HOST: scanner
+      CLAMAV_PORT: 3310
+    depends_on:
+      scanner:
+        condition: service_healthy
+  scanner:
+    image: clamav/clamav:stable@sha256:7054e3f34308c384ea43cd786ea17abf899bd44af40af9f1b099853d7a5c214e
+    user: clamav
+    entrypoint: ["/init-unprivileged"]
+    volumes:
+      - clamav-signatures:/var/lib/clamav
+    expose: ["3310"]
+    mem_limit: 4g
+    cpus: 1.0
+    pids_limit: 128
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    healthcheck:
+      test: ["CMD", "clamdscan", "--ping=1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 180s
+      retries: 10
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+volumes:
+  clamav-signatures:

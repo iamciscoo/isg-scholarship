@@ -1,0 +1,70 @@
+import Link from "next/link";
+import { z } from "zod";
+import { requireStaff } from "@/lib/auth/session";
+import { Workspace } from "@/components/layout/workspace";
+import { PromotionEditor, type Promotion } from "@/features/admin/opportunity-editor";
+export default async function Promotions({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; edit?: string }>;
+}) {
+  const { db, user, role } = await requireStaff(true);
+  const q = await searchParams;
+  const page = Math.max(1, Math.min(100000, Number.parseInt(q.page || "1", 10) || 1));
+  const list = await db
+    .from("study_promotions")
+    .select("*", { count: "exact" })
+    .order("updated_at", { ascending: false })
+    .order("id")
+    .range((page - 1) * 20, page * 20 - 1);
+  if (list.error) throw Error("Promotions unavailable");
+  const edit =
+    q.edit && z.uuid().safeParse(q.edit).success
+      ? await db.from("study_promotions").select("*").eq("id", q.edit).maybeSingle()
+      : null;
+  if (edit?.error) throw Error("Promotion unavailable");
+  return (
+    <Workspace role={role} email={user.email || ""} active="promotions">
+      <h1>Public study promotions.</h1>
+      <p>
+        Show broad destinations, fields, study levels and funding types. The private opportunity catalogue is
+        never used as a public listing.
+      </p>
+      <div className="operation-grid">
+        <section className="workspace-panel">
+          <h2>{edit?.data ? "Edit promotion" : "Add promotion"}</h2>
+          {edit?.data && (
+            <Link href="/admin/promotions" className="text-link">
+              Add another →
+            </Link>
+          )}
+          <PromotionEditor value={edit?.data as Promotion | undefined} />
+        </section>
+        <section className="workspace-panel">
+          <h2>Promotion history</h2>
+          {!list.data?.length ? (
+            <p>No promotions have been authored yet.</p>
+          ) : (
+            <ul className="notification-history">
+              {(list.data as Promotion[]).map((p) => (
+                <li key={p.id}>
+                  <strong>{p.title}</strong>
+                  <p>
+                    {p.published ? "Published" : "Private draft"} · {p.destination} · {p.study_level}
+                  </p>
+                  <Link className="text-link" href={`/admin/promotions?edit=${p.id}&page=${page}`}>
+                    Edit promotion →
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="pagination">
+            {page > 1 && <Link href={`/admin/promotions?page=${page - 1}`}>← Previous</Link>}
+            {page * 20 < (list.count || 0) && <Link href={`/admin/promotions?page=${page + 1}`}>Next →</Link>}
+          </div>
+        </section>
+      </div>
+    </Workspace>
+  );
+}

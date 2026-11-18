@@ -21,7 +21,7 @@ Reuse the existing Next/Supabase identity, leads, draft persistence, workspace a
 
 Verification per slice: PostgreSQL adversarial authorization/transition tests, focused validation tests, typecheck/lint/build and real browser checks. Test identities stay in disposable databases. Document external limits honestly.
 
-References: the Consultation PDF and Scholarship Application Word file are not present among current attachments or relevant Downloads; the owner has been asked for their paths. Implement only explicitly requested field categories until the originals can be reviewed. Do not claim exact reference parity without them.
+References reviewed: `C:/Users/Administrator/Downloads/ISG CONSULTATION FORM .pdf` (two pages) and `C:/Users/Administrator/Downloads/ISG_Scholarship_Application_Form.docx`. Initial consultation covers current stage, education and goals, broad destinations/language/timing and general questions. Application stage covers requested documents, contact/study interests, guardian/nominated contact, address, education institution and programme details. Guardian DOB is optional and only requested when needed. Replace handwritten signature with a versioned declaration snapshot. Fee/account details are managed privately; owner confirmed CRDB Bank in chat.
 
 Security: raw receipts and applicant documents never go to group messages. Staff notifications use an authenticated staff receipt route, without PII or public/signed bearer links. Decode/reencode accepted images; PDF uploads require a configured malware scanner and fail closed. Serve private files as attachments with no-store, nosniff and authorization on every request.
 

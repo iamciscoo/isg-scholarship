@@ -35,10 +35,17 @@ test("unauthenticated private routes stay protected", async ({ page, request, ba
     "/admin/enquiries",
     "/admin/consultations",
     "/admin/notifications",
+    "/admin/payments",
+    "/admin/opportunities",
+    "/admin/promotions",
+    "/admin/packages",
+    "/admin/applications",
     "/advisor",
     "/dashboard",
     "/dashboard/profile",
     "/dashboard/consultations",
+    "/dashboard/application",
+    "/dashboard/applications",
   ]) {
     await page.goto(path);
     await expect(page).toHaveURL(/\/login/);
