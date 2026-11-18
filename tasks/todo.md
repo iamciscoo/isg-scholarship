@@ -21,7 +21,7 @@ Owner setup remains separate: Turnstile, Supabase Auth SMTP, Resend, staff ident
 - [x] Admin private opportunities/packages and broad public promotions. Anonymous data minimization and single-use consultation credit verified.
 - [x] Study Paths merger, homepage, help hover/tap and responsive loading/form polish. Browser/a11y checks at 320/390/768/1024/1440.
 - [x] Final independent review, database tests, Docker and docs/configuration/rollback report.
-- [ ] Git push and remote revision verification.
+- [x] Git push and remote revision verification. Code checkpoint 5e9614d matched origin/main; GitHub Actions stopped before any steps due to the account billing lock. See docs/DELIVERY-2026-11-19.md.
 
 ## November 19 UI continuation
 
