@@ -26,3 +26,17 @@ The original universities page was reviewed for visual direction. New campus pho
 - university-campus-1.jpg: Bruce Taylor, https://www.pexels.com/photo/facade-of-the-university-of-pretoria-engineering-1-building-pretoria-south-africa-19014974/
 - university-campus-2.jpg: Efrem Efre, https://www.pexels.com/photo/jonkoping-university-school-of-engineering-building-39289023/
 - university-campus-3.jpg: An Vuong, https://www.pexels.com/photo/the-university-of-oklahoma-in-autumn-19554793/
+
+## November 19 original-site references
+
+The user requested additional imagery from https://www.isgscholarship.com/universities.html. These Unsplash sources were inspected visually and downloaded as local editorial illustrations. The original page's university labels were not copied: the photographs do not establish a partnership, scholarship or admission offer.
+
+| Asset                    | Actual visual context                          | Original image source                                        |
+| ------------------------ | ---------------------------------------------- | ------------------------------------------------------------ |
+| reference-campus.jpg     | Graduation celebrations with Singapore skyline | https://images.unsplash.com/photo-1541339907198-e08756dedf3f |
+| reference-library.jpg    | Library shelves and study space                | https://images.unsplash.com/photo-1498243691581-b145c3f54a5a |
+| reference-study-city.jpg | Kyoto street and pagoda                        | https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e |
+
+Use follows the standard Unsplash license, checked 19 November: https://unsplash.com/license. Do not imply endorsement by photographed people or institutions. The original page incorrectly labels some scenes as named universities; the new UI uses truthful general captions. Germany and Canada flags also use the included flag-icons MIT license.
+
+New admin uploads require ISG's publication permission and are explicitly public marketing assets. They are decoded/re-encoded to WebP without original filenames or EXIF. Never upload applicant material through this gallery.

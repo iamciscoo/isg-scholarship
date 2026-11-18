@@ -92,7 +92,8 @@ export async function StudyPaths({
           when reviewed and published by ISG.
         </p>
       )}
-      <div className="study-path-grid">
+      <p className="mobile-swipe-hint">Swipe to explore study paths →</p>
+      <div className="study-path-grid" tabIndex={0} aria-label="Study paths">
         {guides.map((p) => (
           <article className="study-path-card" key={p.title}>
             <div className="study-path-photo">
@@ -120,7 +121,8 @@ export async function StudyPaths({
       {!!promotions.length && (
         <>
           <h2 className="mt-10">Destinations and funding to explore</h2>
-          <div className="study-path-grid">
+          <p className="mobile-swipe-hint">Swipe to explore study paths →</p>
+          <div className="study-path-grid" tabIndex={0} aria-label="Study paths">
             {promotions.map((p) => (
               <article className="study-path-card" key={p.id}>
                 <div className="study-path-photo">

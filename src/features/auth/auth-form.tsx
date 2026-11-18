@@ -30,7 +30,7 @@ export function AuthForm({
   } = useLocale();
   const onToken = useCallback((v: string) => setToken(v), []);
   return (
-    <form className="form-stack" action={action}>
+    <form className="form-stack" action={action} onReset={(event) => event.preventDefault()}>
       <input type="hidden" name="mode" value={mode} />
       <input type="hidden" name="next" value={next || ""} />
       <input type="hidden" name="captcha" value={token} />

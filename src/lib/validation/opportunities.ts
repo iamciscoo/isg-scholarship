@@ -8,7 +8,14 @@ export const approvedImages = [
   "/images/university-campus-3.jpg",
   "/images/study-together.jpg",
   "/images/campus-life.jpg",
+  "/images/reference-campus.jpg",
+  "/images/reference-library.jpg",
+  "/images/reference-study-city.jpg",
 ] as const;
+export const marketingImageSchema = z.union([
+  z.enum(approvedImages),
+  z.string().regex(/^\/api\/marketing-images\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/),
+]);
 const title = (max = 160) => z.string().trim().min(1).max(max);
 export const opportunitySchema = z
   .object({
@@ -23,7 +30,7 @@ export const opportunitySchema = z
     sourceUrl: z.url().refine((v) => v.startsWith("https://")),
     providerFee: z.union([z.string().regex(/^\d{1,9}(\.\d{1,2})?$/), z.literal("")]),
     providerCurrency: z.enum(["TZS", "USD", "EUR", "GBP", "RUB"]),
-    image: z.enum(approvedImages),
+    image: marketingImageSchema,
     active: z.boolean(),
   })
   .strict();
@@ -35,7 +42,7 @@ export const promotionSchema = z
     field: title(),
     fundingType: title(200),
     eligibility: z.string().trim().max(2000),
-    image: z.enum(approvedImages),
+    image: marketingImageSchema,
     published: z.boolean(),
   })
   .strict();

@@ -20,12 +20,13 @@ Owner setup remains separate: Turnstile, Supabase Auth SMTP, Resend, staff ident
 - [x] Multiple applications, applicant approval, workflow/provider decision separation and dated status history. Independent outcomes and immutable approvals verified.
 - [x] Admin private opportunities/packages and broad public promotions. Anonymous data minimization and single-use consultation credit verified.
 - [x] Study Paths merger, homepage, help hover/tap and responsive loading/form polish. Browser/a11y checks at 320/390/768/1024/1440.
-- [ ] Final independent review, database tests, Docker, docs/configuration/rollback report and Git push.
+- [x] Final independent review, database tests, Docker and docs/configuration/rollback report.
+- [ ] Git push and remote revision verification.
 
 ## November 19 UI continuation
 
-- [ ] Larger destination flags, shorter hero copy, remove plaque line, logo feedback and home scroll behavior.
-- [ ] Login/register fit with accessible short-screen scrolling and compact mobile composition; no auth behavior regressions.
-- [ ] Fixed desktop workspace sidebar/header with content scrolling and explicit link prefetch; mobile swipe rows and tighter section spacing.
-- [ ] Original-site image references, thumbnail choices and safe public marketing image uploads; admin homepage image selection.
-- [ ] Styled progressive-enhancement select pickers and final mobile/desktop/browser/security review; complete final verification/push above.
+- [x] Larger destination flags, shorter hero copy, remove plaque line, logo feedback and home scroll behavior.
+- [x] Login/register fit with accessible short-screen scrolling and compact mobile composition; no auth behavior regressions.
+- [x] Fixed desktop workspace sidebar/header with content scrolling and explicit link prefetch; mobile swipe rows and tighter section spacing.
+- [x] Original-site image references, thumbnail choices and safe public marketing image uploads; admin homepage image selection.
+- [x] Styled progressive-enhancement select pickers and final mobile/desktop/browser/security review; complete final verification/push above.

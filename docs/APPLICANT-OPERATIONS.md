@@ -63,3 +63,13 @@ Independent payment, meeting/form and application/catalogue reviews passed after
 - The current configured scanner and notification worker run locally. A deployment needs equivalent private scanner connectivity, scheduling, secrets, backups and monitoring. Domain/DNS/public-site deployment is separate.
 
 Practical next improvements: approve refund/retention procedures; configure authenticated provider email delivery; optionally connect Google Calendar for real availability and invitations; add staff-reviewed receipt redaction before considering group media attachments. See APPLICANT-OPERATIONS-MIGRATIONS.md for recovery planning.
+
+## November 19 UI continuation
+
+Destination links now include larger flags, the hero copy is shorter and its decorative dashed line is removed. The logo returns home and returns to the top when already on the homepage, respecting reduced motion and modifier clicks. Login and registration use a compact mobile layout, preserve fields after errors and allow scrolling on short viewports without clipping controls.
+
+Workspace navigation lives in persistent layouts, explicitly prefetches tabs and shows loading content while page-level authorization runs. On desktop the sidebar and header remain in place while the selected tab scrolls. Mobile navigation and selected card rows scroll horizontally; filters and checkboxes retain native form semantics. Select pickers gain styled options where the browser supports them, with normal native controls as fallback.
+
+`/admin/website` manages the homepage photograph. Opportunity/promotion image choices include thumbnails and a public marketing-image uploader. Choose/upload an image, then explicitly save the surrounding form; uploading does not itself publish a promotion or replace the homepage hero. The separate public `marketing-images` bucket is never used for private receipts/documents. Migration 020 and rollback guidance are in APPLICANT-OPERATIONS-MIGRATIONS.md.
+
+Validation: 35 isolated production browser tests passed. Real-admin Docker checks confirmed one active navigation item, fixed desktop chrome, mobile navigation swiping and no horizontal overflow. At 390×844 the registration submit button fits within the viewport. Browser-driven file selection was blocked by the Chrome extension's local-file permission; the upload handler is covered separately with actual image decoding and mocked storage/authorization in unit tests. A real hosted upload has not been claimed as verified.

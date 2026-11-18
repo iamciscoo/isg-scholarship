@@ -12,8 +12,8 @@ export default async function Pathways({
   return (
     <>
       <PageHero
-        image="/images/university-campus-2.jpg"
-        imageAlt="Jönköping University School of Engineering, Sweden"
+        image="/images/reference-library.jpg"
+        imageAlt="University library with space for study and research"
         label="Study paths"
         title="Find your study path."
         description="Explore programmes, destinations and campus life with guidance through every stage of your application."

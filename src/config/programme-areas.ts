@@ -11,7 +11,7 @@ export const programmeAreas = [
     title: "Business & management",
     level: "Undergraduate",
     field: "Business",
-    image: "/images/study-1.jpg",
+    image: "/images/reference-campus.jpg",
     text: "Compare business, economics and management course structures with your career interests and current qualifications.",
   },
   {
@@ -39,14 +39,14 @@ export const programmeAreas = [
     title: "Public health & life sciences",
     level: "Master's",
     field: "Health",
-    image: "/images/campus-life.jpg",
+    image: "/images/reference-study-city.jpg",
     text: "Discuss postgraduate routes in public health and life sciences, research expectations and qualification recognition.",
   },
   {
     title: "An original research contribution",
     level: "PhD / Research",
     field: "Research",
-    image: "/images/university-campus-3.jpg",
+    image: "/images/reference-library.jpg",
     text: "Prepare to discuss your research interests, supervisor fit, academic evidence and possible funding routes.",
   },
   {

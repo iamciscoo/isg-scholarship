@@ -37,7 +37,28 @@ export function HeaderClient({ account }: { account: AccountSummary }) {
         </div>
       </div>
       <div className="container header-inner">
-        <Link href="/" aria-label={t.home} onClick={() => setOpen(false)} className="brand">
+        <Link
+          href="/"
+          aria-label={t.home}
+          onClick={(event) => {
+            setOpen(false);
+            if (
+              pathname === "/" &&
+              !event.ctrlKey &&
+              !event.metaKey &&
+              !event.shiftKey &&
+              !event.altKey &&
+              event.button === 0
+            ) {
+              event.preventDefault();
+              window.scrollTo({
+                top: 0,
+                behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+              });
+            }
+          }}
+          className="brand"
+        >
           <Image
             src="/brand/logo.svg"
             width={280}

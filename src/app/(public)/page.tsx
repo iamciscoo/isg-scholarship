@@ -19,9 +19,11 @@ import { DestinationStories } from "@/components/public/destination-stories";
 import { getMessages } from "@/lib/i18n/server";
 import { Leaders } from "@/components/public/leaders";
 import { UniversityLife } from "@/components/public/university-life";
+import { getHomepageImage } from "@/server/repositories/marketing-images";
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 export default async function Home() {
   const { home: h, ui: t } = await getMessages();
+  const heroImage = await getHomepageImage();
   return (
     <div data-home>
       <section className="hero container" data-home-hero>
@@ -53,7 +55,8 @@ export default async function Home() {
                   key={name}
                   href={`/pathways?destination=${encodeURIComponent(["Russia", "United Kingdom", "Germany", "Canada"][i])}`}
                 >
-                  {name}
+                  <Image src={`/flags/${["ru", "gb", "de", "ca"][i]}.svg`} width={32} height={24} alt="" />
+                  <span>{name}</span>
                   <ArrowUpRight size={12} />
                 </Link>
               ))}
@@ -64,8 +67,8 @@ export default async function Home() {
           <div className="hero-cream-plane" aria-hidden="true" />
           <div className="hero-visual">
             <Image
-              src="/images/study-together.jpg"
-              alt="Students sharing ideas while studying together outdoors"
+              src={heroImage}
+              alt="Explore international study with ISG guidance"
               fill
               sizes="(max-width: 767px) 100vw, 50vw"
               priority
@@ -76,7 +79,6 @@ export default async function Home() {
           <div className="hero-route-plaque">
             <Plane size={19} />
             <span>{h.promises[0]}</span>
-            <span className="route-plaque-line" aria-hidden="true" />
           </div>
         </div>
       </section>

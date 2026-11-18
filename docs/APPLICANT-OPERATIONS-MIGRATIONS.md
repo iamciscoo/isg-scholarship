@@ -17,4 +17,10 @@ Only in an empty disposable environment may new slice tables/functions/policies 
 
 ## External configuration
 
+## November 19 marketing-image migration plan
+
+Migration 020 adds a public marketing gallery and a single public homepage-image setting. It uses a separate Storage bucket from receipts/documents. Only an active administrator can upload through the server; content is bounded, decoded and re-encoded before publication. Original filenames and EXIF metadata are discarded. Public image reads are intentional. Existing opportunity/promotion image constraints are widened to permit registered marketing-image IDs, without widening private data access.
+
+Test 020 and public/private role boundaries on disposable PostgreSQL before applying. Revert the UI first for rollback; retain uploaded assets and disable the new write RPCs. Restore the old image constraint only after checking that no row uses a registered gallery path. Do not delete uploaded business assets or private application data as a rollback shortcut.
+
 Payment instructions must be supplied by an administrator; no account number is fabricated. Manual approval records a claim verification, not an automated bank integration. Google Meet links are supplied by the scheduling advisor; Calendar OAuth automation is not implied. Resend test-sender restrictions remain. GREEN-API receives generic staff-only links, never raw applicant files. A trusted malware scanner is required for PDF uploads; decoded image uploads remain available independently.

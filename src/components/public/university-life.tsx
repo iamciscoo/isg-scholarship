@@ -1,9 +1,72 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-const scenes=[
- {image:"university-campus-3.jpg",location:"University of Oklahoma · United States",title:"Find a place to grow.",text:"Explore the learning environment, course structure and student life that fit your ambitions.",alt:"University of Oklahoma campus in autumn"},
- {image:"university-campus-1.jpg",location:"University of Pretoria · South Africa",title:"Make room for discovery.",text:"Think about libraries, research facilities and the academic support you will need throughout your studies.",alt:"University of Pretoria Engineering 1 building"},
- {image:"university-campus-2.jpg",location:"Jönköping University · Sweden",title:"Feel at home, further afield.",text:"Prepare for the language, culture and everyday life of an international student community.",alt:"Jönköping University School of Engineering"},
+const scenes = [
+  {
+    image: "university-campus-3.jpg",
+    location: "University of Oklahoma · United States",
+    title: "Find a place to grow.",
+    text: "Explore the learning environment, course structure and student life that fit your ambitions.",
+    alt: "University of Oklahoma campus in autumn",
+  },
+  {
+    image: "university-campus-1.jpg",
+    location: "University of Pretoria · South Africa",
+    title: "Make room for discovery.",
+    text: "Think about libraries, research facilities and the academic support you will need throughout your studies.",
+    alt: "University of Pretoria Engineering 1 building",
+  },
+  {
+    image: "university-campus-2.jpg",
+    location: "Jönköping University · Sweden",
+    title: "Feel at home, further afield.",
+    text: "Prepare for the language, culture and everyday life of an international student community.",
+    alt: "Jönköping University School of Engineering",
+  },
 ];
-export function UniversityLife({withinPaths=false}:{withinPaths?:boolean}){return <section className="university-life section" lang="en" dir="ltr"><div className="container"><div className="university-heading"><div><h2>More than a university.<br/>Your next environment.</h2><p>ISG informs and supports students throughout the application process, from exploring destinations to preparing documents and following up on applications.</p></div>{!withinPaths&&<Link href="/pathways#campus-life" className="text-link">Explore study paths<ArrowUpRight size={18}/></Link>}</div><div className="university-scenes">{scenes.map(s=><article key={s.title}><div className="university-scene-photo"><Image src={`/images/${s.image}`} fill sizes="(max-width:767px) 100vw, 33vw" alt={s.alt}/></div><div className="university-scene-copy"><span className="university-location">{s.location}</span><h3>{s.title}</h3><p>{s.text}</p></div></article>)}</div><p className="university-image-note">Featured universities illustrate international study environments and do not imply an ISG partnership. University options are discussed personally with your advisor.</p></div></section>;}
+export function UniversityLife({ withinPaths = false }: { withinPaths?: boolean }) {
+  return (
+    <section className="university-life section" lang="en" dir="ltr">
+      <div className="container">
+        <div className="university-heading">
+          <div>
+            <h2>
+              More than a university.
+              <br />
+              Your next environment.
+            </h2>
+            <p>
+              ISG informs and supports students throughout the application process, from exploring
+              destinations to preparing documents and following up on applications.
+            </p>
+          </div>
+          {!withinPaths && (
+            <Link href="/pathways#campus-life" className="text-link">
+              Explore study paths
+              <ArrowUpRight size={18} />
+            </Link>
+          )}
+        </div>
+        <p className="mobile-swipe-hint">Swipe to explore campus life →</p>
+        <div className="university-scenes" tabIndex={0} aria-label="Campus life">
+          {scenes.map((s) => (
+            <article key={s.title}>
+              <div className="university-scene-photo">
+                <Image src={`/images/${s.image}`} fill sizes="(max-width:767px) 100vw, 33vw" alt={s.alt} />
+              </div>
+              <div className="university-scene-copy">
+                <span className="university-location">{s.location}</span>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+        <p className="university-image-note">
+          Featured universities illustrate international study environments and do not imply an ISG
+          partnership. University options are discussed personally with your advisor.
+        </p>
+      </div>
+    </section>
+  );
+}

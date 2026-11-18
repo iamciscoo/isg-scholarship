@@ -1,22 +1,33 @@
+"use client";
+import { createContext, useContext, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, ClipboardList, Home, Mail, CircleCheck, UserRound } from "lucide-react";
+import { Bell, ClipboardList, Home, Mail, CircleCheck, UserRound, ImageIcon } from "lucide-react";
 import { LanguageSelector } from "./language-selector";
 import { NotificationBell } from "@/features/notifications/bell";
 import { signOut } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import type { Role } from "@/lib/auth/permissions";
-export function Workspace({
-  children,
-  role,
-  email,
-  active = "overview",
-}: {
-  children: React.ReactNode;
-  role: Role;
-  email: string;
-  active?: string;
-}) {
+type WorkspaceProps = { children: React.ReactNode; role: Role; email: string; active?: string };
+const WorkspaceContext = createContext(false);
+export function Workspace(props: WorkspaceProps) {
+  const hosted = useContext(WorkspaceContext);
+  return hosted ? props.children : <WorkspaceFrame {...props} />;
+}
+export function WorkspaceLayout(props: WorkspaceProps) {
+  return (
+    <WorkspaceContext.Provider value={true}>
+      <WorkspaceFrame {...props} />
+    </WorkspaceContext.Provider>
+  );
+}
+function WorkspaceFrame({ children, role, email, active = "overview" }: WorkspaceProps) {
+  const pathname = usePathname();
+  const content = useRef<HTMLElement>(null);
+  useEffect(() => {
+    content.current?.scrollTo({ top: 0 });
+  }, [pathname]);
   const staff = role !== "applicant";
   const base = role === "admin" ? "/admin" : "/advisor";
   const links = staff
@@ -47,6 +58,7 @@ export function Workspace({
               { href: "/admin/audit", label: "Activity & delivery", icon: CircleCheck, id: "audit" },
               { href: "/admin/notifications", label: "User notifications", icon: Bell, id: "notifications" },
               { href: "/admin/settings", label: "Team & notifications", icon: CircleCheck, id: "settings" },
+              { href: "/admin/website", label: "Website images", icon: ImageIcon, id: "website" },
             ]
           : []),
         { href: `${base}/applications`, label: "Applications", icon: ClipboardList, id: "applications" },
@@ -72,13 +84,31 @@ export function Workspace({
   return (
     <div className="workspace">
       <aside className="workspace-sidebar">
-        <Link href="/">
+        <Link href="/" className="workspace-home" aria-label="ISG home" prefetch>
           <Image src="/brand/logo.svg" width={200} height={52} alt="ISG home" />
         </Link>
         <div className="workspace-label">{staff ? "Staff workspace" : "My ISG"}</div>
         <nav aria-label="Workspace navigation">
           {links.map((item) => (
-            <Link key={item.id} href={item.href} aria-current={active === item.id ? "page" : undefined}>
+            <Link
+              key={item.id}
+              href={item.href}
+              prefetch={true}
+              aria-current={
+                pathname === item.href ||
+                (item.href !== "/dashboard" &&
+                  item.href !== "/advisor" &&
+                  pathname.startsWith(item.href + "/")) ||
+                (item.id === "overview" &&
+                  staff &&
+                  (pathname === base ||
+                    pathname.startsWith(base + "/leads/") ||
+                    pathname.startsWith(base + "/cases/"))) ||
+                (!pathname && active === item.id)
+                  ? "page"
+                  : undefined
+              }
+            >
               <item.icon size={18} />
               {item.label}
             </Link>
@@ -102,7 +132,7 @@ export function Workspace({
             </form>
           </div>
         </header>
-        <main id="main" className="workspace-content">
+        <main id="main" className="workspace-content" ref={content}>
           {children}
         </main>
       </div>

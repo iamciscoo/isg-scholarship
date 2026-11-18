@@ -2,7 +2,9 @@ import { ActionForm } from "@/components/forms/action-form";
 import { saveOpportunity, savePackage, savePromotion } from "./opportunity-actions";
 import { type Opportunity } from "@/lib/validation/opportunities";
 import { ApprovedImagePicker } from "./approved-image-picker";
-export function OpportunityEditor({ value }: { value?: Opportunity }) {
+import { getMarketingImages } from "@/server/repositories/marketing-images";
+export async function OpportunityEditor({ value }: { value?: Opportunity }) {
+  const images = await getMarketingImages();
   const fields = [
     { key: "name", label: "Internal opportunity / scholarship name", value: value?.name, max: 200 },
     { key: "provider", label: "Actual provider / university", value: value?.provider, max: 200 },
@@ -67,7 +69,7 @@ export function OpportunityEditor({ value }: { value?: Opportunity }) {
           </select>
         </label>
       </div>
-      <ApprovedImagePicker image={value?.image} />
+      <ApprovedImagePicker image={value?.image} images={images} />
       <label className="checkbox-field">
         <input type="checkbox" name="active" defaultChecked={value?.active ?? true} />
         Active for private matching
@@ -90,7 +92,8 @@ export type Promotion = {
   image: string;
   published: boolean;
 };
-export function PromotionEditor({ value }: { value?: Promotion }) {
+export async function PromotionEditor({ value }: { value?: Promotion }) {
+  const images = await getMarketingImages();
   const fields = [
     { key: "title", label: "Broad public title", value: value?.title },
     { key: "destination", label: "Destination", value: value?.destination },
@@ -126,7 +129,7 @@ export function PromotionEditor({ value }: { value?: Promotion }) {
         Broad eligibility summary
         <textarea name="eligibility" maxLength={2000} defaultValue={value?.eligibility || ""} />
       </label>
-      <ApprovedImagePicker image={value?.image} />
+      <ApprovedImagePicker image={value?.image} images={images} />
       <label className="checkbox-field">
         <input type="checkbox" name="published" defaultChecked={value?.published || false} />
         Publish this broad promotion on Study Paths
