@@ -1,0 +1,92 @@
+.action-fields {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 18px;
+}
+.action-fields > label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.action-fields p,
+.payment-panel p {
+  font-size: 13px;
+  line-height: 1.8;
+}
+.action-fields input:not([type="checkbox"]):not([type="hidden"]),
+.action-fields textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--white);
+}
+.action-fields textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+.preserve-lines {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.payment-panel h2,
+.payment-panel h3 {
+  margin-block: 18px 12px;
+}
+.payment-panel .form-stack {
+  margin-top: 24px;
+  max-width: 640px;
+}
+.case-file-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+.case-file-list li {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.case-file-list a {
+  text-decoration: underline;
+  color: var(--navy);
+}
+.case-file-list p {
+  flex-basis: 100%;
+}
+.operation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.operation-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 0;
+}
+.operation-card p {
+  font-size: 13px;
+  line-height: 1.8;
+}
+.operation-card h3 {
+  font-size: 18px;
+  margin-block: 12px;
+}
+@media (max-width: 767px) {
+  .operation-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

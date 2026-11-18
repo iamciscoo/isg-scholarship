@@ -1,0 +1,26 @@
+-- Real PostgreSQL; all identities and receipts are disposable fixtures, never hosted.
+select public.test_assert((select count(*)=1 from public.consultation_cases where user_id='00000000-0000-4000-8000-000000000201'),'submission creates exactly one case');
+insert into storage.objects(bucket_id,name) values('case-files','00000000-0000-4000-8000-000000000201/60000000-0000-4000-8000-000000000001.webp');
+set role service_role;
+select public.register_case_file('00000000-0000-4000-8000-000000000201','60000000-0000-4000-8000-000000000001','receipt','payment_receipt','00000000-0000-4000-8000-000000000201/60000000-0000-4000-8000-000000000001.webp','image/webp',100,repeat('a',64));
+reset role;
+set role authenticated;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000201","aal":"aal1"}',false);
+select public.test_assert((select payment_status='pending_verification' from public.consultation_cases),'receipt remains pending until admin review');
+select public.test_assert((select count(*)=1 from public.case_files),'owner can access its receipt metadata');
+do $$begin perform public.review_consultation_payment('60000000-0000-4000-8000-000000000001',true,'Fake approval');raise exception 'Applicant approved payment';exception when raise_exception then if sqlerrm<>'Access denied' then raise;end if;end $$;
+do $$begin update public.consultation_cases set payment_status='verified',verified_at=now();raise exception 'Direct payment mutation';exception when insufficient_privilege then null;end $$;
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000202","aal":"aal1"}',false);
+select public.test_assert((select count(*)=0 from public.case_files),'another applicant cannot access receipt metadata');
+select public.test_assert((select count(*)=0 from public.consultation_cases),'another applicant cannot access the case');
+select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000103","aal":"aal1"}',false);
+select public.save_payment_instructions('Test-only payment instructions, never a real bank destination');
+select public.review_consultation_payment('60000000-0000-4000-8000-000000000001',true,'Received and matched in disposable test');
+select public.test_assert((select payment_status='verified' and verified_at is not null from public.consultation_cases where user_id='00000000-0000-4000-8000-000000000201'),'admin verification recorded');
+do $$begin perform public.review_consultation_payment('60000000-0000-4000-8000-000000000001',true,'Duplicate');raise exception 'Repeated verification';exception when raise_exception then if sqlerrm<>'Already reviewed' then raise;end if;end $$;
+reset role;
+select public.test_assert((select public=false from storage.buckets where id='case-files'),'private bucket');
+select public.test_assert(not has_table_privilege('anon','public.case_files','select'),'no anonymous files');
+select public.test_assert(not has_function_privilege('authenticated','public.register_case_file(uuid,uuid,text,text,text,text,integer,text)','execute'),'browser cannot forge upload registration');
+select public.test_assert((select count(*)=1 from private.integration_events where event='payment.receipt_received' and channel='whatsapp'),'generic staff receipt event queued once');
+select 'PAYMENT AND RECEIPT AUTHORIZATION PASSED' as result;

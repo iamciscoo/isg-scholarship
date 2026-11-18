@@ -3,13 +3,36 @@ import { Workspace } from "@/components/layout/workspace";
 import { EmailSettings } from "@/features/admin/email-settings";
 import { assignRole } from "@/features/admin/settings-actions";
 import { Button } from "@/components/ui/button";
+import { ActionForm } from "@/components/forms/action-form";
+import { savePaymentInstructions } from "@/features/consultations/payment-actions";
 export default async function Settings() {
   const { db, user, role } = await requireStaff(true);
   const [settings, accounts] = await Promise.all([db.rpc("admin_alert_settings"), db.rpc("staff_accounts")]);
   if (settings.error || accounts.error) throw new Error("Settings unavailable");
+  const instructions = await db.rpc("consultation_payment_instructions");
+  if (instructions.error) throw Error("Payment instructions unavailable");
   return (
     <Workspace role={role} email={user.email || ""} active="settings">
       <h1>Team and notifications.</h1>
+      <section className="workspace-panel">
+        <h2>Consultation payment instructions</h2>
+        <p>
+          The consultation fee is fixed at TZS 50,000. Include the verified bank/network, account name,
+          account number and payment reference applicants should use.
+        </p>
+        <ActionForm action={savePaymentInstructions} label="Save payment instructions">
+          <label>
+            Instructions
+            <textarea
+              name="instructions"
+              defaultValue={instructions.data || ""}
+              minLength={10}
+              maxLength={5000}
+              required
+            />
+          </label>
+        </ActionForm>
+      </section>
       <section className="workspace-panel">
         <h2>Email recipients</h2>
         <EmailSettings emails={settings.data.emails} />

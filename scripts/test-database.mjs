@@ -45,6 +45,7 @@ try {
     "tests/integration/consultations.sql",
     "tests/integration/draft-sync.sql",
     "tests/integration/advisor-directory.sql",
+    "tests/integration/payments.sql",
   ];
   for (const file of files) {
     docker(

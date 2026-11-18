@@ -29,6 +29,7 @@ export function Workspace({
         },
         ...(role === "admin"
           ? [
+              { href: "/admin/payments", label: "Payments", icon: ClipboardList, id: "payments" },
               { href: "/admin/enquiries", label: "Contact enquiries", icon: Mail, id: "enquiries" },
               { href: "/admin/audit", label: "Activity & delivery", icon: CircleCheck, id: "audit" },
               { href: "/admin/notifications", label: "User notifications", icon: Bell, id: "notifications" },

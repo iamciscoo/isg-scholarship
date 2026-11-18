@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { Button } from "@/components/ui/button";
 import { stageLabel } from "@/lib/validation/leads";
+import { PaymentPanel } from "@/features/consultations/payment-panel";
 type Consultation = {
   id: string;
   reference: string;
@@ -19,6 +20,16 @@ export default async function Consultations() {
     db.from("consultation_drafts").select("step,updated_at").eq("user_id", user.id).maybeSingle(),
   ]);
   if (requests.error || draft.error) throw new Error("Consultations unavailable");
+  const [payment, files, instructions] = await Promise.all([
+    db.from("consultation_cases").select("*").eq("user_id", user.id).maybeSingle(),
+    db
+      .from("case_files")
+      .select("id,user_id,kind,category,review_status,review_note,created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
+    db.rpc("consultation_payment_instructions"),
+  ]);
+  if (payment.error || files.error || instructions.error) throw Error("Consultation payment unavailable");
   return (
     <Workspace role={role} email={user.email || ""} active="consultations">
       <div className="workspace-page-heading">
@@ -33,6 +44,9 @@ export default async function Consultations() {
           </Link>
         </Button>
       </div>
+      {payment.data && (
+        <PaymentPanel record={payment.data} files={files.data || []} instructions={instructions.data || ""} />
+      )}
       {draft.data && (
         <section className="workspace-panel consultation-draft">
           <span className="status-pill">In progress</span>
