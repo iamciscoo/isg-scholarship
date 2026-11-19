@@ -1,0 +1,56 @@
+.workspace-mobile-account {
+  display: none;
+}
+.workspace-profile-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+}
+.workspace-profile-menu {
+  width: min(320px, calc(100vw - 24px));
+  max-height: min(640px, var(--radix-dropdown-menu-content-available-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.workspace-profile-menu .language-option {
+  min-height: 44px;
+}
+.workspace-profile-menu .language-option > svg {
+  flex-shrink: 0;
+}
+.workspace-profile-menu [aria-current="page"] {
+  background: #edf1f6;
+  color: var(--navy);
+  font-weight: 700;
+}
+.workspace-profile-menu .account-menu-name {
+  color: var(--navy);
+  font-weight: 650;
+}
+@media (max-width: 900px) {
+  .workspace-mobile-account {
+    display: block;
+  }
+  .workspace-sidebar nav,
+  .workspace-top .workspace-desktop-logout {
+    display: none;
+  }
+  .workspace-home {
+    margin-bottom: 0;
+  }
+  .workspace-sidebar {
+    min-height: 64px;
+  }
+  .workspace-top {
+    top: 10px;
+  }
+  .workspace-profile-trigger:active {
+    transform: scale(0.97);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-profile-trigger:active {
+    transform: none;
+  }
+}

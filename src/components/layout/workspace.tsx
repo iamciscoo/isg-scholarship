@@ -9,7 +9,14 @@ import { NotificationBell } from "@/features/notifications/bell";
 import { signOut } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import type { Role } from "@/lib/auth/permissions";
-type WorkspaceProps = { children: React.ReactNode; role: Role; email: string; active?: string };
+import { WorkspaceProfileMenu, type WorkspaceAccount } from "./workspace-profile-menu";
+type WorkspaceProps = {
+  children: React.ReactNode;
+  role: Role;
+  email: string;
+  active?: string;
+  account?: WorkspaceAccount;
+};
 const WorkspaceContext = createContext(false);
 export function Workspace(props: WorkspaceProps) {
   const hosted = useContext(WorkspaceContext);
@@ -22,7 +29,7 @@ export function WorkspaceLayout(props: WorkspaceProps) {
     </WorkspaceContext.Provider>
   );
 }
-function WorkspaceFrame({ children, role, email, active = "overview" }: WorkspaceProps) {
+function WorkspaceFrame({ children, role, email, active = "overview", account }: WorkspaceProps) {
   const pathname = usePathname();
   const content = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -38,6 +45,8 @@ function WorkspaceFrame({ children, role, email, active = "overview" }: Workspac
           icon: ClipboardList,
           id: "overview",
         },
+        { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" },
+
         ...(role === "admin"
           ? [
               { href: "/admin/inbox", label: "Your notifications", icon: Bell, id: "inbox" },
@@ -63,17 +72,16 @@ function WorkspaceFrame({ children, role, email, active = "overview" }: Workspac
             ]
           : []),
         { href: `${base}/applications`, label: "Applications", icon: ClipboardList, id: "applications" },
-        { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" },
       ]
     : [
         { href: "/dashboard", label: "My overview", icon: Home, id: "overview" },
+        { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" },
         {
           href: "/dashboard/consultations",
           label: "Consultations",
           icon: ClipboardList,
           id: "consultations",
         },
-        { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" },
         {
           href: "/dashboard/application",
           label: "Application details",
@@ -82,6 +90,19 @@ function WorkspaceFrame({ children, role, email, active = "overview" }: Workspac
         },
         { href: "/dashboard/applications", label: "Applications", icon: ClipboardList, id: "applications" },
       ];
+  const navigation = links.map((item) => ({
+    ...item,
+    current: Boolean(
+      pathname === item.href ||
+      (item.href !== "/dashboard" && item.href !== "/advisor" && pathname.startsWith(item.href + "/")) ||
+      (item.id === "overview" &&
+        staff &&
+        (pathname === base ||
+          pathname.startsWith(base + "/leads/") ||
+          pathname.startsWith(base + "/cases/"))) ||
+      (!pathname && active === item.id),
+    ),
+  }));
   return (
     <div className="workspace">
       <aside className="workspace-sidebar">
@@ -90,25 +111,12 @@ function WorkspaceFrame({ children, role, email, active = "overview" }: Workspac
         </Link>
         <div className="workspace-label">{staff ? "Staff workspace" : "My ISG"}</div>
         <nav aria-label="Workspace navigation">
-          {links.map((item) => (
+          {navigation.map((item) => (
             <Link
               key={item.id}
               href={item.href}
               prefetch={true}
-              aria-current={
-                pathname === item.href ||
-                (item.href !== "/dashboard" &&
-                  item.href !== "/advisor" &&
-                  pathname.startsWith(item.href + "/")) ||
-                (item.id === "overview" &&
-                  staff &&
-                  (pathname === base ||
-                    pathname.startsWith(base + "/leads/") ||
-                    pathname.startsWith(base + "/cases/"))) ||
-                (!pathname && active === item.id)
-                  ? "page"
-                  : undefined
-              }
+              aria-current={item.current ? "page" : undefined}
             >
               <item.icon size={18} />
               {item.label}
@@ -126,7 +134,11 @@ function WorkspaceFrame({ children, role, email, active = "overview" }: Workspac
               <LanguageSelector />
             </div>
             <span>{email}</span>
-            <form action={signOut}>
+            <WorkspaceProfileMenu
+              links={navigation}
+              account={account || { name: email || "ISG account", avatar: null }}
+            />
+            <form action={signOut} className="workspace-desktop-logout">
               <Button size="sm" variant="outline" aria-label="Sign out">
                 <LogOut size={16} />
                 <span className="workspace-signout-label">Sign out</span>
