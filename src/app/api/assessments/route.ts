@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { intakeSchema } from "@/lib/validation/assessment";
 import { sameOrigin, readJson } from "@/lib/security/request";
-import { intakeConfigured } from "@/lib/supabase/config";
+import { intakeConfigured, challengeRequired } from "@/lib/supabase/config";
 import { adminClient } from "@/lib/supabase/admin";
 import { guardIntake, payloadHash } from "@/server/services/intake";
 import { createClient } from "@/lib/supabase/server";
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   if (data.email.toLowerCase() !== user.email?.toLowerCase())
     return NextResponse.json({ error: "Use your account email." }, { status: 422 });
   try {
-    await guardIntake(request.headers, turnstileToken, "assessment");
+    await guardIntake(request.headers, turnstileToken, "assessment", challengeRequired());
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Please try again later." },

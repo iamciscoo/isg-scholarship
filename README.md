@@ -19,7 +19,7 @@ Use .env.example for another environment. Never commit real environment files. C
 docker compose --env-file .env.local -f compose.yaml -f compose.integrations.yaml -f compose.scanning.yaml up --build -d
 ```
 
-Open http://localhost:3002. The admin dashboard is /admin; /admin/consultations handles submitted consultations; /dashboard/consultations shows a user’s drafts and request status; /admin/settings manages roles and notification recipients. Consultation requires registration. Consultation intake remains disabled pending the remaining provider setup. Advisor enquiries are enabled independently; admin alerts appear at /admin/inbox. See docs/ADVISOR-PREVIEW-UPDATE.md for ngrok setup and WebP/notification details. compose.yaml alone runs the basic app without optional integration files. The image runs non-root; hosted Supabase supplies database, Auth and Storage.
+Open http://localhost:3002. The admin dashboard is /admin; /admin/consultations handles submitted consultations; /dashboard/consultations shows a user’s drafts and request status; /admin/settings manages roles and notification recipients. Consultation requires registration and is enabled by compose.preview.yaml for the ngrok preview; the basic Compose service keeps intake paused. See docs/PROGRAMMES-CONSULTATION-UPDATE.md for the expanded study guides and submission configuration. Advisor enquiries are enabled independently; admin alerts appear at /admin/inbox. See docs/ADVISOR-PREVIEW-UPDATE.md for ngrok setup and WebP/notification details. compose.yaml alone runs the basic app without optional integration files. The image runs non-root; hosted Supabase supplies database, Auth and Storage.
 
 ## Verify
 

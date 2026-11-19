@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { authConfigured, intakeConfigured } from "@/lib/supabase/config";
+import { authConfigured, intakeConfigured, challengeRequired } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/session";
 import { AssessmentForm } from "@/features/assessments/assessment-form";
@@ -27,6 +27,7 @@ export default async function Consultation() {
   return (
     <AssessmentForm
       enabled={intakeConfigured()}
+      challengeRequired={challengeRequired()}
       initialStep={restored.step}
       initial={{
         ...restored.data,

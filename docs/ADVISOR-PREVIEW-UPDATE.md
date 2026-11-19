@@ -21,7 +21,7 @@ $env:PREVIEW_SITE_URL = 'https://YOUR-CURRENT-TUNNEL.ngrok-free.dev'
 docker compose --env-file .env.local -f compose.yaml -f compose.integrations.yaml -f compose.scanning.yaml -f compose.preview.yaml up --build -d
 ```
 
-This sets public links and trusted forwarding in the container without overwriting environment files. Only enable proxy trust behind an ingress that controls forwarded headers. The default Compose service remains bound to loopback; ngrok provides remote access. Supabase password-recovery redirect allowlists/SMTP and a verified Resend sender domain remain separate setup items. Consultation intake remains disabled.
+This sets public links, trusted forwarding and INTAKE_ENABLED=true in the container without overwriting environment files. Only enable proxy trust behind an ingress that controls forwarded headers. The default Compose service remains bound to loopback; ngrok provides remote access. Supabase password-recovery redirect allowlists/SMTP and a verified Resend sender domain remain separate setup items. Authenticated consultation intake is now enabled in this preview; see [Programme and consultation update](PROGRAMMES-CONSULTATION-UPDATE.md).
 
 ## Verification
 

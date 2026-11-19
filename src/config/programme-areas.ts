@@ -1,59 +1,32 @@
-// Editorial study guides, not a seeded scholarship or university catalogue.
-export const programmeAreas = [
+import { programmeGroups } from "./programme-groups";
+const levels = [
   {
-    title: "Engineering & technology",
+    key: "undergraduate",
     level: "Undergraduate",
-    field: "Engineering",
-    image: "/images/university-campus-1.webp",
-    text: "Explore routes into engineering, computing and applied technology. Your advisor will check entry subjects and language requirements.",
+    guidance: "Your advisor will check entry subjects, language requirements and suitable course structures.",
   },
   {
-    title: "Business & management",
-    level: "Undergraduate",
-    field: "Business",
-    image: "/images/reference-campus.webp",
-    text: "Compare business, economics and management course structures with your career interests and current qualifications.",
-  },
-  {
-    title: "Health & life sciences",
-    level: "Undergraduate",
-    field: "Health",
-    image: "/images/study-3.webp",
-    text: "Discuss science prerequisites, clinical training, professional recognition and the requirements of each destination.",
-  },
-  {
-    title: "Advanced engineering & computing",
+    key: "masters",
     level: "Master's",
-    field: "Engineering",
-    image: "/images/university-campus-2.webp",
-    text: "Build on your first degree with a taught or research-led specialism. Course eligibility depends on your academic background.",
+    guidance: "Your advisor will review your first degree, relevant experience and specialisation interests.",
   },
   {
-    title: "Business, policy & leadership",
-    level: "Master's",
-    field: "Business",
-    image: "/images/study-2.webp",
-    text: "Explore specialist routes in business, economics and policy, including programme structure and relevant professional experience.",
-  },
-  {
-    title: "Public health & life sciences",
-    level: "Master's",
-    field: "Health",
-    image: "/images/reference-study-city.webp",
-    text: "Discuss postgraduate routes in public health and life sciences, research expectations and qualification recognition.",
-  },
-  {
-    title: "An original research contribution",
+    key: "research",
     level: "PhD / Research",
-    field: "Research",
-    image: "/images/reference-library.webp",
-    text: "Prepare to discuss your research interests, supervisor fit, academic evidence and possible funding routes.",
-  },
-  {
-    title: "Research in science & technology",
-    level: "PhD / Research",
-    field: "Engineering",
-    image: "/images/study-together.webp",
-    text: "Review research preparation and potential areas of specialism. Specific supervisors and opportunities are discussed privately.",
+    guidance: "Discuss research preparation, a potential topic and supervisor fit with your advisor.",
   },
 ] as const;
+// One shared editorial catalogue for all countries. Provider availability is confirmed privately.
+export const programmeAreas = levels.flatMap((level) =>
+  [0, 1].flatMap((index) =>
+    programmeGroups.map((group) => ({
+      title: group[level.key][index],
+      level: level.level,
+      field: group.field,
+      image: group.image,
+      text: `${group.focus} ${level.guidance}`,
+    })),
+  ),
+);
+export const programmeFields = programmeGroups.map(({ field, label }) => ({ value: field, label }));
+export const programmesPerPage = 12;

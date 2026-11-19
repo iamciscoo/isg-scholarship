@@ -4,11 +4,7 @@ export function authConfigured() {
 export function intakeConfigured() {
   return (
     authConfigured() &&
-    Boolean(
-      process.env.SUPABASE_SERVICE_ROLE_KEY &&
-      process.env.TURNSTILE_SECRET_KEY &&
-      process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
-    ) &&
+    Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY) &&
     process.env.INTAKE_ENABLED === "true"
   );
 }
@@ -19,6 +15,7 @@ export function contactConfigured() {
     process.env.CONTACT_ENABLED !== "false"
   );
 }
-export function contactChallengeRequired() {
+export function challengeRequired() {
   return Boolean(process.env.TURNSTILE_SECRET_KEY || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 }
+export { challengeRequired as contactChallengeRequired };

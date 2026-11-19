@@ -11,14 +11,16 @@ import { steps, consentFields } from "./fields";
 import { AssessmentReview } from "./assessment-review";
 import { saveConsultationDraft } from "@/features/consultations/actions";
 import { requestId } from "@/lib/request-id";
-const titles = ["About you", "Your academics", "Your ambitions", "Review & consent"];
+const titles = ["About", "Academics", "Ambitions", "Review"];
 export function AssessmentForm({
   enabled,
+  challengeRequired,
   nonce,
   initial = {},
   initialStep = 0,
 }: {
   enabled: boolean;
+  challengeRequired: boolean;
   nonce?: string;
   initial?: Partial<AssessmentInput>;
   initialStep?: number;
@@ -83,7 +85,7 @@ export function AssessmentForm({
     }
   }
   async function submit(data: AssessmentInput) {
-    if (!enabled || !token) {
+    if (!enabled || (challengeRequired && !token)) {
       setError("Complete the security check before submitting.");
       return;
     }
@@ -228,7 +230,9 @@ export function AssessmentForm({
                 <span className="field-error">{form.formState.errors[item.name]?.message}</span>
               </div>
             ))}
-            <Turnstile action="assessment" nonce={nonce} onToken={onToken} resetKey={resetKey} />
+            {challengeRequired && (
+              <Turnstile action="assessment" nonce={nonce} onToken={onToken} resetKey={resetKey} />
+            )}
           </div>
         )}
         <div className="honeypot" aria-hidden="true">
@@ -255,7 +259,10 @@ export function AssessmentForm({
           >
             Back
           </Button>
-          <Button type="submit" disabled={pending || (step === 3 && (!enabled || !token))}>
+          <Button
+            type="submit"
+            disabled={pending || (step === 3 && (!enabled || (challengeRequired && !token)))}
+          >
             {pending
               ? step === 3
                 ? "Submitting…"

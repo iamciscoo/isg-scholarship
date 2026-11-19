@@ -8,3 +8,4 @@ services:
       NEXT_PUBLIC_SITE_URL: ${PREVIEW_SITE_URL:-http://localhost:3002}
       TRUST_PROXY: "true"
       CONTACT_ENABLED: "true"
+      INTAKE_ENABLED: "true"

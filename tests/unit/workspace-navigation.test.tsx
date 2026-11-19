@@ -16,7 +16,9 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 function render(role: "applicant" | "admin" | "advisor") {
   renderToStaticMarkup(
-    React.createElement(Workspace, { role, email: "fixture@example.invalid", children: "Test content" }),
+    <Workspace role={role} email="fixture@example.invalid">
+      Test content
+    </Workspace>,
   );
   return mock.menu.mock.calls[0][0];
 }
@@ -54,16 +56,11 @@ it("excludes administrator menus for advisors", () => {
 it("renders a single persistent menu with the current profile photo", () => {
   const account = { name: "Fixture student", avatar: "/api/profile/avatar?v=fixture" };
   renderToStaticMarkup(
-    React.createElement(WorkspaceLayout, {
-      role: "applicant",
-      email: "fixture@example.invalid",
-      account,
-      children: React.createElement(Workspace, {
-        role: "applicant",
-        email: "fixture@example.invalid",
-        children: "Content",
-      }),
-    }),
+    <WorkspaceLayout role="applicant" email="fixture@example.invalid" account={account}>
+      <Workspace role="applicant" email="fixture@example.invalid">
+        Content
+      </Workspace>
+    </WorkspaceLayout>,
   );
   expect(mock.menu).toHaveBeenCalledTimes(1);
   expect(mock.menu.mock.calls[0][0].account).toEqual(account);

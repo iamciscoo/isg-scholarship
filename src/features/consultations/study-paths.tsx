@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { programmeAreas } from "@/config/programme-areas";
+import { programmeAreas, programmeFields, programmesPerPage } from "@/config/programme-areas";
+import { studyLevels } from "@/lib/validation/assessment";
 import { createClient } from "@/lib/supabase/server";
 import { authConfigured } from "@/lib/supabase/config";
+import { ProgrammeResultsHeading } from "./programme-results-heading";
 type Promotion = {
   id: string;
   title: string;
@@ -16,7 +18,7 @@ type Promotion = {
 export async function StudyPaths({
   query,
 }: {
-  query: { level?: string; field?: string; destination?: string };
+  query: { level?: string; field?: string; destination?: string; page?: string };
 }) {
   const level = programmeAreas.some((p) => p.level === query.level) ? query.level || "" : "";
   const field = programmeAreas.some((p) => p.field === query.field) ? query.field || "" : "";
@@ -37,6 +39,17 @@ export async function StudyPaths({
     promotions = data || [];
   }
   const guides = programmeAreas.filter((p) => (!level || p.level === level) && (!field || p.field === field));
+  const pages = Math.max(1, Math.ceil(guides.length / programmesPerPage));
+  const page = Math.min(pages, Math.max(1, Number.parseInt(query.page || "1", 10) || 1));
+  const visibleGuides = guides.slice((page - 1) * programmesPerPage, page * programmesPerPage);
+  const pageHref = (next: number) => {
+    const params = new URLSearchParams();
+    if (level) params.set("level", level);
+    if (field) params.set("field", field);
+    if (destination) params.set("destination", destination);
+    params.set("page", String(next));
+    return `/pathways?${params}#programme-results`;
+  };
   return (
     <section className="section container" id="programmes">
       <div className="study-path-heading">
@@ -50,12 +63,17 @@ export async function StudyPaths({
           </p>
         </div>
       </div>
-      <form className="study-path-filters">
+      <form
+        key={`${level}|${field}|${destination}`}
+        className="study-path-filters"
+        action="/pathways#programme-results"
+        method="get"
+      >
         <label>
           Study level
           <select name="level" defaultValue={level}>
             <option value="">All study levels</option>
-            {["Undergraduate", "Master's", "PhD / Research"].map((v) => (
+            {studyLevels.map((v) => (
               <option key={v}>{v}</option>
             ))}
           </select>
@@ -64,8 +82,10 @@ export async function StudyPaths({
           Academic field
           <select name="field" defaultValue={field}>
             <option value="">All fields</option>
-            {["Engineering", "Business", "Health", "Research"].map((v) => (
-              <option key={v}>{v}</option>
+            {programmeFields.map((v) => (
+              <option key={v.value} value={v.value}>
+                {v.label}
+              </option>
             ))}
           </select>
         </label>
@@ -81,20 +101,25 @@ export async function StudyPaths({
         <button type="submit" className="button button-primary">
           Explore paths
         </button>
-        <Link className="text-link" href="/pathways">
+        <Link className="text-link" href="/pathways#programme-results">
           Reset
         </Link>
       </form>
+      <ProgrammeResultsHeading key={`${level}|${field}|${destination}|${page}`} />
+      <p className="programme-result-count">
+        {guides.length} programme guides{level ? ` · ${level}` : ""}
+        {field ? ` · ${programmeFields.find((f) => f.value === field)?.label || field}` : ""}. The same guide
+        range is available for every destination.
+      </p>
       {destination && (
         <p className="notice">
-          Interested in {destination}? Your advisor will confirm suitable institutions and current
-          requirements. Programme-area guides below are general; destination-specific promotions appear only
-          when reviewed and published by ISG.
+          Exploring {destination}? These are general study interests, not confirmed offers. Your advisor will
+          check which institutions, courses and requirements match your profile.
         </p>
       )}
       <p className="mobile-swipe-hint">Swipe to explore study paths →</p>
       <div className="study-path-grid" tabIndex={0} aria-label="Study paths">
-        {guides.map((p) => (
+        {visibleGuides.map((p) => (
           <article className="study-path-card" key={p.title}>
             <div className="study-path-photo">
               <Image
@@ -115,6 +140,28 @@ export async function StudyPaths({
           </article>
         ))}
       </div>
+      {pages > 1 && (
+        <nav className="programme-pagination" aria-label="Programme pages">
+          {page > 1 ? (
+            <Link href={pageHref(page - 1)} className="text-link">
+              ← Previous
+            </Link>
+          ) : (
+            <span />
+          )}
+          <span>
+            Page {page} of {pages} · {Math.min((page - 1) * programmesPerPage + 1, guides.length)}–
+            {Math.min(page * programmesPerPage, guides.length)} of {guides.length}
+          </span>
+          {page < pages ? (
+            <Link href={pageHref(page + 1)} className="text-link">
+              Next →
+            </Link>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )}
       {!guides.length && (
         <p>No programme guide matches these filters. Try another field or ask an advisor.</p>
       )}

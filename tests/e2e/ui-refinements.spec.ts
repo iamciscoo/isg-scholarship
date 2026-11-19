@@ -30,7 +30,7 @@ test("home flags and mobile swipe rows preserve page width", async ({ page }) =>
   await page.goto("/pathways");
   const row = page.locator(".study-path-grid").first();
   await expect(row).toBeVisible();
-  await expect(row.locator("article")).toHaveCount(8);
+  await expect(row.locator("article")).toHaveCount(12);
   expect(await row.evaluate((e) => e.scrollWidth > e.clientWidth)).toBe(true);
   await row.focus();
   await page.keyboard.press("ArrowRight");

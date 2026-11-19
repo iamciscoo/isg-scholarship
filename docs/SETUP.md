@@ -30,7 +30,7 @@ Green API instance 710722779815 was authorized at https://7107.api.greenapi.com 
 
 ## Remaining public launch setup
 
-Public intake remains disabled with INTAKE_ENABLED=false until Turnstile, Supabase Auth password-recovery email, approved business/privacy information and production HTTPS origin are configured. Supabase Auth password recovery and the admin Resend alert integration are separate services. Default Supabase development email limits are unsuitable for public launch.
+The basic Compose service keeps INTAKE_ENABLED=false. The optional compose.preview.yaml overlay enables authenticated consultation submissions for remote testing without overwriting environment files. Turnstile is required whenever either key is configured and fails closed on incomplete configuration; with neither key, authenticated submissions retain validation, consent and persistent rate limits. Configure Turnstile, password-recovery email, approved business/privacy information and the production HTTPS origin before broader public traffic. Supabase Auth password recovery and the admin Resend alert integration are separate services. Default Supabase development email limits are unsuitable for public launch.
 
 Configure the Supabase site URL and callback allowlist for each environment, including /auth/callback?next=/consultation and recovery callbacks. Keep the private schema out of exposed Data API schemas. Configure proxy trust, backups and recovery procedures. No DNS or production website deployment was performed.
 

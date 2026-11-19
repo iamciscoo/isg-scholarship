@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Study paths", alternates: { canonica
 export default async function Pathways({
   searchParams,
 }: {
-  searchParams: Promise<{ level?: string; field?: string; destination?: string }>;
+  searchParams: Promise<{ level?: string; field?: string; destination?: string; page?: string }>;
 }) {
   return (
     <>

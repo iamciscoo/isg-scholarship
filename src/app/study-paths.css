@@ -24,6 +24,24 @@
   max-width: 760px;
   margin-bottom: 32px;
 }
+.programme-results-heading {
+  margin-top: 32px;
+  scroll-margin-top: 16px;
+}
+.programme-result-count {
+  font-size: 13px;
+  margin-block: 12px 20px;
+  color: var(--muted);
+}
+.programme-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
 .study-path-heading h2 {
   margin-block: 14px 20px;
 }
