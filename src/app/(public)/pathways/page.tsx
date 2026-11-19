@@ -12,7 +12,7 @@ export default async function Pathways({
   return (
     <>
       <PageHero
-        image="/images/reference-library.jpg"
+        image="/images/reference-library.webp"
         imageAlt="University library with space for study and research"
         label="Study paths"
         title="Find your study path."

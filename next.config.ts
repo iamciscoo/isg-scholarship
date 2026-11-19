@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { readdirSync } from "node:fs";
 
 const legacy: Record<string, string> = {
   "index.html": "/",
@@ -22,16 +23,34 @@ const legacy: Record<string, string> = {
   "disclaimer.html": "/terms",
 };
 const config: NextConfig = {
+  allowedDevOrigins: ["*.ngrok-free.dev", "*.ngrok-free.app", "*.ngrok.app", "*.ngrok.io"],
   distDir: process.env.NEXT_DIST_DIR || ".next",
   output: "standalone",
   poweredByHeader: false,
-  experimental: { serverActions: { bodySizeLimit: "3mb" } },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "3mb",
+      allowedOrigins: ["*.ngrok-free.dev", "*.ngrok-free.app", "*.ngrok.app", "*.ngrok.io"],
+    },
+  },
   async redirects() {
-    return Object.entries(legacy).map(([source, destination]) => ({
-      source: `/${source}`,
-      destination,
-      permanent: true,
-    }));
+    const photoRedirects = readdirSync("public/images")
+      .filter((name) => name.endsWith(".webp"))
+      .flatMap((name) =>
+        ["jpg", "jpeg", "png"].map((extension) => ({
+          source: `/images/${name.replace(/\.webp$/, `.${extension}`)}`,
+          destination: `/images/${name}`,
+          permanent: true,
+        })),
+      );
+    return [
+      ...photoRedirects,
+      ...Object.entries(legacy).map(([source, destination]) => ({
+        source: `/${source}`,
+        destination,
+        permanent: true,
+      })),
+    ];
   },
   async headers() {
     return [

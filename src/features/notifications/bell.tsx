@@ -34,18 +34,24 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
       if (!document.hidden) void refresh(controller.signal);
     };
     load();
-    const interval = setInterval(load, 60000);
+    const interval = setInterval(load, 15000);
     window.addEventListener("focus", load);
+    window.addEventListener("isg:notifications-read", load);
+    document.addEventListener("visibilitychange", load);
     return () => {
       controller.abort();
       clearInterval(interval);
       window.removeEventListener("focus", load);
+      window.removeEventListener("isg:notifications-read", load);
+      document.removeEventListener("visibilitychange", load);
     };
   }, [refresh]);
   const read = (id: string | null) =>
     start(async () => {
-      if (await markNotificationsRead(id)) await refresh();
-      else setError(true);
+      if (await markNotificationsRead(id)) {
+        await refresh();
+        window.dispatchEvent(new Event("isg:notifications-read"));
+      } else setError(true);
     });
   return (
     <Popover.Root

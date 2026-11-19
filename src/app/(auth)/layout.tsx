@@ -11,7 +11,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
     <main id="main" className="auth-shell">
       <aside className="auth-story">
         <Image
-          src="/images/campus-life.jpg"
+          src="/images/campus-life.webp"
           fill
           priority
           sizes="(max-width: 900px) 100vw, 50vw"

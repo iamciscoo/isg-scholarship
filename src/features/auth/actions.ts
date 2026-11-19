@@ -13,7 +13,7 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
   if (!authConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY)
     return { error: "Account services are awaiting setup. Please contact ISG." };
   const requestHeaders = await headers();
-  if (!sameOrigin(requestHeaders.get("origin"))) return { error: "Request origin is not allowed." };
+  if (!sameOrigin(requestHeaders.get("origin"), requestHeaders)) return { error: "Request origin is not allowed." };
   const mode = z.enum(["login", "register", "forgot-password"]).safeParse(fd.get("mode"));
   const captchaRequired = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
   const email = z.email().trim().toLowerCase().max(254).safeParse(fd.get("email"));
@@ -85,7 +85,8 @@ export async function signOut() {
 }
 export async function resetPassword(_state: AuthState, fd: FormData): Promise<AuthState> {
   const { db } = await requireUser();
-  if (!sameOrigin((await headers()).get("origin"))) return { error: "Request origin is not allowed." };
+  const requestHeaders = await headers();
+  if (!sameOrigin(requestHeaders.get("origin"), requestHeaders)) return { error: "Request origin is not allowed." };
   const password = passwordSchema.safeParse(fd.get("password"));
   if (!password.success) return { error: password.error.issues[0].message };
   const { error } = await db.auth.updateUser({ password: password.data });

@@ -1,0 +1,73 @@
+.about-support-list {
+  padding-inline-start: 20px;
+  margin-block: 20px 24px;
+  display: grid;
+  gap: 10px;
+}
+.about-support-list li {
+  font-size: 14px;
+}
+.admin-inbox-list {
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+}
+.hero-actions > * {
+  flex-shrink: 0;
+}
+.notification-count {
+  background: #d5333f;
+  color: #fff;
+  border: 2px solid var(--surface);
+  min-width: 19px;
+  height: 19px;
+  padding-inline: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  top: -1px;
+  inset-inline-end: -1px;
+}
+@media (max-width: 1023px) {
+  .hero-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 14px;
+    align-items: center;
+  }
+  .hero-actions .button {
+    font-size: 11px;
+    padding-inline: 12px;
+    gap: 6px;
+    min-height: 44px;
+  }
+  .hero-actions .text-link {
+    flex: 1;
+    min-width: 0;
+    font-size: 11px;
+    gap: 4px;
+    white-space: normal;
+  }
+  .hero-actions .text-link svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+  .hero-actions .button svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+@media (max-width: 360px) {
+  .hero-actions {
+    gap: 10px;
+  }
+  .hero-actions .button {
+    font-size: 10px;
+    padding-inline: 10px;
+  }
+  .hero-actions .text-link {
+    font-size: 10px;
+  }
+}

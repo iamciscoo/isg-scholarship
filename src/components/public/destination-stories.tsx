@@ -3,10 +3,10 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { getMessages } from "@/lib/i18n/server";
 const photos = [
-  "/images/world-connections.jpg",
-  "/images/study-together.jpg",
-  "/images/moscow.jpg",
-  "/images/campus-life.jpg",
+  "/images/world-connections.webp",
+  "/images/study-together.webp",
+  "/images/moscow.webp",
+  "/images/campus-life.webp",
 ];
 export async function DestinationStories() {
   const { home: h } = await getMessages();
@@ -26,7 +26,7 @@ export async function DestinationStories() {
         </div>
         <figure className="destination-photo">
           <Image
-            src="/images/moscow.jpg"
+            src="/images/moscow.webp"
             alt="The colorful domes of Saint Basil’s Cathedral in Moscow"
             fill
             sizes="(max-width: 767px) 100vw, 58vw"

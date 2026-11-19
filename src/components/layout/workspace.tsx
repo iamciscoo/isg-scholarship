@@ -40,6 +40,7 @@ function WorkspaceFrame({ children, role, email, active = "overview" }: Workspac
         },
         ...(role === "admin"
           ? [
+              { href: "/admin/inbox", label: "Your notifications", icon: Bell, id: "inbox" },
               { href: "/admin/payments", label: "Payments", icon: ClipboardList, id: "payments" },
               {
                 href: "/admin/opportunities",

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { PageHero } from "@/components/public/page-hero";
 import { ContactForm } from "@/features/contact/contact-form";
-import { intakeConfigured } from "@/lib/supabase/config";
+import { contactConfigured, contactChallengeRequired } from "@/lib/supabase/config";
 import { site } from "@/config/site";
 export const metadata: Metadata = { title: "Speak with an advisor", alternates: { canonical: "/contact" } };
 export default async function Contact({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
@@ -12,11 +12,13 @@ export default async function Contact({ searchParams }: { searchParams: Promise<
       ? "Privacy request"
       : query.topic === "fees"
         ? "Service fees"
-        : "General enquiry";
+        : query.topic === "consultation"
+          ? "Consultation"
+          : "General enquiry";
   return (
     <>
       <PageHero
-        image="/images/study-2.jpg"
+        image="/images/study-2.webp"
         label="Let’s talk"
         title="Every journey starts with a question."
         description="Tell us what’s on your mind. We’ll help you understand your next step."
@@ -34,11 +36,12 @@ export default async function Contact({ searchParams }: { searchParams: Promise<
             enquiry does not confirm an appointment.
           </p>
           <p className="field-help">
-            Prefer to start with your goals? Complete the initial eligibility assessment without an account.
+            Register to start a consultation and keep track of your next steps in your workspace.
           </p>
         </div>
         <ContactForm
-          enabled={intakeConfigured()}
+          enabled={contactConfigured()}
+          challengeRequired={contactChallengeRequired()}
           topic={topic}
           nonce={(await headers()).get("x-nonce") || undefined}
         />

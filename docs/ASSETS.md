@@ -1,5 +1,7 @@
 # Brand and imagery
 
+All 15 photographic files listed here now use `.webp` rather than `.jpg`; original source URLs are retained for provenance. Conversion verified the output format and reduced combined photo size from 2,709,271 to 2,127,086 bytes. SVG brand/flag assets and the PNG Apple touch icon retain their compatible formats. Future uploaded photos are decoded and re-encoded to WebP by the server.
+
 Brand source: user-supplied `ISG-Flight LOGO`, current Manrope / cream revision. SVG masters are used directly. Manrope is self-hosted under its supplied SIL Open Font License (`public/fonts/OFL.txt`). Artwork is not redrawn or regenerated.
 
 Student photography is illustrative stock imagery, not evidence of ISG clients, awards, partnerships or outcomes. Images are stored locally; no Pexels key or API request is shipped to visitors.

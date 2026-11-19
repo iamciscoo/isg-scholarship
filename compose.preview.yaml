@@ -1,0 +1,10 @@
+# Local ngrok/LAN preview behind a trusted forwarding proxy. No credentials stored here.
+services:
+  web:
+    build:
+      args:
+        NEXT_PUBLIC_SITE_URL: ${PREVIEW_SITE_URL:-http://localhost:3002}
+    environment:
+      NEXT_PUBLIC_SITE_URL: ${PREVIEW_SITE_URL:-http://localhost:3002}
+      TRUST_PROXY: "true"
+      CONTACT_ENABLED: "true"

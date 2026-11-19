@@ -1,16 +1,16 @@
 import { z } from "zod";
 export const approvedImages = [
-  "/images/study-1.jpg",
-  "/images/study-2.jpg",
-  "/images/study-3.jpg",
-  "/images/university-campus-1.jpg",
-  "/images/university-campus-2.jpg",
-  "/images/university-campus-3.jpg",
-  "/images/study-together.jpg",
-  "/images/campus-life.jpg",
-  "/images/reference-campus.jpg",
-  "/images/reference-library.jpg",
-  "/images/reference-study-city.jpg",
+  "/images/study-1.webp",
+  "/images/study-2.webp",
+  "/images/study-3.webp",
+  "/images/university-campus-1.webp",
+  "/images/university-campus-2.webp",
+  "/images/university-campus-3.webp",
+  "/images/study-together.webp",
+  "/images/campus-life.webp",
+  "/images/reference-campus.webp",
+  "/images/reference-library.webp",
+  "/images/reference-study-city.webp",
 ] as const;
 export const marketingImageSchema = z.union([
   z.enum(approvedImages),

@@ -4,10 +4,10 @@ select public.test_assert((select not public from storage.buckets where id='case
 select public.test_assert(not has_function_privilege('authenticated','public.register_marketing_image(uuid,uuid,text)','execute'),'browser cannot register uploads');
 set role authenticated;
 select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000201"}',false);
-do $$begin perform public.set_homepage_image('/images/study-1.jpg');raise exception 'Applicant changed hero';exception when raise_exception then if sqlerrm<>'Access denied' then raise;end if;end $$;
+do $$begin perform public.set_homepage_image('/images/study-1.webp');raise exception 'Applicant changed hero';exception when raise_exception then if sqlerrm<>'Access denied' then raise;end if;end $$;
 do $$begin insert into public.marketing_images values(gen_random_uuid(),'x.webp','x',auth.uid(),now());raise exception 'Direct gallery write';exception when insufficient_privilege then null;end $$;
 select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000103"}',false);
-select public.set_homepage_image('/images/reference-library.jpg');
+select public.set_homepage_image('/images/reference-library.webp');
 do $$begin perform public.set_homepage_image('/api/case-files/60000000-0000-4000-8000-000000000001');raise exception 'Private receipt selected';exception when raise_exception then if sqlerrm<>'Choose an approved image' then raise;end if;end $$;
 do $$begin perform public.set_homepage_image('/api/marketing-images/90000000-0000-4000-8000-000000000001');raise exception 'Missing gallery selected';exception when raise_exception then if sqlerrm<>'Choose an approved image' then raise;end if;end $$;
 reset role;

@@ -1,5 +1,13 @@
 # Applicant operations: migration and recovery plan
 
+## Enquiries, staff inbox and WebP migration 021
+
+Before hosted changes, run the full migration chain and role/isolation/idempotency tests on disposable PostgreSQL. Inspect hosted migration history and counts of existing enquiries, notifications and legacy image paths. Migration 021 adds an enquiry trigger and extends the existing private admin-event function to create individual admin inbox messages. Messages contain generic text and authenticated workspace links, never enquiry text or applicant documents. Existing read-state/RLS rules apply; only active admins receive new staff alerts. No historical events or test records are seeded.
+
+The same migration normalizes stored local photo references to their verified WebP counterparts and restricts new local marketing choices to WebP. Legacy JPG URLs redirect to the converted photos. Public upload, avatar and private image handlers already re-encode validated content as WebP; PDFs retain their document format. Apple’s touch icon stays PNG and vector logos/flags stay SVG for compatibility.
+
+Rollback the application first. Retain notifications/read history and source data; disable the new enquiry trigger and restore the prior queue function from migration 009 if staff alert writes must stop. Keep the WebP files and legacy redirects; do not delete business records or reverse image paths to files no longer served. No environment file will be overwritten. Consultation intake remains disabled; advisor enquiry collection is separately controlled by CONTACT_ENABLED.
+
 Baseline: main a873959; hosted migrations 001–013 verified on 18 November 2026. Read-only preflight found two accounts and zero submitted consultations. No real accounts or environment files may be replaced for QA.
 
 ## Before applying

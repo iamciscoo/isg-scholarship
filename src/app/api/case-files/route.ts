@@ -5,7 +5,7 @@ import { sameOrigin } from "@/lib/security/request";
 import { validateCaseFile } from "@/server/services/file-validation";
 import { authConfigured } from "@/lib/supabase/config";
 export async function POST(request: Request) {
-  if (!sameOrigin(request.headers.get("origin")))
+  if (!sameOrigin(request.headers.get("origin"), request.headers))
     return Response.json({ error: "Request origin is not allowed." }, { status: 403 });
   if (!authConfigured())
     return Response.json({ error: "Private uploads are not configured." }, { status: 503 });

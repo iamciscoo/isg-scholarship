@@ -49,6 +49,7 @@ try {
     "tests/integration/meetings-and-forms.sql",
     "tests/integration/applications.sql",
     "tests/integration/marketing-images.sql",
+    "tests/integration/staff-inbox.sql",
   ];
   for (const file of files) {
     docker(

@@ -3,10 +3,22 @@ import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Turnstile } from "@/components/forms/turnstile";
 import { contactSchema } from "./schema";
-export function ContactForm({ enabled, topic, nonce }: { enabled: boolean; topic: string; nonce?: string }) {
+import { site } from "@/config/site";
+import { requestId } from "@/lib/request-id";
+export function ContactForm({
+  enabled,
+  topic,
+  nonce,
+  challengeRequired,
+}: {
+  enabled: boolean;
+  topic: string;
+  nonce?: string;
+  challengeRequired: boolean;
+}) {
   const [token, setToken] = useState("");
   const onToken = useCallback((v: string) => setToken(v), []);
-  const [key] = useState(() => crypto.randomUUID());
+  const [key] = useState(requestId);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
@@ -60,11 +72,6 @@ export function ContactForm({ enabled, topic, nonce }: { enabled: boolean; topic
     );
   return (
     <form className="form-stack" onSubmit={submit}>
-      {!enabled && (
-        <div className="notice">
-          The online enquiry form is awaiting service setup. Please email ISG directly for now.
-        </div>
-      )}
       <div className="field">
         <label htmlFor="contact-name">Your name</label>
         <input name="name" id="contact-name" autoComplete="name" required maxLength={160} />
@@ -95,13 +102,23 @@ export function ContactForm({ enabled, topic, nonce }: { enabled: boolean; topic
       <div className="honeypot" aria-hidden="true">
         <input name="website" tabIndex={-1} aria-label="Website" autoComplete="off" />
       </div>
-      <Turnstile action="contact" onToken={onToken} nonce={nonce} resetKey={resetKey} />
+      {challengeRequired && (
+        <Turnstile action="contact" onToken={onToken} nonce={nonce} resetKey={resetKey} />
+      )}
       {error && (
         <p className="notice notice-error" role="alert">
           {error}
         </p>
       )}
-      <Button disabled={!enabled || pending || !token}>{pending ? "Sending…" : "Send enquiry"}</Button>
+      {!enabled && (
+        <p role="status">
+          Online enquiries are temporarily unavailable. Email{" "}
+          <a href={`mailto:${site.email}`}>{site.email}</a> for help.
+        </p>
+      )}
+      <Button disabled={!enabled || pending || (challengeRequired && !token)}>
+        {pending ? "Sending…" : "Send enquiry"}
+      </Button>
     </form>
   );
 }

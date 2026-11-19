@@ -12,7 +12,7 @@ export const contactRequestSchema = z
   .object({
     data: contactSchema,
     idempotencyKey: z.uuid(),
-    turnstileToken: z.string().min(1).max(2048),
+    turnstileToken: z.string().max(2048),
     website: z.string().max(100),
   })
   .strict();

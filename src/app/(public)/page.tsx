@@ -42,7 +42,7 @@ export default async function Home() {
                 <ArrowUpRight size={18} />
               </Link>
             </Button>
-            <Link className="text-link" href="/contact">
+            <Link className="text-link" href="/contact?topic=consultation">
               {t.advisor}
               <ArrowRight size={17} />
             </Link>
@@ -174,7 +174,7 @@ export default async function Home() {
       <section className="care-section container">
         <div className="care-image">
           <Image
-            src="/images/campus-life.jpg"
+            src="/images/campus-life.webp"
             alt="Students together in a university corridor"
             fill
             sizes="(max-width: 767px) 100vw, 45vw"

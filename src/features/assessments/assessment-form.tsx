@@ -10,6 +10,7 @@ import { Turnstile } from "@/components/forms/turnstile";
 import { steps, consentFields } from "./fields";
 import { AssessmentReview } from "./assessment-review";
 import { saveConsultationDraft } from "@/features/consultations/actions";
+import { requestId } from "@/lib/request-id";
 const titles = ["About you", "Your academics", "Your ambitions", "Review & consent"];
 export function AssessmentForm({
   enabled,
@@ -23,7 +24,7 @@ export function AssessmentForm({
   initialStep?: number;
 }) {
   const [step, setStep] = useState(initialStep);
-  const [key] = useState(() => crypto.randomUUID());
+  const [key] = useState(requestId);
   const [token, setToken] = useState("");
   const onToken = useCallback((v: string) => setToken(v), []);
   const [error, setError] = useState("");

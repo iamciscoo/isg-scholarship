@@ -1,10 +1,15 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { authConfigured } from "./config";
 export async function createClient() {
   if (!authConfigured()) throw new Error("Authentication is not configured.");
   const cookieStore = await cookies();
+  const requestHeaders = await headers();
+  const secure =
+    process.env.TRUST_PROXY === "true"
+      ? requestHeaders.get("x-forwarded-proto")?.split(",")[0]?.trim() === "https"
+      : (process.env.NEXT_PUBLIC_SITE_URL?.startsWith("https://") ?? false);
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -12,7 +17,7 @@ export async function createClient() {
       cookieOptions: {
         httpOnly: true,
         sameSite: "lax",
-        secure: process.env.NEXT_PUBLIC_SITE_URL?.startsWith("https://") ?? false,
+        secure,
         path: "/",
       },
       cookies: {

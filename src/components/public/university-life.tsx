@@ -3,21 +3,21 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 const scenes = [
   {
-    image: "university-campus-3.jpg",
+    image: "university-campus-3.webp",
     location: "University of Oklahoma · United States",
     title: "Find a place to grow.",
     text: "Explore the learning environment, course structure and student life that fit your ambitions.",
     alt: "University of Oklahoma campus in autumn",
   },
   {
-    image: "university-campus-1.jpg",
+    image: "university-campus-1.webp",
     location: "University of Pretoria · South Africa",
     title: "Make room for discovery.",
     text: "Think about libraries, research facilities and the academic support you will need throughout your studies.",
     alt: "University of Pretoria Engineering 1 building",
   },
   {
-    image: "university-campus-2.jpg",
+    image: "university-campus-2.webp",
     location: "Jönköping University · Sweden",
     title: "Feel at home, further afield.",
     text: "Prepare for the language, culture and everyday life of an international student community.",

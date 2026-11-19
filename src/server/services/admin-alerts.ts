@@ -25,6 +25,7 @@ export async function dispatchAdminAlerts() {
     const labels: Record<string, string> = {
       "account.verified": "An ISG account update is available.",
       "account.created": "A new student account has been created.",
+      "enquiry.received": "A new advisor enquiry needs review in the private contact inbox.",
       "consultation.received": "A new consultation request has arrived.",
       "lead.updated": "An ISG lead has been updated.",
       "payment.receipt_received":
@@ -35,18 +36,21 @@ export async function dispatchAdminAlerts() {
       "consultation.follow_up": "A consultation follow-up question needs a reply.",
       "application.form_received": "An applicant submitted a full application declaration.",
       "application.updated": "An application workflow update is available.",
-      "package.accepted":"An applicant accepted an ISG service-package quote. Payment balances remain subject to verification.",
+      "package.accepted":
+        "An applicant accepted an ISG service-package quote. Payment balances remain subject to verification.",
     };
     const path =
-      item.event === "payment.receipt_received"
-        ? `/admin/receipts/${item.entity_id}`
-        : item.event === "payment.reviewed"
-          ? "/admin/payments"
-          : item.event === "application.form_received"
-            ? `/admin/declarations/${item.entity_id}`
-            : item.event.startsWith("application.")
-              ? "/admin/applications"
-              : "/admin/consultations";
+      item.event === "enquiry.received"
+        ? "/admin/enquiries"
+        : item.event === "payment.receipt_received"
+          ? `/admin/receipts/${item.entity_id}`
+          : item.event === "payment.reviewed"
+            ? "/admin/payments"
+            : item.event === "application.form_received"
+              ? `/admin/declarations/${item.entity_id}`
+              : item.event.startsWith("application.")
+                ? "/admin/applications"
+                : "/admin/consultations";
     const message = `${labels[item.event] || "An ISG account event occurred."}\nReview securely: ${process.env.NEXT_PUBLIC_SITE_URL}${path}\nEvent: ${item.id}`;
     let state = "uncertain",
       provider: string | null = null;

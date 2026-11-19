@@ -17,7 +17,10 @@ export async function proxy(request: NextRequest) {
         cookieOptions: {
           httpOnly: true,
           sameSite: "lax",
-          secure: request.nextUrl.protocol === "https:",
+          secure:
+            request.nextUrl.protocol === "https:" ||
+            (process.env.TRUST_PROXY === "true" &&
+              request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() === "https"),
           path: "/",
         },
         cookies: {

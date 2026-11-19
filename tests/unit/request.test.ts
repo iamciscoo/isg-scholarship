@@ -11,6 +11,26 @@ it("rejects cross-origin mutations", () => {
   expect(sameOrigin("https://isg.example")).toBe(true);
   expect(sameOrigin(null)).toBe(false);
 });
+it("accepts the actual ngrok or LAN request host without changing the configured site URL", () => {
+  vi.stubEnv("NEXT_PUBLIC_SITE_URL", "http://localhost:3002");
+  vi.stubEnv("TRUST_PROXY", "false");
+  expect(sameOrigin("https://demo.ngrok-free.dev", new Headers({ host: "demo.ngrok-free.dev" }))).toBe(true);
+  expect(sameOrigin("http://192.168.1.5:3002", new Headers({ host: "192.168.1.5:3002" }))).toBe(true);
+  expect(sameOrigin("https://evil.invalid", new Headers({ host: "demo.ngrok-free.dev" }))).toBe(false);
+  expect(sameOrigin("https://demo.ngrok-free.dev/path", new Headers({ host: "demo.ngrok-free.dev" }))).toBe(
+    false,
+  );
+  expect(sameOrigin("null", new Headers({ host: "demo.ngrok-free.dev" }))).toBe(false);
+});
+it("trusts forwarded hosts only when proxy trust is enabled", () => {
+  vi.stubEnv("NEXT_PUBLIC_SITE_URL", "http://localhost:3002");
+  const h = new Headers({ host: "web:3000", "x-forwarded-host": "demo.ngrok-free.dev" });
+  vi.stubEnv("TRUST_PROXY", "false");
+  expect(sameOrigin("https://demo.ngrok-free.dev", h)).toBe(false);
+  vi.stubEnv("TRUST_PROXY", "true");
+  expect(sameOrigin("https://demo.ngrok-free.dev", h)).toBe(true);
+  expect(sameOrigin("https://other.ngrok-free.dev", h)).toBe(false);
+});
 it("caps chunked request size without trusting content-length", async () => {
   const request = new Request("http://localhost", {
     method: "POST",

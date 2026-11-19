@@ -6,7 +6,7 @@ import { adminClient } from "@/lib/supabase/admin";
 import { guardIntake, payloadHash } from "@/server/services/intake";
 import { createClient } from "@/lib/supabase/server";
 export async function POST(request: Request) {
-  if (!sameOrigin(request.headers.get("origin")))
+  if (!sameOrigin(request.headers.get("origin"), request.headers))
     return NextResponse.json({ error: "Request origin is not allowed." }, { status: 403 });
   if (!intakeConfigured())
     return NextResponse.json(

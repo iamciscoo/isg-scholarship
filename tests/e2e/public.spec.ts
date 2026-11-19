@@ -35,6 +35,7 @@ test("unauthenticated private routes stay protected", async ({ page, request, ba
     "/admin/enquiries",
     "/admin/consultations",
     "/admin/notifications",
+    "/admin/inbox",
     "/admin/payments",
     "/admin/opportunities",
     "/admin/promotions",
