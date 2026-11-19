@@ -3,7 +3,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
-import { getLead, getAdvisors, getLeadNotes } from "@/server/repositories/leads";
+import { getLead } from "@/server/repositories/leads";
 import { ReviewForm } from "./review-form";
 import { stageLabel } from "@/lib/validation/leads";
 export async function LeadDetail({ id, admin }: { id: string; admin: boolean }) {
@@ -11,8 +11,6 @@ export async function LeadDetail({ id, admin }: { id: string; admin: boolean }) 
   if (!z.uuid().safeParse(id).success) notFound();
   const { lead } = await getLead(db, id);
   if (!lead) notFound();
-  const { notes, error: notesError } = await getLeadNotes(db, id);
-  const advisors = admin ? await getAdvisors(db) : [];
   const { data: consents, error: consentError } = await db
     .from("consent_records")
     .select("purpose,granted,created_at,policy_version")
@@ -49,12 +47,12 @@ export async function LeadDetail({ id, admin }: { id: string; admin: boolean }) 
       </p>
       {a.applicant_id && (
         <Link className="text-link" href={`/${admin ? "admin" : "advisor"}/cases/${a.applicant_id}`}>
-          Consultation, meetings and documents →
+          Open consultation →
         </Link>
       )}
       <div className="detail-grid">
         <section className="workspace-panel">
-          <h2>Initial assessment</h2>
+          <h2>Consultation details</h2>
           <dl>
             {details.map(([label, value]) => (
               <div key={label}>
@@ -76,35 +74,10 @@ export async function LeadDetail({ id, admin }: { id: string; admin: boolean }) 
             ))
           )}
         </section>
-        <div>
-          <section className="workspace-panel">
-            <h2>Review and follow-up</h2>
-            <ReviewForm lead={lead} advisors={advisors} admin={admin} />
-          </section>
-          <section className="workspace-panel">
-            <h2>Internal review history</h2>
-            {notesError ? (
-              <p className="notice notice-error">Review history is unavailable.</p>
-            ) : !notes.length ? (
-              <p>No reviews recorded yet.</p>
-            ) : (
-              <ol className="timeline">
-                {notes.map((note) => (
-                  <li key={note.id}>
-                    <strong>{stageLabel(note.stage)}</strong>
-                    <p>{note.reason}</p>
-                    <small>
-                      {new Date(note.created_at).toLocaleString("en-GB", {
-                        timeZone: "Africa/Dar_es_Salaam",
-                      })}{" "}
-                      EAT
-                    </small>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </section>
-        </div>
+        <section className="workspace-panel">
+          <h2>Consultation status</h2>
+          <ReviewForm lead={lead} />
+        </section>
       </div>
     </Workspace>
   );

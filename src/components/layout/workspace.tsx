@@ -81,18 +81,13 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
           icon: ClipboardList,
           id: "consultations",
         },
-        {
-          href: "/dashboard/application",
-          label: "Application details",
-          icon: ClipboardList,
-          id: "application",
-        },
         { href: "/dashboard/applications", label: "Applications", icon: ClipboardList, id: "applications" },
       ];
   const navigation = links.map((item) => ({
     ...item,
     current: Boolean(
       pathname === item.href ||
+      (item.id === "applications" && pathname === "/dashboard/application") ||
       (item.href !== "/dashboard" && item.href !== "/advisor" && pathname.startsWith(item.href + "/")) ||
       (item.id === "overview" &&
         staff &&

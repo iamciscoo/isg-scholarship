@@ -1,7 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { leadStages } from "@/lib/validation/leads";
-import type { Advisor, Lead, LeadNote } from "@/features/leads/types";
+import type { Advisor, Lead } from "@/features/leads/types";
 export const assessmentColumns =
   "id,applicant_id,reference,first_name,last_name,email,phone,nationality,residence,qualification,education_status,field_of_study,performance,graduation_year,english_status,study_level,preferred_fields,destinations,intake,funding,constraints_note,created_at";
 export async function listLeads(
@@ -49,8 +49,4 @@ export async function getAdvisors(db: SupabaseClient) {
   const { data, error } = await db.rpc("advisor_directory");
   if (error) return [];
   return (data || []) as Advisor[];
-}
-export async function getLeadNotes(db: SupabaseClient, id: string) {
-  const result = await db.rpc("lead_notes", { p_id: id });
-  return { notes: (result.data || []) as LeadNote[], error: result.error };
 }

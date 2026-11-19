@@ -13,10 +13,17 @@ export function notificationTemplate(
     payment_update:
       "Your consultation payment status has changed. Open your workspace for its verification status.",
     meeting_scheduled: "Your advisor has scheduled a Google Meet consultation.",
-    meeting_completed: "Your consultation is complete and your full application form is unlocked.",
+    meeting_completed:
+      "Your consultation meeting is complete. Check Applications for any packages your advisor recommended.",
     meeting_cancelled:
       "A consultation meeting has been cancelled. You can request another meeting without paying the consultation fee again.",
     consultation_reply: "Your ISG advisor replied to your consultation question.",
+    advisor_assigned:
+      "ISG has assigned your advisor. You can now request a meeting or send a message in Consultations.",
+    package_recommended:
+      "Your advisor recommended a scholarship package. Review it in Applications after discussing your options.",
+    package_payment_update:
+      "ISG reviewed your scholarship package receipt. Open Applications for your payment status.",
     document_request: "Your advisor has updated your document requests.",
     document_update: "A document review is available in your workspace.",
     application_update: "Your application has a new update.",
@@ -39,7 +46,7 @@ export function notificationTemplate(
       siteUrl +
       (event === "document_request" || event === "document_update"
         ? "/dashboard/application"
-        : event === "opportunity_proposed" || event === "application_update" || event === "package_accepted"
+        : event === "opportunity_proposed" || event === "application_update" || event.startsWith("package_")
           ? "/dashboard/applications"
           : "/dashboard/consultations");
     const text = `${updates[event]}${meet ? `\nTime (UTC): ${start}\nGoogle Meet: ${meet}` : ""}\nYour private workspace: ${url}\nInternational Scholarship Gateway`;

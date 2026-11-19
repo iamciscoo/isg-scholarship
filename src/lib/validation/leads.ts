@@ -11,8 +11,6 @@ export const leadStages = [
 export const leadReviewSchema = z.object({
   id: z.uuid(),
   stage: z.enum(leadStages),
-  reason: z.string().trim().min(5, "Explain the review in at least 5 characters.").max(1500),
-  advisorId: z.union([z.uuid(), z.literal("")]),
   followUp: z.union([z.iso.date(), z.literal("")]),
 });
 export function stageLabel(stage: string) {

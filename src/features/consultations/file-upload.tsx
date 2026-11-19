@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 export function FileUpload({
   kind,
   category = "payment_receipt",
+  application,
 }: {
   kind: "receipt" | "document";
   category?: string;
+  application?: string;
 }) {
   const [pending, setPending] = useState(false),
     [message, setMessage] = useState("");
@@ -16,6 +18,7 @@ export function FileUpload({
       className="form-stack"
       onSubmit={async (e) => {
         e.preventDefault();
+        const shareReceipt = new FormData(e.currentTarget).get("shareReceipt");
         const file = ref.current?.files?.[0];
         if (!file) return;
         if (file.size > 8 * 1024 * 1024) {
@@ -29,6 +32,8 @@ export function FileUpload({
           data.set("file", file);
           data.set("kind", kind);
           data.set("category", category);
+          if (application) data.set("application", application);
+          if (shareReceipt === "on") data.set("shareReceipt", "on");
           const r = await fetch("/api/case-files", { method: "POST", body: data });
           const result = await r.json();
           if (!r.ok) throw Error(result.error || "Upload failed.");
@@ -51,16 +56,22 @@ export function FileUpload({
           disabled={pending}
         />
       </label>
-      <p>
-        JPEG, PNG, WebP or PDF, up to 8 MB. PDF uploads require the secure scanning service. Never upload
-        someone else’s documents.
-      </p>
+      <p>JPEG, PNG, WebP or PDF, up to 8 MB.</p>
+      {kind === "receipt" && (
+        <label className="checkbox-field">
+          <input type="checkbox" name="shareReceipt" disabled={pending} />
+          Share this redacted receipt in ISG’s private staff WhatsApp group. I’ve permanently removed account
+          numbers and sensitive details from this copy.
+        </label>
+      )}
       {message && (
         <p role="alert" className="notice notice-error">
           {message}
         </p>
       )}
-      <Button disabled={pending}>{pending ? "Checking and uploading…" : "Upload privately"}</Button>
+      <Button disabled={pending}>
+        {pending ? "Checking and uploading…" : kind === "receipt" ? "Upload receipt" : "Upload document"}
+      </Button>
     </form>
   );
 }

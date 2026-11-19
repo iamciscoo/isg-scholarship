@@ -2,6 +2,8 @@ import Link from "next/link";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { PreviousPackageQuote } from "./package-panel";
+import { PackageCatalogue } from "./package-catalogue";
+import { packageStatus } from "./package-status";
 import { applicationStatuses, proposalSchema } from "@/lib/validation/opportunities";
 export type ApplicationQuery = { page?: string; status?: string };
 export async function ApplicationList({
@@ -18,15 +20,20 @@ export async function ApplicationList({
   const page = Math.max(1, Math.min(100000, Number.parseInt(query.page || "1", 10) || 1));
   let request = db
     .from("study_applications")
-    .select("id,user_id,proposal,status,provider_decision,approval,next_step,next_date,created_at", {
-      count: "exact",
-    })
+    .select(
+      "id,user_id,proposal,status,package_state,provider_decision,approval,next_step,next_date,created_at",
+      {
+        count: "exact",
+      },
+    )
     .order("created_at", { ascending: false })
     .order("id")
     .range((page - 1) * 20, page * 20 - 1);
   if (own) request = request.eq("user_id", user.id);
   if (applicationStatuses.includes(query.status as (typeof applicationStatuses)[number]))
     request = request.eq("status", query.status);
+  if (query.status === "interested" || query.status === "paid")
+    request = request.eq("package_state", query.status);
   const { data: applications, error, count } = await request;
   if (error) throw Error("Applications unavailable");
   const base = staff ? (admin ? "/admin/applications" : "/advisor/applications") : "/dashboard/applications";
@@ -34,12 +41,18 @@ export async function ApplicationList({
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
       <h1>{own ? "Your applications." : "Application tracking."}</h1>
-      <p>Review scholarship packages from your advisor and track what happens after you apply.</p>
+      <p>
+        {own
+          ? "Track your interests, packages, receipts and applications in one place."
+          : "Track applicant interests, payments and application progress."}
+      </p>
       <form className="filter-bar">
         <label className="field">
-          Workflow status
+          Status
           <select name="status" defaultValue={query.status || ""}>
             <option value="">All statuses</option>
+            <option value="interested">Interested</option>
+            <option value="paid">Package paid</option>
             {applicationStatuses.map((s) => (
               <option key={s}>{s}</option>
             ))}
@@ -70,7 +83,7 @@ export async function ApplicationList({
             if (!p.success) throw Error("Application proposal unavailable");
             return (
               <article className="workspace-panel" key={a.id}>
-                <span className="status-pill">{a.status}</span>
+                <span className="status-pill">{packageStatus(a.package_state, a.status)}</span>
                 <h2>{p.data.name}</h2>
                 <p>
                   {p.data.provider} · {p.data.destination}
@@ -80,14 +93,21 @@ export async function ApplicationList({
                     ISG package fee · <strong>TZS {p.data.packageFee.toLocaleString("en")}</strong>
                   </p>
                 )}
-                <p>
-                  Official provider decision: <strong>{a.provider_decision}</strong>
-                </p>
-                <p>
-                  {a.approval === "pending"
-                    ? "Waiting for applicant review"
-                    : `Applicant decision: ${a.approval}`}
-                </p>
+                {a.package_state === "paid" && (
+                  <p>{p.data.packageFee === 0 ? "No package fee due" : "Package payment verified"}</p>
+                )}
+                {(!a.package_state || a.package_state === "paid") && (
+                  <p>
+                    Official provider decision: <strong>{a.provider_decision}</strong>
+                  </p>
+                )}
+                {!a.package_state && (
+                  <p>
+                    {a.approval === "pending"
+                      ? "Waiting for applicant review"
+                      : `Applicant decision: ${a.approval}`}
+                  </p>
+                )}
                 {a.next_step && (
                   <p>
                     Next: {a.next_step}
@@ -111,7 +131,12 @@ export async function ApplicationList({
           {page * 20 < (count || 0) && <Link href={pageLink(page + 1)}> Next →</Link>}
         </div>
       </div>
-      {own && <PreviousPackageQuote user={user.id} />}
+      {own && (
+        <>
+          <PackageCatalogue applicant={user.id} />
+          <PreviousPackageQuote user={user.id} />
+        </>
+      )}
     </Workspace>
   );
 }

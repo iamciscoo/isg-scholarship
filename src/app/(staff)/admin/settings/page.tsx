@@ -8,8 +8,11 @@ export default async function Settings() {
   const { db, user, role } = await requireStaff(true);
   const [settings, accounts] = await Promise.all([db.rpc("admin_alert_settings"), db.rpc("staff_accounts")]);
   if (settings.error || accounts.error) throw new Error("Settings unavailable");
-  const instructions = await db.rpc("consultation_payment_instructions");
-  if (instructions.error) throw Error("Payment instructions unavailable");
+  const [instructions, packageInstructions] = await Promise.all([
+    db.rpc("consultation_payment_instructions"),
+    db.rpc("package_payment_instructions"),
+  ]);
+  if (instructions.error || packageInstructions.error) throw Error("Payment instructions unavailable");
   return (
     <Workspace role={role} email={user.email || ""} active="settings">
       <h1>Team and notifications.</h1>
@@ -25,6 +28,26 @@ export default async function Settings() {
             <textarea
               name="instructions"
               defaultValue={instructions.data || ""}
+              minLength={10}
+              maxLength={5000}
+              required
+            />
+          </label>
+        </ActionForm>
+      </section>
+      <section className="workspace-panel">
+        <h2>Scholarship package payment instructions</h2>
+        <p>
+          These instructions appear after the applicant confirms a package. Its full fee is shown
+          automatically.
+        </p>
+        <ActionForm action={savePaymentInstructions} label="Save package payment instructions">
+          <input type="hidden" name="type" value="package" />
+          <label>
+            Instructions
+            <textarea
+              name="instructions"
+              defaultValue={packageInstructions.data || ""}
               minLength={10}
               maxLength={5000}
               required

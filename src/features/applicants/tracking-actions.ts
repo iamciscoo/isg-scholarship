@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { applicationStatuses, providerDecisions } from "@/lib/validation/opportunities";
@@ -21,10 +22,22 @@ export async function proposeApplication(_: ActionState, fd: FormData): Promise<
   });
   if (error)
     return {
-      error: "Check that the package is active and the consultation is complete, then try again.",
+      error:
+        "Check that consultation payment is verified, an advisor is assigned, and the package is active.",
     };
   refresh();
-  return { message: "Package shared in the applicant’s workspace for review." };
+  revalidatePath(`/admin/cases/${x.data.user}`);
+  revalidatePath(`/advisor/cases/${x.data.user}`);
+  return { message: "Package recommended. The applicant can review and confirm it in Applications." };
+}
+export async function selectPackage(_: ActionState, form: FormData): Promise<ActionState> {
+  const { db } = await requireUser();
+  const packageId = z.uuid().safeParse(form.get("package"));
+  if (!packageId.success) return { error: "Choose an available package." };
+  const { data, error } = await db.rpc("select_scholarship_package", { p_package: packageId.data });
+  if (error) return { error: "Submit your consultation first, then choose an available package." };
+  refresh(data);
+  redirect(`/dashboard/applications/${data}`);
 }
 export async function approveApplication(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireUser();
@@ -36,7 +49,10 @@ export async function approveApplication(_: ActionState, fd: FormData): Promise<
   });
   if (error)
     return {
-      error: "Your decision could not be saved. To approve, first submit your application form.",
+      error:
+        error.message === "Submit application declaration first"
+          ? "Submit your application form before confirming this earlier offer."
+          : "Refresh to check the current recommendation. Your advisor must recommend a package before you can confirm it.",
     };
   refresh(x.data.id);
   return { message: "Your decision has been saved." };

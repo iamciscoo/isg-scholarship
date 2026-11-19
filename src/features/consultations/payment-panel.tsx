@@ -33,10 +33,12 @@ export function PaymentPanel({
   record,
   instructions,
   files,
+  advisor,
 }: {
   record: ConsultationCase;
   instructions: string;
   files: CaseFile[];
+  advisor: string | null;
 }) {
   const receipts = files.filter((f) => f.kind === "receipt");
   return (
@@ -44,9 +46,11 @@ export function PaymentPanel({
       <span className="status-pill">{labels[record.payment_status]}</span>
       <h2>Consultation fee · TZS {record.fee_tzs.toLocaleString("en")}</h2>
       <p>
-        {record.completed_at
-          ? "Your consultation is complete. Follow-up questions are included."
-          : nextStep[record.payment_status]}
+        {record.payment_status === "verified" && !advisor
+          ? "ISG will assign an advisor. Then you can request a meeting or send a message."
+          : record.completed_at
+            ? "Your consultation is complete. Follow-up questions are included."
+            : nextStep[record.payment_status]}
       </p>
       {["awaiting_receipt", "rejected"].includes(record.payment_status) && (
         <>

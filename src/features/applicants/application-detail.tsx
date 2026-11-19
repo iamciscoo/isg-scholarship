@@ -7,6 +7,8 @@ import { Workspace } from "@/components/layout/workspace";
 import { ActionForm } from "@/components/forms/action-form";
 import { applicationStatuses, providerDecisions, proposalSchema } from "@/lib/validation/opportunities";
 import { approveApplication, updateApplication, commitPlace } from "./tracking-actions";
+import { PackageProgress } from "./package-progress";
+import { packageStatus } from "./package-status";
 export async function ApplicationDetail({
   id,
   historyPage = 1,
@@ -35,6 +37,7 @@ export async function ApplicationDetail({
     .range((page - 1) * 20, page * 20 - 1);
   if (history.error) throw Error("Application history unavailable");
   const base = staff ? (admin ? "/admin/applications" : "/advisor/applications") : "/dashboard/applications";
+  const canWork = !a.package_state || a.package_state === "paid";
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
       <Link href={base} className="text-link">
@@ -46,7 +49,7 @@ export async function ApplicationDetail({
       </p>
       <div className="operation-grid">
         <section className="workspace-panel">
-          <span className="status-pill">{a.status}</span>
+          <span className="status-pill">{packageStatus(a.package_state, a.status)}</span>
           <h2>Scholarship package</h2>
           {p.data.image && (
             <div className="approved-image-preview">
@@ -92,12 +95,8 @@ export async function ApplicationDetail({
             </div>
           </dl>
           {p.data.packageFee !== undefined && <p>The TZS 50,000 consultation fee is separate.</p>}
-          <p>
-            Approval: {a.approval}
-            {a.approved_at ? ` · ${new Date(a.approved_at).toISOString()}` : ""} · Proposal version{" "}
-            {a.proposal_version}
-          </p>
-          {!staff && a.approval === "pending" && (
+          {!a.package_state && <p>Approval: {a.approval}</p>}
+          {!staff && !a.package_state && a.approval === "pending" && (
             <ActionForm action={approveApplication} label="Record my decision">
               <input type="hidden" name="id" value={id} />
               <label>
@@ -118,31 +117,43 @@ export async function ApplicationDetail({
             </ActionForm>
           )}
         </section>
-        <section className="workspace-panel">
-          <h2>Official provider decision</h2>
-          <strong>{a.provider_decision}</strong>
-          <p>{a.provider_decision_date || "No official decision date recorded."}</p>
-          <p className="preserve-lines">{a.provider_evidence}</p>
-          <h3>Next steps</h3>
-          <p>{a.next_step || "Your advisor will confirm the next step."}</p>
-          {a.next_date && <p>Next action date: {a.next_date}</p>}
-          {!staff && a.status === "Accepted" && (
-            <ActionForm action={commitPlace} label="Confirm my commitment">
-              <input type="hidden" name="id" value={id} />
-              <label className="checkbox-field">
-                <input name="confirm" type="checkbox" required />I confirm that I am committing to this
-                accepted place.
-              </label>
-              <label className="checkbox-field">
-                <input name="closeOthers" type="checkbox" />
-                Close my other active ISG application workflows. ISG must confirm any separate provider
-                withdrawals.
-              </label>
-            </ActionForm>
-          )}
-        </section>
+        {a.package_state && (
+          <PackageProgress
+            id={id}
+            state={a.package_state}
+            status={a.status}
+            fee={p.data.packageFee}
+            staff={staff}
+            admin={admin}
+          />
+        )}
+        {canWork && (
+          <section className="workspace-panel">
+            <h2>Official provider decision</h2>
+            <strong>{a.provider_decision}</strong>
+            <p>{a.provider_decision_date || "No official decision date recorded."}</p>
+            <p className="preserve-lines">{a.provider_evidence}</p>
+            <h3>Next steps</h3>
+            <p>{a.next_step || "Your advisor will confirm the next step."}</p>
+            {a.next_date && <p>Next action date: {a.next_date}</p>}
+            {!staff && a.status === "Accepted" && (
+              <ActionForm action={commitPlace} label="Confirm my commitment">
+                <input type="hidden" name="id" value={id} />
+                <label className="checkbox-field">
+                  <input name="confirm" type="checkbox" required />I confirm that I am committing to this
+                  accepted place.
+                </label>
+                <label className="checkbox-field">
+                  <input name="closeOthers" type="checkbox" />
+                  Close my other active ISG application workflows. ISG must confirm any separate provider
+                  withdrawals.
+                </label>
+              </ActionForm>
+            )}
+          </section>
+        )}
       </div>
-      {staff && (
+      {staff && canWork && (
         <section className="workspace-panel">
           <h2>Record a workflow update</h2>
           <ActionForm action={updateApplication} label="Save dated update">

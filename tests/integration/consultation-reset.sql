@@ -1,0 +1,11 @@
+select public.test_assert((select count(*)=0 from public.eligibility_assessments),'consultations cleared');
+select public.test_assert((select count(*)=0 from public.consultation_cases),'cases cleared');
+select public.test_assert((select count(*)=0 from public.case_files),'receipt metadata cleared');
+select public.test_assert((select count(*)=0 from public.study_applications),'applications cleared');
+select public.test_assert((select count(*)=0 from private.opportunities),'catalogue cleared');
+select public.test_assert((select count(*)=0 from public.service_packages),'legacy catalogue cleared');
+select public.test_assert((select count(*)=0 from public.service_orders),'legacy quotes cleared');
+select public.test_assert((select count(*)>0 from public.profiles),'accounts preserved');
+select public.test_assert((select count(*)>0 from public.user_roles),'roles preserved');
+select public.test_assert((select count(*)>0 from public.study_promotions),'public editorial promotions preserved');
+select public.test_assert((select count(*)=1 from private.payment_instructions where id),'payment settings preserved');

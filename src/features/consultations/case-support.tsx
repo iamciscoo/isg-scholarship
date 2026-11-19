@@ -4,8 +4,16 @@ import { ActionForm } from "@/components/forms/action-form";
 import { sendFollowUp, requestMeeting, finishMeeting } from "./meeting-actions";
 import { MeetingScheduler } from "./meeting-scheduler";
 import type { ConsultationCase } from "./payment-panel";
-export async function CaseSupport({ record, staff = false }: { record: ConsultationCase; staff?: boolean }) {
-  if (record.payment_status !== "verified") return null;
+export async function CaseSupport({
+  record,
+  advisor,
+  staff = false,
+}: {
+  record: ConsultationCase;
+  advisor: string | null;
+  staff?: boolean;
+}) {
+  if (!advisor) return null;
   const db = await createClient();
   const [messages, requests, meetings] = await Promise.all([
     db
@@ -42,28 +50,8 @@ export async function CaseSupport({ record, staff = false }: { record: Consultat
           </Link>
         ))}
       </p>
-      {record.completed_at && (
-        <section className="workspace-panel">
-          <h2>{staff ? "Application form available" : "Next: complete your application form"}</h2>
-          <p>Fill in your details and upload the documents ISG requests.</p>
-          {!staff && (
-            <Link className="text-link" href="/dashboard/application">
-              Open application form →
-            </Link>
-          )}
-          {!staff && (
-            <p>
-              Look in{" "}
-              <Link className="text-link" href="/dashboard/applications">
-                Applications
-              </Link>{" "}
-              for packages your advisor shares.
-            </p>
-          )}
-        </section>
-      )}
       <section className="workspace-panel">
-        <h2>Advisor meetings</h2>
+        <h2>{staff ? "Advisor meetings" : `Meet with ${advisor}`}</h2>
         <p>
           Additional requests are included in your consultation fee. ISG confirms availability before
           scheduling.

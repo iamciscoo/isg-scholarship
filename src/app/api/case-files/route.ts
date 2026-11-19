@@ -4,6 +4,7 @@ import { adminClient } from "@/lib/supabase/admin";
 import { sameOrigin } from "@/lib/security/request";
 import { validateCaseFile } from "@/server/services/file-validation";
 import { authConfigured } from "@/lib/supabase/config";
+import { z } from "zod";
 export async function POST(request: Request) {
   if (!sameOrigin(request.headers.get("origin"), request.headers))
     return Response.json({ error: "Request origin is not allowed." }, { status: 403 });
@@ -49,15 +50,36 @@ export async function POST(request: Request) {
     const file = fd.get("file"),
       kind = fd.get("kind"),
       category = String(fd.get("category") || "");
+    const application = z.uuid().nullable().safeParse(fd.get("application"));
     if (
       !(file instanceof File) ||
+      !application.success ||
+      (application.data && kind !== "receipt") ||
       !["receipt", "document"].includes(String(kind)) ||
       !category ||
       category.length > 80
     )
       throw Error("Choose a valid file and category.");
-    if (kind === "receipt" && ["verified", "pending_verification"].includes(record.payment_status))
+    if (
+      kind === "receipt" &&
+      !application.data &&
+      ["verified", "pending_verification"].includes(record.payment_status)
+    )
       throw Error("Your payment is already submitted.");
+    if (application.data) {
+      const { data: target } = await db
+        .from("study_applications")
+        .select("package_state,status")
+        .eq("id", application.data)
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (
+        !target ||
+        target.status !== "Starting" ||
+        !["awaiting_receipt", "receipt_rejected"].includes(target.package_state)
+      )
+        throw Error("Package payment is not available. Refresh your application.");
+    }
     if (kind === "document" && !record.completed_at)
       throw Error("Your application form is not unlocked yet.");
     const validated = await validateCaseFile(file);
@@ -67,7 +89,7 @@ export async function POST(request: Request) {
       .from("case-files")
       .upload(path, validated.data, { contentType: validated.mime, upsert: false });
     if (upload.error) throw Error("Private storage is unavailable. Please try again.");
-    const registered = await admin.rpc("register_case_file", {
+    const registered = await admin.rpc("register_payment_file", {
       p_user: user.id,
       p_id: id,
       p_kind: kind,
@@ -76,9 +98,11 @@ export async function POST(request: Request) {
       p_mime: validated.mime,
       p_bytes: validated.data.length,
       p_hash: createHash("sha256").update(validated.data).digest("hex"),
+      p_application: application.data,
+      p_share_receipt: kind === "receipt" && fd.get("shareReceipt") === "on",
     });
     if (registered.error) {
-      await admin.storage.from("case-files").remove([path]);
+      if (/^(22|23|42|P0)/.test(registered.error.code)) await admin.storage.from("case-files").remove([path]);
       throw Error("The file could not be attached. Please refresh and try again.");
     }
     return Response.json({ id }, { status: 201 });

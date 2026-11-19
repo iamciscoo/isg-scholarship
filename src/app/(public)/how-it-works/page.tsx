@@ -13,27 +13,19 @@ const journey = [
   ],
   [
     "Discuss your options",
-    "Once payment is verified, request an advisor meeting. ISG confirms a time and Google Meet link in your workspace and queues an email. Follow-up questions and additional meeting requests are included, subject to scheduling.",
+    "After verifying payment, ISG assigns an advisor. You can then send questions or request a Google Meet in Consultations.",
   ],
   [
-    "Complete your profile",
-    "After a completed consultation, your full application form unlocks with known details prefilled. Save drafts, provide requested documents and guardian contact information, then accept the electronic declaration and download your submitted PDF.",
+    "Explore and agree on a package",
+    "Browse packages in Applications and save the ones you’re interested in. Discuss them with your advisor and confirm the package they recommend.",
   ],
   [
-    "Agree on a plan",
-    "Review the proposed opportunities, service scope, any fees and the requirements you will need to meet.",
-  ],
-  [
-    "Authorize your applications",
-    "Understand the scholarship provider, material costs and data-sharing destination before giving permission for each selected application.",
-  ],
-  [
-    "Prepare and submit",
-    "Work through documents and application tasks with your advisor, following each provider's submission rules.",
+    "Pay for the agreed package",
+    "Pay the full ISG package fee and upload its receipt in the application. Your advisor starts after ISG verifies the payment.",
   ],
   [
     "Follow the outcome",
-    "Track each application independently, including dates, notes and next steps. ISG workflow updates are separate from official provider decisions. After acceptance, confirm your chosen place; rejected applications remain in history and your advisor can start another.",
+    "Check application progress, advisor updates and provider decisions in your workspace.",
   ],
 ];
 export default function HowItWorks() {

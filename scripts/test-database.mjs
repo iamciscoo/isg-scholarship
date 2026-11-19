@@ -35,6 +35,8 @@ try {
   const migrations = readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort();
+  const advisorFlow = migrations.findIndex((file) => file.endsWith("_advisor_assignment_flow.sql"));
+  if (advisorFlow < 0) throw new Error("Advisor flow migration is missing.");
   const files = [
     "tests/fixtures/database-bootstrap.sql",
     ...migrations.filter((f) => f < "202611180010").map((f) => `supabase/migrations/${f}`),
@@ -52,8 +54,15 @@ try {
     "tests/integration/applications.sql",
     "tests/integration/marketing-images.sql",
     "tests/integration/staff-inbox.sql",
-    ...migrations.filter((f) => f >= "20261119222344").map((f) => `supabase/migrations/${f}`),
+    ...migrations
+      .slice(0, advisorFlow)
+      .filter((f) => f >= "20261119222344")
+      .map((f) => `supabase/migrations/${f}`),
     "tests/integration/scholarship-packages.sql",
+    ...migrations.slice(advisorFlow).map((f) => `supabase/migrations/${f}`),
+    "tests/integration/advisor-package-flow.sql",
+    "scripts/reset-consultations-and-packages.sql",
+    "tests/integration/consultation-reset.sql",
   ];
   for (const file of files) {
     docker(

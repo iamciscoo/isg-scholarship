@@ -1,5 +1,6 @@
 import "server-only";
 import { adminClient } from "@/lib/supabase/admin";
+import { sendReceiptAttachment } from "./whatsapp-receipt";
 type Event = {
   id: string;
   lease_id: string;
@@ -28,9 +29,8 @@ export async function dispatchAdminAlerts() {
       "enquiry.received": "A new advisor enquiry needs review in the private contact inbox.",
       "consultation.received": "A new consultation request has arrived.",
       "lead.updated": "An ISG lead has been updated.",
-      "payment.receipt_received":
-        "A consultation payment receipt needs verification. Financial details remain in the private workspace.",
-      "payment.reviewed": "A consultation payment review has been recorded.",
+      "payment.receipt_received": "A payment receipt needs verification.",
+      "payment.reviewed": "A payment review has been recorded.",
       "meeting.requested": "An applicant requested another advisor meeting.",
       "meeting.scheduled": "An advisor meeting has been scheduled.",
       "consultation.follow_up": "A consultation follow-up question needs a reply.",
@@ -76,15 +76,22 @@ export async function dispatchAdminAlerts() {
         const base = process.env.GREEN_API_URL;
         if (base !== "https://7107.api.greenapi.com" || !/^\d+@g\.us$/.test(item.recipient))
           throw new Error("invalid_destination");
-        response = await fetch(
-          `${base}/waInstance${process.env.GREEN_API_INSTANCE_ID}/sendMessage/${process.env.GREEN_API_TOKEN}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chatId: item.recipient, message, linkPreview: false }),
-            signal: AbortSignal.timeout(12000),
-          },
-        );
+        const signal = AbortSignal.timeout(12000);
+        const attachment =
+          item.event === "payment.receipt_received"
+            ? await sendReceiptAttachment(db, item.entity_id, item.recipient, message, signal)
+            : null;
+        response =
+          attachment ??
+          (await fetch(
+            `${base}/waInstance${process.env.GREEN_API_INSTANCE_ID}/sendMessage/${process.env.GREEN_API_TOKEN}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ chatId: item.recipient, message, linkPreview: false }),
+              signal,
+            },
+          ));
       }
       if (!response.ok) state = "failed";
       else {

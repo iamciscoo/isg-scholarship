@@ -10,25 +10,46 @@ export async function savePaymentInstructions(_: ActionState, fd: FormData): Pro
     return {
       error: "Enter clear payment instructions, including the bank/network, account name and reference.",
     };
-  const { error } = await db.rpc("save_payment_instructions", { p_instructions: value.data });
+  const rpc =
+    fd.get("type") === "package" ? "save_package_payment_instructions" : "save_payment_instructions";
+  const { error } = await db.rpc(rpc, { p_instructions: value.data });
   if (error) return { error: "Payment instructions could not be saved." };
   revalidatePath("/dashboard/consultations");
+  revalidatePath("/dashboard/applications/[id]", "page");
   revalidatePath("/admin/settings");
   return { message: "Payment instructions updated." };
 }
 export async function reviewPayment(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireStaff(true);
   const value = z
-    .object({ id: z.uuid(), approve: z.enum(["true", "false"]), note: z.string().trim().min(3).max(1000) })
-    .safeParse(Object.fromEntries(fd));
-  if (!value.success) return { error: "Choose a receipt and enter a review note." };
-  const { error } = await db.rpc("review_consultation_payment", {
+    .object({ id: z.uuid(), approve: z.enum(["true", "false"]), note: z.string().trim().max(1000) })
+    .safeParse({ id: fd.get("id"), approve: fd.get("approve"), note: fd.get("note") || "" });
+  if (!value.success) return { error: "Choose a decision for this receipt." };
+  const { error } = await db.rpc("review_payment_receipt", {
     p_file: value.data.id,
     p_approve: value.data.approve === "true",
-    p_note: value.data.note,
+    p_feedback: value.data.note,
   });
   if (error) return { error: "This payment could not be reviewed. It may already have been reviewed." };
   revalidatePath("/admin/payments");
   revalidatePath("/dashboard/consultations");
-  return { message: "Payment review recorded." };
+  revalidatePath("/dashboard/applications");
+  revalidatePath("/dashboard/applications/[id]", "page");
+  revalidatePath(`/admin/receipts/${value.data.id}`);
+  return {
+    message: value.data.approve === "true" ? "Payment verified." : "Receipt returned for correction.",
+  };
+}
+
+export async function assignConsultationAdvisor(_: ActionState, form: FormData): Promise<ActionState> {
+  const { db } = await requireStaff(true);
+  const input = z.object({ user: z.uuid(), advisor: z.uuid() }).safeParse(Object.fromEntries(form));
+  if (!input.success) return { error: "Choose an advisor." };
+  const { user, advisor } = input.data;
+  const { error } = await db.rpc("assign_consultation_advisor", { p_user: user, p_advisor: advisor });
+  if (error) return { error: "Verify the consultation payment and choose an active advisor." };
+  revalidatePath(`/admin/cases/${user}`);
+  revalidatePath("/admin/consultations");
+  revalidatePath("/dashboard/consultations");
+  return { message: "Advisor assigned. The applicant can now request meetings and send messages." };
 }

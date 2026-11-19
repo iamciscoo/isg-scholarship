@@ -21,16 +21,19 @@ export default async function Consultations() {
     db.from("consultation_drafts").select("step,updated_at").eq("user_id", user.id).maybeSingle(),
   ]);
   if (requests.error || draft.error) throw new Error("Consultations unavailable");
-  const [payment, files, instructions] = await Promise.all([
+  const [payment, files, instructions, advisor] = await Promise.all([
     db.from("consultation_cases").select("*").eq("user_id", user.id).maybeSingle(),
     db
       .from("case_files")
       .select("id,user_id,kind,category,review_status,review_note,created_at")
       .eq("user_id", user.id)
+      .is("application_id", null)
       .order("created_at", { ascending: false }),
     db.rpc("consultation_payment_instructions"),
+    db.rpc("consultation_advisor", { p_user: user.id }),
   ]);
-  if (payment.error || files.error || instructions.error) throw Error("Consultation payment unavailable");
+  if (payment.error || files.error || instructions.error || advisor.error)
+    throw Error("Consultation payment unavailable");
   return (
     <Workspace role={role} email={user.email || ""} active="consultations">
       <div className="workspace-page-heading">
@@ -48,9 +51,14 @@ export default async function Consultations() {
         )}
       </div>
       {payment.data && (
-        <PaymentPanel record={payment.data} files={files.data || []} instructions={instructions.data || ""} />
+        <PaymentPanel
+          record={payment.data}
+          files={files.data || []}
+          instructions={instructions.data || ""}
+          advisor={advisor.data}
+        />
       )}
-      {payment.data && <CaseSupport record={payment.data} />}
+      {payment.data && <CaseSupport record={payment.data} advisor={advisor.data} />}
       {draft.data && (
         <section className="workspace-panel consultation-draft">
           <span className="status-pill">In progress</span>

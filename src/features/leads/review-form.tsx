@@ -3,8 +3,8 @@ import { useActionState } from "react";
 import { leadStages, stageLabel } from "@/lib/validation/leads";
 import { Button } from "@/components/ui/button";
 import { reviewLead } from "./actions";
-import type { Advisor, Lead } from "./types";
-export function ReviewForm({ lead, advisors, admin }: { lead: Lead; advisors: Advisor[]; admin: boolean }) {
+import type { Lead } from "./types";
+export function ReviewForm({ lead }: { lead: Lead }) {
   const [state, action, pending] = useActionState(reviewLead, {});
   return (
     <form action={action} className="form-stack">
@@ -24,29 +24,6 @@ export function ReviewForm({ lead, advisors, admin }: { lead: Lead; advisors: Ad
           <label htmlFor="followUp">Follow-up date (optional)</label>
           <input type="date" name="followUp" id="followUp" defaultValue={lead.follow_up || ""} />
         </div>
-        {admin ? (
-          <div className="field form-full">
-            <label htmlFor="advisorId">Assigned advisor</label>
-            <select name="advisorId" id="advisorId" defaultValue={lead.advisor_id || ""}>
-              <option value="">Not assigned</option>
-              {advisors.map((advisor) => (
-                <option key={advisor.id} value={advisor.id}>
-                  {`${advisor.first_name} ${advisor.last_name}`.trim() || advisor.email}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : (
-          <input type="hidden" name="advisorId" value={lead.advisor_id || ""} />
-        )}
-      </div>
-      <div className="field">
-        <label htmlFor="reason">Internal review notes / reason</label>
-        <textarea name="reason" id="reason" required minLength={5} maxLength={1500} />
-        <span className="field-help">
-          Private to authorized staff. Record the reason for the stage or assignment change. Do not record
-          portal passwords.
-        </span>
       </div>
       {state.error && (
         <p role="alert" className="notice notice-error">
@@ -59,7 +36,7 @@ export function ReviewForm({ lead, advisors, admin }: { lead: Lead; advisors: Ad
         </p>
       )}
       <div>
-        <Button disabled={pending}>{pending ? "Saving review…" : "Save review"}</Button>
+        <Button disabled={pending}>{pending ? "Saving…" : "Save status"}</Button>
       </div>
     </form>
   );

@@ -34,18 +34,16 @@ export default function Privacy() {
           When configured, Supabase hosts the database and authentication, Resend delivers service emails, and
           Cloudflare Turnstile checks submissions for abuse. The hosting provider processes requests needed to
           serve the platform. Student-life imagery is stored locally from Pexels; loading it does not call the
-          Pexels API. GREEN-API can deliver generic event notifications to ISG’s private staff group. Raw
-          receipts, applicant documents and sensitive personal details are excluded from group alerts; staff
-          links require authorized sign-in.
+          Pexels API. GREEN-API sends staff alerts with links that require authorized sign-in. If you choose
+          to share a redacted receipt, GREEN-API processes that copy and sends it to ISG’s private staff
+          WhatsApp group. Cover sensitive details before choosing this option.
         </p>
         <h2>Later application and payment records</h2>
         <p>
-          After consultation submission, you can upload a private payment receipt for administrator
-          verification. After a completed consultation, the full application stage asks for the documents and
-          guardian or nominated-contact details needed for the agreed work. Inform your nominated contact
-          before sharing their details. Submitted declarations record their version, acceptance time and an
-          immutable copy of your answers. Individual provider applications require your separate approval of
-          the disclosed opportunity. PDF files require malware scanning; images are decoded and re-encoded
+          ISG uses consultation and package receipts to verify payment. When you save an interest or confirm a
+          package, ISG records it in your Applications. Advisors may request documents needed for an
+          individual provider application. Inform your nominated contact before sharing their details.
+          Provider applications require your separate approval. The platform scans PDFs and re-encodes images
           before storage.
         </p>
         <h2>Consent and communications</h2>
