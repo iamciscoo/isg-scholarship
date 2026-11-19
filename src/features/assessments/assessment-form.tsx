@@ -134,12 +134,11 @@ export function AssessmentForm({
       <aside className="assessment-sidebar">
         <span className="eyebrow">Your journey starts here</span>
         <h1>Let’s get to know your ambition.</h1>
-        <p>A few details help us understand where you are and where you want to go. No documents needed.</p>
         <ol className="assessment-stepper" aria-label="Assessment progress">
           {titles.map((title, i) => (
             <li key={title} aria-current={i === step ? "step" : undefined}>
-              <span>{i < step ? <Check size={14} /> : i + 1}</span>
-              {title}
+              <span className="step-number">{i < step ? <Check size={14} /> : i + 1}</span>
+              <span className="step-label">{title}</span>
             </li>
           ))}
         </ol>
@@ -161,20 +160,6 @@ export function AssessmentForm({
         <h2 ref={heading} tabIndex={-1}>
           {titles[step]}
         </h2>
-        <p className="form-intro">
-          {step === 3
-            ? "Check your details and tell us how we may use your information."
-            : "Fields are required unless marked optional."}
-        </p>
-        {!enabled && (
-          <div className="notice mb-6" role="status">
-            Assessment submission opens after ISG completes its service setup. You can explore the form or{" "}
-            <Link href="/contact" className="underline">
-              contact ISG
-            </Link>
-            .
-          </div>
-        )}
         {step < 3 ? (
           <div className="form-grid">
             {steps[step].map((field) => (
@@ -280,6 +265,15 @@ export function AssessmentForm({
             <ArrowRight size={17} />
           </Button>
         </div>
+        {step === 3 && !enabled && (
+          <p className="field-help mt-4">
+            Online submission is currently unavailable.{" "}
+            <Link href="/contact" className="underline">
+              Contact ISG
+            </Link>{" "}
+            for help.
+          </p>
+        )}
         <p className="field-help mt-4">
           An initial assessment does not guarantee funding, admission or a visa.
         </p>

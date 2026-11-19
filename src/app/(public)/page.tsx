@@ -126,9 +126,8 @@ export default async function Home() {
         <div className="container">
           <div className="section-heading">
             <h2>{h.pathTitle}</h2>
-            <p>{h.pathText}</p>
           </div>
-          <div className="pathway-grid">
+          <div className="pathway-grid" tabIndex={0} role="region" aria-label={h.pathTitle}>
             {h.degrees.map(([degree, title], i) => (
               <Link
                 href={`/pathways?level=${encodeURIComponent(["Undergraduate", "Master's", "PhD / Research"][i])}#programmes`}

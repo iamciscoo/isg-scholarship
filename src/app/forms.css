@@ -114,7 +114,7 @@
   color: var(--muted);
   font-size: 13px;
 }
-.assessment-stepper li span {
+.assessment-stepper .step-number {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,7 +128,7 @@
   color: var(--navy);
   font-weight: 700;
 }
-.assessment-stepper li[aria-current] span {
+.assessment-stepper li[aria-current] .step-number {
   background: var(--navy);
   color: #fff;
   border-color: var(--navy);

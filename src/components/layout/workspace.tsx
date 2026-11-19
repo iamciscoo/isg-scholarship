@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, ClipboardList, Home, Mail, CircleCheck, UserRound, ImageIcon } from "lucide-react";
+import { Bell, ClipboardList, Home, Mail, CircleCheck, UserRound, ImageIcon, LogOut } from "lucide-react";
 import { LanguageSelector } from "./language-selector";
 import { NotificationBell } from "@/features/notifications/bell";
 import { signOut } from "@/features/auth/actions";
@@ -126,8 +126,9 @@ function WorkspaceFrame({ children, role, email, active = "overview" }: Workspac
             </div>
             <span>{email}</span>
             <form action={signOut}>
-              <Button size="sm" variant="outline">
-                Sign out
+              <Button size="sm" variant="outline" aria-label="Sign out">
+                <LogOut size={16} />
+                <span className="workspace-signout-label">Sign out</span>
               </Button>
             </form>
           </div>
