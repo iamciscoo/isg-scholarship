@@ -18,10 +18,16 @@ export type CaseFile = {
   created_at: string;
 };
 const labels: Record<string, string> = {
-  awaiting_receipt: "Awaiting receipt",
+  awaiting_receipt: "Payment needed",
   pending_verification: "Pending verification",
   verified: "Payment verified",
-  rejected: "Receipt needs attention",
+  rejected: "New receipt needed",
+};
+const nextStep: Record<string, string> = {
+  awaiting_receipt: "Pay using the instructions below, then upload your receipt.",
+  pending_verification: "We’ll review your receipt and update this page.",
+  rejected: "Check the feedback below and upload a replacement receipt.",
+  verified: "You can now request a meeting with your advisor.",
 };
 export function PaymentPanel({
   record,
@@ -36,13 +42,13 @@ export function PaymentPanel({
   return (
     <section className="workspace-panel payment-panel">
       <span className="status-pill">{labels[record.payment_status]}</span>
-      <h2>Your consultation · TZS 50,000</h2>
+      <h2>Consultation fee · TZS {record.fee_tzs.toLocaleString("en")}</h2>
       <p>
-        Pay once. Your verified consultation fee is credited toward a later ISG service package. Follow-up
-        questions and requests for further advisor meetings do not incur another consultation fee. Meetings
-        depend on scheduling.
+        {record.completed_at
+          ? "Your consultation is complete. Follow-up questions are included."
+          : nextStep[record.payment_status]}
       </p>
-      {record.payment_status !== "verified" && (
+      {["awaiting_receipt", "rejected"].includes(record.payment_status) && (
         <>
           <h3>Payment instructions</h3>
           {instructions ? (
@@ -52,9 +58,7 @@ export function PaymentPanel({
               ISG is preparing payment instructions. Contact the team before making any payment.
             </p>
           )}
-          {instructions && ["awaiting_receipt", "rejected"].includes(record.payment_status) && (
-            <FileUpload kind="receipt" />
-          )}
+          {instructions && <FileUpload kind="receipt" />}
         </>
       )}
       {!!receipts.length && (
@@ -67,12 +71,6 @@ export function PaymentPanel({
             </li>
           ))}
         </ul>
-      )}
-      {record.payment_status === "verified" && (
-        <p className="notice">
-          Your payment is verified. TZS 50,000 is available as a one-time credit toward your ISG package.
-          Provider and university fees are separate.
-        </p>
       )}
     </section>
   );

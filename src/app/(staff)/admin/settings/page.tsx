@@ -2,7 +2,6 @@ import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { EmailSettings } from "@/features/admin/email-settings";
 import { assignRole } from "@/features/admin/settings-actions";
-import { Button } from "@/components/ui/button";
 import { ActionForm } from "@/components/forms/action-form";
 import { savePaymentInstructions } from "@/features/consultations/payment-actions";
 export default async function Settings() {
@@ -55,26 +54,29 @@ export default async function Settings() {
       </section>
       <section className="workspace-panel">
         <h2>Account roles</h2>
-        <p>Only active accounts can be assigned a staff role. Every change is audited.</p>
-        {accounts.data.map((a: { id: string; email: string; role: string; status: string }) => (
-          <form key={a.id} action={assignRole} className="workspace-action-row">
-            <input type="hidden" name="user" value={a.id} />
-            <span>{a.email}</span>
-            <select
-              name="role"
-              defaultValue={a.role}
-              aria-label={`Role for ${a.email}`}
-              disabled={a.status !== "active"}
-            >
-              <option value="applicant">Applicant</option>
-              <option value="advisor">Advisor</option>
-              <option value="admin">Admin</option>
-            </select>
-            <Button size="sm" disabled={a.status !== "active"}>
-              Save role
-            </Button>
-          </form>
-        ))}
+        <p>Advisors work with assigned applicants. Admins also manage payments, packages and team access.</p>
+        <ul className="account-role-list">
+          {accounts.data.map((a: { id: string; email: string; role: string; status: string }) => (
+            <li key={a.id}>
+              <strong>{a.email}</strong>
+              {a.status === "active" ? (
+                <ActionForm action={assignRole} label="Save role" className="account-role-form">
+                  <input type="hidden" name="user" value={a.id} />
+                  <label>
+                    Role
+                    <select name="role" defaultValue={a.role} aria-label={`Role for ${a.email}`}>
+                      <option value="applicant">Applicant</option>
+                      <option value="advisor">Advisor</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </label>
+                </ActionForm>
+              ) : (
+                <span>Inactive account</span>
+              )}
+            </li>
+          ))}
+        </ul>
       </section>
     </Workspace>
   );

@@ -21,7 +21,7 @@ export function notificationTemplate(
     document_update: "A document review is available in your workspace.",
     application_update: "Your application has a new update.",
     opportunity_proposed:
-      "ISG has proposed an opportunity. Review the actual provider and details, then approve or decline in your workspace before submission.",
+      "Your advisor shared a scholarship package. Open Applications in your workspace to review its details and fees.",
     package_accepted:
       "Your ISG service-package quote and consultation credit are recorded in your workspace.",
   };
@@ -39,7 +39,9 @@ export function notificationTemplate(
       siteUrl +
       (event === "document_request" || event === "document_update"
         ? "/dashboard/application"
-        : "/dashboard/consultations");
+        : event === "opportunity_proposed" || event === "application_update" || event === "package_accepted"
+          ? "/dashboard/applications"
+          : "/dashboard/consultations");
     const text = `${updates[event]}${meet ? `\nTime (UTC): ${start}\nGoogle Meet: ${meet}` : ""}\nYour private workspace: ${url}\nInternational Scholarship Gateway`;
     return {
       subject:

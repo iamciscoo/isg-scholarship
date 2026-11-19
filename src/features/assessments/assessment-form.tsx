@@ -114,19 +114,12 @@ export function AssessmentForm({
     return (
       <section className="success-panel" role="status">
         <CheckCircle2 size={44} />
-        <h1>A good first step.</h1>
-        <p>
-          Your assessment has been received securely. Keep your reference for future conversations with ISG.
-        </p>
+        <h1>Consultation submitted</h1>
         <div className="reference">{reference}</div>
-        <p>
-          Your next step is the one-time TZS 50,000 consultation fee. Payment instructions and private receipt
-          upload are in your workspace. The fee is credited toward your later ISG package. Your confirmation
-          email is queued for delivery.
-        </p>
+        <p>Open your workspace for the TZS 50,000 payment instructions, then upload your receipt.</p>
         <Button asChild>
           <Link href="/dashboard/consultations">
-            View my consultations <ArrowRight size={17} />
+            View payment instructions <ArrowRight size={17} />
           </Link>
         </Button>
       </section>

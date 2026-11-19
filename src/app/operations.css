@@ -132,8 +132,77 @@
   padding: 0;
   margin-bottom: 24px;
 }
+.scholarship-admin-grid {
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  align-items: start;
+}
+.package-gallery > summary {
+  cursor: pointer;
+  color: var(--navy);
+  font-weight: 600;
+}
+.package-gallery[open] > summary {
+  margin-bottom: 12px;
+}
+.package-fees {
+  display: grid;
+  gap: 12px;
+  margin-block: 16px;
+  padding: 14px;
+  border-radius: 8px;
+  background: var(--cream);
+}
+.package-fees div {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.package-fees dd {
+  margin: 0;
+  font-weight: 700;
+}
+.account-role-list {
+  display: grid;
+  list-style: none;
+  padding: 0;
+}
+.account-role-list > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 1.1fr);
+  align-items: start;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-block: 14px;
+}
+.account-role-list strong {
+  overflow-wrap: anywhere;
+  align-self: center;
+  font-size: 14px;
+}
+.account-role-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px 12px;
+}
+.account-role-form > button {
+  grid-column: 2;
+  grid-row: 1;
+}
+.account-role-form > p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.account-role-form select {
+  min-width: 0;
+  width: 100%;
+}
 @media (max-width: 767px) {
   .operation-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .account-role-list > li {
     grid-template-columns: minmax(0, 1fr);
   }
 }

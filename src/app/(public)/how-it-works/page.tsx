@@ -9,7 +9,7 @@ const journey = [
   ],
   [
     "Pay once for consultation",
-    "Your workspace shows the TZS 50,000 fee and ISG payment instructions. Upload a private receipt and wait for administrator verification. The consultation fee is credited toward a later ISG package.",
+    "Follow the TZS 50,000 payment instructions in your workspace, then upload your receipt for review.",
   ],
   [
     "Discuss your options",

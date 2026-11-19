@@ -3,8 +3,8 @@ import AxeBuilder from "@axe-core/playwright";
 test("study paths merge campus life and filter programme areas", async ({ page }) => {
   await page.goto("/pathways");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Find your study path.");
-  await page.getByRole("combobox",{name:"Study level",exact:true}).selectOption("Master's");
-  await page.getByRole("combobox",{name:"Academic field",exact:true}).selectOption("Health");
+  await page.getByRole("combobox", { name: "Study level", exact: true }).selectOption("Master's");
+  await page.getByRole("combobox", { name: "Academic field", exact: true }).selectOption("Health");
   await page.getByRole("button", { name: "Explore paths" }).click();
   await expect(
     page.getByRole("heading", { name: "Public health & life sciences", exact: true }),
@@ -18,6 +18,7 @@ test("private file and declared PDF endpoints do not serve anonymous content", a
   for (const path of [
     "/api/case-files/80000000-0000-4000-8000-000000000001",
     "/api/application-pdf/80000000-0000-4000-8000-000000000001",
+    "/api/scholarship-images/80000000-0000-4000-8000-000000000001",
   ]) {
     const result = await request.get(path);
     expect([401, 503]).toContain(result.status());

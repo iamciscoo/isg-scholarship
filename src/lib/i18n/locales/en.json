@@ -101,10 +101,7 @@
         "Tell us your goals",
         "Create your account and complete the short consultation form. No documents are needed yet."
       ],
-      [
-        "Verify your consultation payment",
-        "Pay TZS 50,000 once and upload a private receipt. The fee is credited toward your ISG package."
-      ],
+      ["Verify your consultation payment", "Pay TZS 50,000 once and upload a private receipt."],
       [
         "Meet your advisor",
         "Book a confirmed meeting, then complete your full details and requested documents. Follow-ups are included."
@@ -160,7 +157,7 @@
     ],
     [
       "How much does the service cost?",
-      "Consultation costs TZS 50,000 once and is credited toward a later ISG service package. Follow-up questions and further meeting requests are included, subject to scheduling. ISG package prices are separate from university, provider, visa and travel fees."
+      "Consultation costs TZS 50,000. Follow-up questions and meeting requests are included. Your advisor explains any separate scholarship package and provider fees before you apply."
     ],
     [
       "How is my information used?",

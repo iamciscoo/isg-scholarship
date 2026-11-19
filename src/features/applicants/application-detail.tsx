@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { z } from "zod";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
@@ -46,23 +47,51 @@ export async function ApplicationDetail({
       <div className="operation-grid">
         <section className="workspace-panel">
           <span className="status-pill">{a.status}</span>
-          <h2>The actual opportunity</h2>
+          <h2>Scholarship package</h2>
+          {p.data.image && (
+            <div className="approved-image-preview">
+              <Image
+                src={p.data.image}
+                alt=""
+                fill
+                sizes="320px"
+                unoptimized={p.data.image.startsWith("/api/scholarship-images/")}
+              />
+            </div>
+          )}
           <p>Field: {p.data.field}</p>
           <p>Provider deadline: {p.data.deadline || "Confirm with advisor"}</p>
-          <p className="preserve-lines">{p.data.requirements}</p>
-          <a className="text-link" href={p.data.sourceUrl} target="_blank" rel="noopener noreferrer">
-            Provider source ↗
-          </a>
-          <h3>Provider / university fee</h3>
-          <p>
-            {p.data.providerFee === null
-              ? "Not confirmed. Ask your advisor before authorizing any charge."
-              : `${p.data.providerCurrency} ${p.data.providerFee.toLocaleString("en")}`}
-          </p>
-          <p>
-            These charges are separate from ISG’s service package. No funding, admission or visa outcome is
-            guaranteed.
-          </p>
+          {p.data.requirements && (
+            <>
+              <h3>Requirements</h3>
+              <p className="preserve-lines">{p.data.requirements}</p>
+            </>
+          )}
+          {p.data.supportSummary && (
+            <>
+              <h3>Included ISG support</h3>
+              <p className="preserve-lines">{p.data.supportSummary}</p>
+            </>
+          )}
+          <dl className="package-fees">
+            <div>
+              <dt>ISG package fee</dt>
+              <dd>
+                {p.data.packageFee === undefined
+                  ? "Ask your advisor"
+                  : `TZS ${p.data.packageFee.toLocaleString("en")}`}
+              </dd>
+            </div>
+            <div>
+              <dt>University or provider fee</dt>
+              <dd>
+                {p.data.providerFee === null
+                  ? "To be confirmed"
+                  : `${p.data.providerCurrency} ${p.data.providerFee.toLocaleString("en")}`}
+              </dd>
+            </div>
+          </dl>
+          {p.data.packageFee !== undefined && <p>The TZS 50,000 consultation fee is separate.</p>}
           <p>
             Approval: {a.approval}
             {a.approved_at ? ` · ${new Date(a.approved_at).toISOString()}` : ""} · Proposal version{" "}
@@ -73,17 +102,18 @@ export async function ApplicationDetail({
               <input type="hidden" name="id" value={id} />
               <label>
                 Decision
-                <select name="approve">
+                <select name="approve" required>
                   <option value="">Select decision</option>
-                  <option value="true">
-                    Approve this opportunity for application preparation and submission
-                  </option>
-                  <option value="false">Decline this opportunity</option>
+                  <option value="true">Approve this package and proceed</option>
+                  <option value="false">Decline this package</option>
                 </select>
               </label>
               <p>
-                Approval applies to this disclosed provider and requirement snapshot. Submit your full
-                application declaration first.
+                To approve, first{" "}
+                <Link className="text-link" href="/dashboard/application">
+                  submit your application form
+                </Link>
+                .
               </p>
             </ActionForm>
           )}

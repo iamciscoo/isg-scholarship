@@ -21,7 +21,15 @@ const labels = [
   "Discovering Kyoto · Japan",
 ];
 const builtIn = approvedImages.map((path, i) => ({ id: path, path, label: labels[i] }));
-export function ApprovedImagePicker({ image, images = [] }: { image?: string; images?: MarketingImage[] }) {
+export function ApprovedImagePicker({
+  image,
+  images = [],
+  showUpload = true,
+}: {
+  image?: string;
+  images?: MarketingImage[];
+  showUpload?: boolean;
+}) {
   const id = useId();
   const [extra, setExtra] = useState<MarketingImage[]>([]);
   const [selected, setSelected] = useState(image || approvedImages[0]);
@@ -34,7 +42,7 @@ export function ApprovedImagePicker({ image, images = [] }: { image?: string; im
   const current = options.find((o) => o.path === selected)!;
   return (
     <div className="approved-image-picker">
-      <label id={id}>Approved image</label>
+      <label id={id}>{showUpload ? "Approved image" : "Gallery image"}</label>
       <input type="hidden" name="image" value={selected} />
       <Menu.Root>
         <Menu.Trigger className="image-picker-trigger" aria-labelledby={id}>
@@ -61,35 +69,39 @@ export function ApprovedImagePicker({ image, images = [] }: { image?: string; im
       <div className="approved-image-preview">
         <Image src={selected} fill sizes="320px" alt={current.label} />
       </div>
-      <Popover.Root modal open={uploadOpen} onOpenChange={setUploadOpen}>
-        <Popover.Trigger className="button button-outline" type="button">
-          <Upload size={16} />
-          Upload a marketing image
-        </Popover.Trigger>
-        <Popover.Portal>
-          <Popover.Content className="marketing-upload-popover" sideOffset={8} collisionPadding={12}>
-            <Popover.Close aria-label="Close image upload" className="upload-close">
-              <X size={18} />
-            </Popover.Close>
-            <h3>Upload a public image</h3>
-            <p>
-              Marketing images are public. Never upload receipts, applicant documents or personal information
-              here.
-            </p>
-            <ImageUpload
-              onUploaded={(item) => {
-                setExtra((v) => [item, ...v]);
-                setSelected(item.path);
-                setUploadOpen(false);
-              }}
-            />
-          </Popover.Content>
-        </Popover.Portal>
-      </Popover.Root>
-      <p>
-        Campus photos illustrate study environments. They do not imply an ISG partnership or a guaranteed
-        place.
-      </p>
+      {showUpload && (
+        <Popover.Root modal open={uploadOpen} onOpenChange={setUploadOpen}>
+          <Popover.Trigger className="button button-outline" type="button">
+            <Upload size={16} />
+            Upload a marketing image
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content className="marketing-upload-popover" sideOffset={8} collisionPadding={12}>
+              <Popover.Close aria-label="Close image upload" className="upload-close">
+                <X size={18} />
+              </Popover.Close>
+              <h3>Upload a public image</h3>
+              <p>
+                Marketing images are public. Never upload receipts, applicant documents or personal
+                information here.
+              </p>
+              <ImageUpload
+                onUploaded={(item) => {
+                  setExtra((v) => [item, ...v]);
+                  setSelected(item.path);
+                  setUploadOpen(false);
+                }}
+              />
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
+      )}
+      {showUpload && (
+        <p>
+          Campus photos illustrate study environments. They do not imply an ISG partnership or a guaranteed
+          place.
+        </p>
+      )}
     </div>
   );
 }

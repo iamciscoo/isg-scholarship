@@ -35,7 +35,7 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
   const opportunities = record.completed_at
     ? await db.rpc("staff_opportunity_choices")
     : { data: [], error: null };
-  if (opportunities.error) throw Error("Opportunity choices unavailable");
+  if (opportunities.error) throw Error("Scholarship packages unavailable");
   return (
     <Workspace role={role} email={user.email || ""}>
       <h1>{[profile.first_name, profile.last_name].filter(Boolean).join(" ") || "Applicant consultation"}</h1>
@@ -64,23 +64,26 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
       {record.completed_at && <DocumentPanel user={id} staff />}
       {record.completed_at && (
         <section className="workspace-panel">
-          <h2>Start another independent application</h2>
-          <p>
-            A rejection or cancellation does not erase earlier history. Propose a new opportunity and get this
-            applicant’s approval before submission.
-          </p>
+          <h2>Share a scholarship package</h2>
+          <p>The package appears in the applicant’s Applications. Ask them to review it before you apply.</p>
           {!opportunities.data?.length ? (
             <p>
-              No current private opportunities are available. An administrator must add verified research
-              first.
+              No active scholarship packages.{" "}
+              {admin ? (
+                <Link className="text-link" href="/admin/packages">
+                  Create a package →
+                </Link>
+              ) : (
+                "Ask an admin to add one."
+              )}
             </p>
           ) : (
-            <ActionForm action={proposeApplication} label="Create private proposal">
+            <ActionForm action={proposeApplication} label="Share package">
               <input type="hidden" name="user" value={id} />
               <label>
-                Actual opportunity
+                Scholarship package
                 <select name="opportunity" required>
-                  <option value="">Choose a private opportunity</option>
+                  <option value="">Choose a package</option>
                   {opportunities.data.map(
                     (o: { id: string; name: string; provider: string; destination: string }) => (
                       <option key={o.id} value={o.id}>

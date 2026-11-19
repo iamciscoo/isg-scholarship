@@ -52,10 +52,10 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
               { href: "/admin/inbox", label: "Your notifications", icon: Bell, id: "inbox" },
               { href: "/admin/payments", label: "Payments", icon: ClipboardList, id: "payments" },
               {
-                href: "/admin/opportunities",
-                label: "Private opportunities",
+                href: "/admin/packages",
+                label: "Scholarship packages",
                 icon: ClipboardList,
-                id: "opportunities",
+                id: "packages",
               },
               {
                 href: "/admin/promotions",
@@ -63,7 +63,6 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
                 icon: ClipboardList,
                 id: "promotions",
               },
-              { href: "/admin/packages", label: "Service packages", icon: ClipboardList, id: "packages" },
               { href: "/admin/enquiries", label: "Contact enquiries", icon: Mail, id: "enquiries" },
               { href: "/admin/audit", label: "Activity & delivery", icon: CircleCheck, id: "audit" },
               { href: "/admin/notifications", label: "User notifications", icon: Bell, id: "notifications" },

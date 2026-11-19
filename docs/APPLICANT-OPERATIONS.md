@@ -1,5 +1,7 @@
 # Applicant operations update
 
+The catalogue and fee sections below record the earlier rollout. [Scholarship packages](SCHOLARSHIP-PACKAGES-MIGRATION.md) now combine opportunity details and ISG fees in the applicant’s application. The consultation fee is separate for new packages.
+
 Implemented on the existing Next.js/Supabase platform, 18–19 November 2026. This supersedes the earlier roadmap's descriptions of consultation, documents, research and application tracking as future-only features. The existing public domain has not been redeployed.
 
 ## Applicant journey

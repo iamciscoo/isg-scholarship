@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
-import { PackagePanel } from "./package-panel";
+import { PreviousPackageQuote } from "./package-panel";
 import { applicationStatuses, proposalSchema } from "@/lib/validation/opportunities";
 export type ApplicationQuery = { page?: string; status?: string };
 export async function ApplicationList({
@@ -34,10 +34,7 @@ export async function ApplicationList({
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
       <h1>{own ? "Your applications." : "Application tracking."}</h1>
-      <p>
-        Each opportunity has its own approval, dates, next steps and history. ISG workflow status is separate
-        from the official provider decision.
-      </p>
+      <p>Review scholarship packages from your advisor and track what happens after you apply.</p>
       <form className="filter-bar">
         <label className="field">
           Workflow status
@@ -57,8 +54,8 @@ export async function ApplicationList({
           <h2>No applications in this view.</h2>
           <p>
             {own
-              ? "Your advisor can propose opportunities after consultation. You review the actual provider and requirements before approving an application."
-              : "Open a student's consultation workspace to propose another opportunity. Previous rejected applications remain in history."}
+              ? "When your advisor shares a scholarship package, you’ll find the details and fees here."
+              : "Open an applicant’s consultation to share a scholarship package."}
           </p>
           {own && (
             <Link href="/dashboard/consultations" className="text-link">
@@ -78,10 +75,19 @@ export async function ApplicationList({
                 <p>
                   {p.data.provider} · {p.data.destination}
                 </p>
+                {p.data.packageFee !== undefined && (
+                  <p>
+                    ISG package fee · <strong>TZS {p.data.packageFee.toLocaleString("en")}</strong>
+                  </p>
+                )}
                 <p>
                   Official provider decision: <strong>{a.provider_decision}</strong>
                 </p>
-                <p>Applicant approval: {a.approval}</p>
+                <p>
+                  {a.approval === "pending"
+                    ? "Waiting for applicant review"
+                    : `Applicant decision: ${a.approval}`}
+                </p>
                 {a.next_step && (
                   <p>
                     Next: {a.next_step}
@@ -89,7 +95,7 @@ export async function ApplicationList({
                   </p>
                 )}
                 <Link className="text-link" href={`${base}/${a.id}`}>
-                  View application and history →
+                  View application →
                 </Link>
               </article>
             );
@@ -105,7 +111,7 @@ export async function ApplicationList({
           {page * 20 < (count || 0) && <Link href={pageLink(page + 1)}> Next →</Link>}
         </div>
       </div>
-      {own && <PackagePanel user={user.id} />}
+      {own && <PreviousPackageQuote user={user.id} />}
     </Workspace>
   );
 }

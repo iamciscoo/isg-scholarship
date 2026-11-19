@@ -14,17 +14,17 @@ function refresh(id?: string) {
 export async function proposeApplication(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireStaff();
   const x = z.object({ user: z.uuid(), opportunity: z.uuid() }).safeParse(Object.fromEntries(fd));
-  if (!x.success) return { error: "Choose a private opportunity for this applicant." };
+  if (!x.success) return { error: "Choose a scholarship package." };
   const { error } = await db.rpc("propose_application", {
     p_user: x.data.user,
     p_opportunity: x.data.opportunity,
   });
   if (error)
     return {
-      error: "The opportunity could not be proposed. Check its deadline and the completed consultation.",
+      error: "Check that the package is active and the consultation is complete, then try again.",
     };
   refresh();
-  return { message: "Proposal created privately. Applicant approval is required before applying." };
+  return { message: "Package shared in the applicant’s workspace for review." };
 }
 export async function approveApplication(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireUser();
@@ -36,11 +36,10 @@ export async function approveApplication(_: ActionState, fd: FormData): Promise<
   });
   if (error)
     return {
-      error:
-        "Approval could not be recorded. Submit your full application declaration first, or refresh an already reviewed proposal.",
+      error: "Your decision could not be saved. To approve, first submit your application form.",
     };
   refresh(x.data.id);
-  return { message: "Your decision has been recorded against this exact proposal." };
+  return { message: "Your decision has been saved." };
 }
 export async function updateApplication(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireStaff();
@@ -90,27 +89,5 @@ export async function commitPlace(_: ActionState, fd: FormData): Promise<ActionS
   refresh(x.data);
   return {
     message: "Your commitment is recorded. ISG will confirm any required provider withdrawals separately.",
-  };
-}
-export async function acceptPackage(_: ActionState, fd: FormData): Promise<ActionState> {
-  const { db } = await requireUser();
-  const x = z
-    .object({ package: z.uuid(), quoteUpdatedAt: z.iso.datetime({ offset: true }) })
-    .safeParse(Object.fromEntries(fd));
-  if (!x.success || fd.get("confirm") !== "on")
-    return { error: "Review and accept the package quote first." };
-  const { error } = await db.rpc("accept_service_package", {
-    p_package: x.data.package,
-    p_quote_updated_at: x.data.quoteUpdatedAt,
-  });
-  if (error)
-    return {
-      error:
-        "The package quote could not be accepted. Refresh to review the current price and scope, and check payment verification or an existing credit allocation.",
-    };
-  refresh();
-  return {
-    message:
-      "Package quote accepted with your one-time TZS 50,000 consultation credit. This does not mark the balance paid.",
   };
 }

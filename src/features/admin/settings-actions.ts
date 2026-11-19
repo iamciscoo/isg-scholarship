@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth/session";
+import type { ActionState } from "@/components/forms/action-form";
 export async function saveEmails(
   _state: { error?: string; message?: string },
   fd: FormData,
@@ -21,11 +22,20 @@ export async function saveEmails(
   revalidatePath("/admin/settings");
   return { message: "Notification recipients updated." };
 }
-export async function assignRole(fd: FormData) {
+export async function assignRole(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireStaff(true);
-  const id = z.uuid().parse(fd.get("user"));
-  const role = z.enum(["applicant", "advisor", "admin"]).parse(fd.get("role"));
-  const { error } = await db.rpc("assign_staff_role", { p_user: id, p_role: role });
-  if (error) throw new Error("Role update refused. Keep at least one active administrator.");
+  const input = z
+    .object({ user: z.uuid(), role: z.enum(["applicant", "advisor", "admin"]) })
+    .safeParse({ user: fd.get("user"), role: fd.get("role") });
+  if (!input.success) return { error: "Choose a role for an active account." };
+  const { user, role } = input.data;
+  const { error } = await db.rpc("assign_staff_role", { p_user: user, p_role: role });
+  if (error?.message === "Keep at least one administrator")
+    return { error: "Assign another active administrator before removing this admin role." };
+  if (error?.message === "Account unavailable") return { error: "This account is no longer active." };
+  if (error) return { error: "The role could not be saved. Refresh the page and try again." };
   revalidatePath("/admin/settings");
+  return {
+    message: `Saved as ${role === "admin" ? "Admin" : role === "advisor" ? "Advisor" : "Applicant"}.`,
+  };
 }

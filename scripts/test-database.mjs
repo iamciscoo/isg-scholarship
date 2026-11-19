@@ -41,7 +41,9 @@ try {
     "tests/integration/database.sql",
     "tests/integration/account-updates.sql",
     "tests/integration/roles-and-alerts.sql",
-    ...migrations.filter((f) => f >= "202611180010").map((f) => `supabase/migrations/${f}`),
+    ...migrations
+      .filter((f) => f >= "202611180010" && f < "20261119222344")
+      .map((f) => `supabase/migrations/${f}`),
     "tests/integration/consultations.sql",
     "tests/integration/draft-sync.sql",
     "tests/integration/advisor-directory.sql",
@@ -50,6 +52,8 @@ try {
     "tests/integration/applications.sql",
     "tests/integration/marketing-images.sql",
     "tests/integration/staff-inbox.sql",
+    ...migrations.filter((f) => f >= "20261119222344").map((f) => `supabase/migrations/${f}`),
+    "tests/integration/scholarship-packages.sql",
   ];
   for (const file of files) {
     docker(

@@ -17,7 +17,8 @@ export const marketingImageSchema = z.union([
   z.string().regex(/^\/api\/marketing-images\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/),
 ]);
 const title = (max = 160) => z.string().trim().min(1).max(max);
-export const opportunitySchema = z
+export const scholarshipImageSchema = z.string().regex(/^\/api\/scholarship-images\/[0-9a-f-]{36}$/);
+export const scholarshipPackageSchema = z
   .object({
     name: title(200),
     provider: title(200),
@@ -25,13 +26,19 @@ export const opportunitySchema = z
     studyLevel: title(80),
     field: title(),
     requirements: z.string().trim().max(10000),
-    staffNotes: z.string().trim().max(5000),
     deadline: z.union([z.iso.date(), z.literal("")]),
-    sourceUrl: z.url().refine((v) => v.startsWith("https://")),
+    supportSummary: z.string().trim().max(3000),
+    packageFee: z
+      .string()
+      .trim()
+      .regex(/^\d{1,9}$/)
+      .transform(Number)
+      .pipe(z.number().max(100000000)),
     providerFee: z.union([z.string().regex(/^\d{1,9}(\.\d{1,2})?$/), z.literal("")]),
     providerCurrency: z.enum(["TZS", "USD", "EUR", "GBP", "RUB"]),
     image: marketingImageSchema,
     active: z.boolean(),
+    useGallery: z.boolean(),
   })
   .strict();
 export const promotionSchema = z
@@ -64,11 +71,13 @@ export const proposalSchema = z.object({
   field: title(),
   requirements: z.string(),
   deadline: z.string().nullable(),
-  sourceUrl: z.url(),
   providerFee: z.number().nullable(),
   providerCurrency: z.string(),
+  packageFee: z.number().int().min(0).max(100000000).optional(),
+  supportSummary: z.string().optional(),
+  image: z.union([marketingImageSchema, scholarshipImageSchema]).optional(),
 });
-export type Opportunity = {
+export type ScholarshipPackage = {
   id: string;
   name: string;
   provider: string;
@@ -76,11 +85,12 @@ export type Opportunity = {
   study_level: string;
   field: string;
   requirements: string;
-  research_notes: string;
   deadline: string | null;
-  source_url: string;
   provider_fee: number | null;
   provider_currency: string;
   image: string;
   active: boolean;
+  package_fee_tzs: number | null;
+  support_summary: string;
+  private_image_id: string | null;
 };

@@ -5,6 +5,7 @@ import { sendFollowUp, requestMeeting, finishMeeting } from "./meeting-actions";
 import { MeetingScheduler } from "./meeting-scheduler";
 import type { ConsultationCase } from "./payment-panel";
 export async function CaseSupport({ record, staff = false }: { record: ConsultationCase; staff?: boolean }) {
+  if (record.payment_status !== "verified") return null;
   const db = await createClient();
   const [messages, requests, meetings] = await Promise.all([
     db
@@ -27,16 +28,6 @@ export async function CaseSupport({ record, staff = false }: { record: Consultat
       .limit(100),
   ]);
   if (messages.error || requests.error || meetings.error) throw Error("Consultation support unavailable");
-  if (record.payment_status !== "verified")
-    return (
-      <section className="workspace-panel">
-        <h2>Next: your advisor conversation.</h2>
-        <p>
-          After your payment is verified, request a meeting and ask follow-up questions here. The full
-          application form unlocks after a completed consultation.
-        </p>
-      </section>
-    );
   return (
     <>
       <p className="workspace-action-row">
@@ -53,12 +44,21 @@ export async function CaseSupport({ record, staff = false }: { record: Consultat
       </p>
       {record.completed_at && (
         <section className="workspace-panel">
-          <h2>Your application form is unlocked.</h2>
-          <p>Your consultation is complete. Prepare your full details and the documents requested by ISG.</p>
+          <h2>{staff ? "Application form available" : "Next: complete your application form"}</h2>
+          <p>Fill in your details and upload the documents ISG requests.</p>
           {!staff && (
             <Link className="text-link" href="/dashboard/application">
               Open application form →
             </Link>
+          )}
+          {!staff && (
+            <p>
+              Look in{" "}
+              <Link className="text-link" href="/dashboard/applications">
+                Applications
+              </Link>{" "}
+              for packages your advisor shares.
+            </p>
           )}
         </section>
       )}
@@ -139,7 +139,7 @@ export async function CaseSupport({ record, staff = false }: { record: Consultat
         )}
       </section>
       <section className="workspace-panel">
-        <h2>Consultation questions and follow-ups</h2>
+        <h2>{staff ? "Messages with applicant" : "Ask your advisor"}</h2>
         <p>
           Ask as many follow-up questions as you need. No additional consultation fee applies. Keep sensitive
           documents in the document area.

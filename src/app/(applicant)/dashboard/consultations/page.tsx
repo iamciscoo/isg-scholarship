@@ -35,40 +35,38 @@ export default async function Consultations() {
     <Workspace role={role} email={user.email || ""} active="consultations">
       <div className="workspace-page-heading">
         <div>
-          <h1>Your consultations.</h1>
-          <p>Follow your requests and continue preparing with ISG.</p>
+          <h1>Your consultation</h1>
+          <p>Check your payment, meetings and messages with your advisor.</p>
         </div>
-        <Button asChild>
-          <Link href="/consultation">
-            {draft.data ? "Continue consultation" : "Start consultation"}
-            <ArrowUpRight size={17} />
-          </Link>
-        </Button>
+        {!payment.data && !draft.data && (
+          <Button asChild>
+            <Link href="/consultation">
+              Start consultation
+              <ArrowUpRight size={17} />
+            </Link>
+          </Button>
+        )}
       </div>
       {payment.data && (
         <PaymentPanel record={payment.data} files={files.data || []} instructions={instructions.data || ""} />
       )}
-      {payment.data&&<CaseSupport record={payment.data}/>}
+      {payment.data && <CaseSupport record={payment.data} />}
       {draft.data && (
         <section className="workspace-panel consultation-draft">
           <span className="status-pill">In progress</span>
           <h2>Your consultation draft</h2>
-          <p>
-            Your details are saved. Continue from step {draft.data.step + 1} when you are ready. Nothing has
-            been submitted to ISG yet.
-          </p>
-          <Link className="text-link" href="/consultation">
-            Continue your request →
-          </Link>
+          <p>Your details are saved. Pick up at step {draft.data.step + 1}.</p>
+          <Button asChild>
+            <Link href="/consultation">Continue consultation</Link>
+          </Button>
         </section>
       )}
       <section className="workspace-panel">
-        <h2>Submitted requests</h2>
+        <h2>Submitted consultations</h2>
         {!requests.data.length ? (
           <div className="empty-state">
             <ClipboardList size={30} />
-            <h3>Your next step starts here.</h3>
-            <p>Submitted consultation requests and their review status will appear here.</p>
+            <p>Your submitted consultation will appear here.</p>
           </div>
         ) : (
           <div className="consultation-cards">
@@ -88,13 +86,6 @@ export default async function Consultations() {
             ))}
           </div>
         )}
-      </section>
-      <section className="workspace-panel">
-        <h2>Support beyond your first conversation.</h2>
-        <p>
-          ISG helps you understand your study options, prepare documents and applications, and follow up
-          through the application process. Your advisor will explain the agreed support and the next steps.
-        </p>
       </section>
     </Workspace>
   );

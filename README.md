@@ -1,6 +1,6 @@
 # ISG Scholarship Platform
 
-The latest [applicant operations update](docs/APPLICANT-OPERATIONS.md) adds one-time consultation payments, private receipts/documents, advisor meetings, full application declarations/PDFs, independent application tracking and private opportunities/public promotions. Use the scanner overlay documented there for raw PDF uploads.
+Admins manage scholarship details, images and fees in a single [Scholarship packages workflow](docs/SCHOLARSHIP-PACKAGES-MIGRATION.md). Applicants receive packages in Applications. The TZS 50,000 consultation fee is separate. See the [applicant operations guide](docs/APPLICANT-OPERATIONS.md) for receipts, meetings, applications and the scanner overlay for raw PDF uploads.
 
 Next.js, React, TypeScript and Supabase with the supplied Flight Ribbon identity. Includes public pages, six-language home/auth/navigation, registered consultation intake, applicant profiles and avatars, admin/advisor workspaces, account notifications and Resend/Green API admin alerts.
 

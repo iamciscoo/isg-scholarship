@@ -2,68 +2,75 @@ import Link from "next/link";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
-import { PackageEditor, type ServicePackage } from "@/features/admin/opportunity-editor";
-export default async function Packages({
+import { ScholarshipPackageEditor } from "@/features/admin/scholarship-package-editor";
+import type { ScholarshipPackage } from "@/lib/validation/opportunities";
+
+export default async function ScholarshipPackages({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; edit?: string }>;
+  searchParams: Promise<{ page?: string; edit?: string; created?: string }>;
 }) {
   const { db, user, role } = await requireStaff(true);
-  const q = await searchParams;
-  const page = Math.max(1, Math.min(100000, Number.parseInt(q.page || "1", 10) || 1));
-  const list = await db
-    .from("service_packages")
-    .select("*", { count: "exact" })
-    .order("updated_at", { ascending: false })
-    .order("id")
-    .range((page - 1) * 20, page * 20 - 1);
-  if (list.error) throw Error("Packages unavailable");
-  const edit =
-    q.edit && z.uuid().safeParse(q.edit).success
-      ? await db.from("service_packages").select("*").eq("id", q.edit).maybeSingle()
-      : null;
-  if (edit?.error) throw Error("Package unavailable");
+  const query = await searchParams;
+  const page = Math.max(1, Math.min(100000, Number.parseInt(query.page || "1", 10) || 1));
+  const [list, edit] = await Promise.all([
+    db.rpc("admin_opportunities", {}, { count: "exact" }).range((page - 1) * 20, page * 20 - 1),
+    z.uuid().safeParse(query.edit).success
+      ? db.rpc("admin_opportunities").eq("id", query.edit).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
+  ]);
+  if (list.error || edit.error) throw Error("Scholarship packages unavailable");
+  const selected = edit.data as ScholarshipPackage | null;
   return (
     <Workspace role={role} email={user.email || ""} active="packages">
-      <h1>ISG service packages.</h1>
+      <h1>Scholarship packages</h1>
       <p>
-        Publish approved ISG prices and scope. The consultation fee is included once; provider and university
-        charges remain separate.
+        Set up the scholarship, ISG support and fees together. Share a package from the applicant’s
+        consultation.
       </p>
-      <div className="operation-grid">
+      <div className="operation-grid scholarship-admin-grid">
         <section className="workspace-panel">
-          <h2>{edit?.data ? "Edit package" : "Add package"}</h2>
-          {edit?.data && (
+          <h2>{selected ? "Edit package" : "Create a package"}</h2>
+          {selected && query.created === "1" && (
+            <p role="status" className="form-message">
+              Scholarship package created.
+            </p>
+          )}
+          {selected && (
             <Link className="text-link" href="/admin/packages">
-              Add another →
+              Create a different package →
             </Link>
           )}
-          <PackageEditor value={edit?.data as ServicePackage | undefined} />
+          <ScholarshipPackageEditor value={selected || undefined} />
         </section>
         <section className="workspace-panel">
-          <h2>Package prices</h2>
+          <h2>Saved packages</h2>
           {!list.data?.length ? (
-            <p>No service packages yet. Add the approved service scope and prices.</p>
+            <p>Add your first package to start sharing scholarships with applicants.</p>
           ) : (
             <ul className="notification-history">
-              {(list.data as ServicePackage[]).map((p) => (
-                <li key={p.id}>
-                  <strong>{p.name}</strong>
+              {(list.data as ScholarshipPackage[]).map((item) => (
+                <li key={item.id}>
+                  <strong>{item.name}</strong>
                   <p>
-                    TZS {p.price_tzs.toLocaleString("en")} · {p.active ? "Active" : "Archived"} ·{" "}
-                    {p.promoted ? "Public" : "Unpublished"}
+                    {item.provider} · {item.destination}
                   </p>
-                  <Link className="text-link" href={`/admin/packages?edit=${p.id}&page=${page}`}>
+                  <p>
+                    {item.package_fee_tzs === null
+                      ? "Add a package fee before sharing"
+                      : `TZS ${item.package_fee_tzs.toLocaleString("en")} · ${item.active ? "Available" : "Archived"}`}
+                  </p>
+                  <Link className="text-link" href={`/admin/packages?edit=${item.id}&page=${page}`}>
                     Edit package →
                   </Link>
                 </li>
               ))}
             </ul>
           )}
-          <div className="pagination">
+          <nav className="pagination" aria-label="Package pages">
             {page > 1 && <Link href={`/admin/packages?page=${page - 1}`}>← Previous</Link>}
             {page * 20 < (list.count || 0) && <Link href={`/admin/packages?page=${page + 1}`}>Next →</Link>}
-          </div>
+          </nav>
         </section>
       </div>
     </Workspace>
