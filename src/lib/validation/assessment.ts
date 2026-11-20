@@ -28,8 +28,10 @@ export const assessmentSchema = z
       .regex(/^\+?[\d\s()-]+$/, "Enter a valid phone number."),
     nationality: text(80),
     residence: text(80),
-    qualification: z.enum(qualifications),
-    educationStatus: z.enum(["Currently studying", "Graduated", "Working", "Other"]),
+    qualification: z.enum(qualifications, { error: "Choose your highest completed qualification." }),
+    educationStatus: z.enum(["Currently studying", "Graduated", "Working", "Other"], {
+      error: "Choose your current education status.",
+    }),
     fieldOfStudy: text(150),
     performance: z.union([
       z.literal(""),
@@ -48,11 +50,15 @@ export const assessmentSchema = z
       z.literal(""),
       z.enum(["Test completed", "Test planned", "Studied in English", "Not yet assessed"]),
     ]),
-    studyLevel: z.enum(studyLevels),
+    studyLevel: z.enum(studyLevels, { error: "Choose the study level you want." }),
     preferredFields: text(200),
     destinations: z.string().trim().max(200),
-    intake: z.enum(["Next available intake", "2027", "2028", "2029 or later", "Still exploring"]),
-    funding: z.enum(["Full funding needed", "Partial funding considered", "Open to advice"]),
+    intake: z.enum(["Next available intake", "2027", "2028", "2029 or later", "Still exploring"], {
+      error: "Choose your intended intake.",
+    }),
+    funding: z.enum(["Full funding needed", "Partial funding considered", "Open to advice"], {
+      error: "Choose a funding preference.",
+    }),
     constraints: z.string().trim().max(400),
     processingConsent: z.boolean().refine((v) => v, "Consent is required to review your assessment."),
     marketingConsent: z.boolean(),

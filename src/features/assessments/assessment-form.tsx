@@ -176,14 +176,23 @@ export function AssessmentForm({
                 {field.options ? (
                   <select
                     id={field.name}
-                    {...form.register(field.name)}
+                    // Controlled so the value shown is always the value validated (iOS keeps an untouched default otherwise).
+                    value={String(form.watch(field.name) ?? "")}
+                    onChange={(event) =>
+                      form.setValue(field.name, event.target.value as never, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
+                    }
+                    onBlur={() => void form.trigger(field.name)}
                     aria-invalid={!!form.formState.errors[field.name]}
                     aria-describedby={`${field.name}-error`}
-                    defaultValue=""
                   >
                     <option value="">Select an option</option>
                     {field.options.map((option) => (
-                      <option key={option}>{option}</option>
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
                     ))}
                   </select>
                 ) : (
