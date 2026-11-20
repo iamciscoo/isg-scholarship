@@ -56,15 +56,11 @@ export async function StudyPaths({
         <div>
           <span className="eyebrow">Start with your interests</span>
           <h2>Find a direction worth exploring.</h2>
-          <p>
-            Browse programme areas, then get personal guidance on destinations, requirements and funding.
-            These guides introduce study options; they are not offers of admission or confirmed scholarship
-            listings.
-          </p>
         </div>
       </div>
       <form
         key={`${level}|${field}|${destination}`}
+        id="programme-filters"
         className="study-path-filters"
         action="/pathways#programme-results"
         method="get"

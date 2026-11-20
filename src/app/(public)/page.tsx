@@ -53,7 +53,7 @@ export default async function Home() {
               {h.destinations.map((name, i) => (
                 <Link
                   key={name}
-                  href={`/pathways?destination=${encodeURIComponent(["Russia", "United Kingdom", "Germany", "Canada"][i])}`}
+                  href={`/pathways?destination=${encodeURIComponent(["Russia", "United Kingdom", "Germany", "Canada"][i])}#programme-filters`}
                 >
                   <Image src={`/flags/${["ru", "gb", "de", "ca"][i]}.svg`} width={32} height={24} alt="" />
                   <span>{name}</span>

@@ -30,6 +30,7 @@ export function ContactForm({
     const parsed = contactSchema.safeParse({
       name: fd.get("name"),
       email: fd.get("email"),
+      whatsapp: fd.get("whatsapp"),
       topic: fd.get("topic"),
       message: fd.get("message"),
       consent: fd.get("consent") === "on",
@@ -79,6 +80,11 @@ export function ContactForm({
       <div className="field">
         <label htmlFor="contact-email">Email address</label>
         <input type="email" name="email" id="contact-email" autoComplete="email" required maxLength={254} />
+      </div>
+      <div className="field">
+        <label htmlFor="contact-whatsapp">WhatsApp number (optional)</label>
+        <input type="tel" name="whatsapp" id="contact-whatsapp" autoComplete="tel" maxLength={20} />
+        <span className="field-help">So an advisor can reply on WhatsApp if you prefer.</span>
       </div>
       <div className="field">
         <label htmlFor="contact-topic">What would you like to discuss?</label>

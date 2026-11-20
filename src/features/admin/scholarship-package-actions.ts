@@ -9,6 +9,21 @@ import { adminClient } from "@/lib/supabase/admin";
 import { scholarshipPackageSchema } from "@/lib/validation/opportunities";
 import { validateCaseFile } from "@/server/services/file-validation";
 
+export async function deleteScholarshipPackage(_: ActionState, form: FormData): Promise<ActionState> {
+  const { db } = await requireStaff(true);
+  const id = z.uuid().safeParse(form.get("id"));
+  if (!id.success) return { error: "Choose a package to delete." };
+  const { data: imageId, error } = await db.rpc("delete_scholarship_package", { p_id: id.data });
+  if (error) {
+    if (error.code === "23503")
+      return { error: "This package is attached to an application. Archive it instead of deleting." };
+    return { error: "The package could not be deleted. Refresh the list and try again." };
+  }
+  if (imageId) await adminClient().storage.from("scholarship-images").remove([`${imageId}.webp`]);
+  revalidatePath("/admin/packages");
+  return { message: "Package deleted." };
+}
+
 export async function saveScholarshipPackage(_: ActionState, form: FormData): Promise<ActionState> {
   const { db, user } = await requireStaff(true);
   const id = z.union([z.uuid(), z.literal("")]).safeParse(form.get("id"));

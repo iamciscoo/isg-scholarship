@@ -34,7 +34,7 @@ it("routes full-form alerts to the specific immutable declaration acceptance", a
   const fetchMock = vi.fn().mockResolvedValue(Response.json({ id: "test-provider-id" }));
   vi.stubGlobal("fetch", fetchMock);
 
-  expect(await dispatchAdminAlerts()).toEqual({ sent: 1, failed: 0, configured: true });
+  expect(await dispatchAdminAlerts("https://isg.example")).toEqual({ sent: 1, failed: 0, configured: true });
   const message = JSON.parse(fetchMock.mock.calls[0][1].body).text;
   expect(message).toContain(`https://isg.example/admin/declarations/${declarationId}`);
   expect(message).not.toContain("/admin/applications");

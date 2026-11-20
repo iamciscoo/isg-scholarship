@@ -2,6 +2,8 @@ import Link from "next/link";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
+import { DeleteForm } from "@/components/forms/delete-form";
+import { deletePromotion } from "@/features/admin/opportunity-actions";
 import { PromotionEditor, type Promotion } from "@/features/admin/opportunity-editor";
 export default async function Promotions({
   searchParams,
@@ -55,6 +57,12 @@ export default async function Promotions({
                   <Link className="text-link" href={`/admin/promotions?edit=${p.id}&page=${page}`}>
                     Edit promotion →
                   </Link>
+                  <DeleteForm
+                    action={deletePromotion}
+                    id={p.id}
+                    label="Delete promotion"
+                    confirm={`Delete ${p.title}? This cannot be undone.`}
+                  />
                 </li>
               ))}
             </ul>

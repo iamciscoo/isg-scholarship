@@ -9,7 +9,7 @@ type Event = {
   entity_id: string;
   recipient: string;
 };
-export async function dispatchAdminAlerts() {
+export async function dispatchAdminAlerts(baseUrl: string) {
   const email =
     process.env.ADMIN_EMAIL_ENABLED === "true" &&
     Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL);
@@ -51,7 +51,7 @@ export async function dispatchAdminAlerts() {
               : item.event.startsWith("application.")
                 ? "/admin/applications"
                 : "/admin/consultations";
-    const message = `${labels[item.event] || "An ISG account event occurred."}\nReview securely: ${process.env.NEXT_PUBLIC_SITE_URL}${path}\nEvent: ${item.id}`;
+    const message = `${labels[item.event] || "An ISG account event occurred."}\nReview securely: ${baseUrl}${path}\nEvent: ${item.id}`;
     let state = "uncertain",
       provider: string | null = null;
     try {

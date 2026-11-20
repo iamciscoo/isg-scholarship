@@ -2,7 +2,9 @@ import Link from "next/link";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
+import { DeleteForm } from "@/components/forms/delete-form";
 import { ScholarshipPackageEditor } from "@/features/admin/scholarship-package-editor";
+import { deleteScholarshipPackage } from "@/features/admin/scholarship-package-actions";
 import type { ScholarshipPackage } from "@/lib/validation/opportunities";
 
 export default async function ScholarshipPackages({
@@ -63,6 +65,12 @@ export default async function ScholarshipPackages({
                   <Link className="text-link" href={`/admin/packages?edit=${item.id}&page=${page}`}>
                     Edit package →
                   </Link>
+                  <DeleteForm
+                    action={deleteScholarshipPackage}
+                    id={item.id}
+                    label="Delete package"
+                    confirm={`Delete ${item.name}? This cannot be undone.`}
+                  />
                 </li>
               ))}
             </ul>

@@ -8,7 +8,7 @@ type Notification = {
   event: string;
   payload: { firstName?: string; reference: string };
 };
-export async function dispatchNotifications() {
+export async function dispatchNotifications(baseUrl: string) {
   if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL)
     return { configured: false, sent: 0, failed: 0 };
   const db = adminClient();
@@ -20,11 +20,7 @@ export async function dispatchNotifications() {
     let providerId: string | null = null;
     let failure: string | null = null;
     try {
-      const content = notificationTemplate(
-        notification.event,
-        notification.payload,
-        process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-      );
+      const content = notificationTemplate(notification.event, notification.payload, baseUrl);
       const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {

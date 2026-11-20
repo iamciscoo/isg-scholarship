@@ -6,7 +6,7 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
   const page = Math.min(10000, Math.max(1, Number.parseInt((await searchParams).page || "1", 10) || 1));
   const { data, error, count } = await db
     .from("contact_enquiries")
-    .select("id,name,email,topic,message,created_at", { count: "exact" })
+    .select("id,name,email,whatsapp,topic,message,created_at", { count: "exact" })
     .order("created_at", { ascending: false })
     .range((page - 1) * 20, page * 20 - 1);
   return (
@@ -44,6 +44,7 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
                     <td>
                       {row.name}
                       <small>{row.email}</small>
+                      {row.whatsapp && <small>WhatsApp {row.whatsapp}</small>}
                     </td>
                     <td>{row.topic}</td>
                     <td className="min-w-64 whitespace-pre-wrap">{row.message}</td>
