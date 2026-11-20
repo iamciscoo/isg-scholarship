@@ -56,10 +56,10 @@ export async function saveScholarshipPackage(_: ActionState, form: FormData): Pr
   let imageId: string | null = null;
   if (hasUpload) {
     if (
-      file.size > 2 * 1024 * 1024 ||
+      file.size > 3 * 1024 * 1024 ||
       !["image/jpeg", "image/png", "image/webp"].includes(file.type)
     )
-      return { error: "Choose a JPEG, PNG or WebP image up to 2 MB." };
+      return { error: "Choose a JPEG, PNG or WebP image up to 3 MB." };
     const admin = adminClient();
     const rate = await admin.rpc("consume_rate_limit", {
       p_key: `scholarship-image:${user.id}`,
