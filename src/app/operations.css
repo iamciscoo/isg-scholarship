@@ -76,6 +76,9 @@
   margin-top: 24px;
   max-width: 640px;
 }
+.payment-overview-card {
+  overflow-wrap: anywhere;
+}
 .receipt-preview {
   display: grid;
   justify-items: start;

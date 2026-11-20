@@ -74,7 +74,7 @@ export default async function Payments({
       )}
       <div className="operation-grid">
         {items.map((p) => (
-          <article className="workspace-panel" key={`${p.kind}:${p.id}`}>
+          <article className="workspace-panel payment-overview-card" key={`${p.kind}:${p.id}`}>
             <span className="status-pill">
               {p.amount === 0 && p.state === "verified" ? "No fee due" : filters[p.state]}
             </span>
