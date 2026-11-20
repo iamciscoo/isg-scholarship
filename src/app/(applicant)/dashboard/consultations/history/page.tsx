@@ -14,13 +14,8 @@ export default async function History({
   const access = await db.from("consultation_cases").select("user_id").eq("user_id", owner).maybeSingle();
   if (access.error) throw Error("History unavailable");
   if (!access.data) notFound();
-  const type = q.type === "meetings" ? "meetings" : q.type === "requests" ? "requests" : "messages";
-  const table =
-    type === "meetings"
-      ? "consultation_meetings"
-      : type === "requests"
-        ? "meeting_requests"
-        : "consultation_messages";
+  const type = q.type === "meetings" ? "meetings" : "requests";
+  const table = type === "meetings" ? "consultation_meetings" : "meeting_requests";
   const count = await db.from(table).select("id", { count: "exact", head: true }).eq("user_id", owner);
   if (count.error) throw Error("History unavailable");
   const page = Math.min(
@@ -53,12 +48,7 @@ export default async function History({
         <ol className="notification-history">
           {items.data?.map((item) => (
             <li key={item.id}>
-              {type === "messages" ? (
-                <>
-                  <strong>{item.author_id === owner ? "Applicant" : "ISG team"}</strong>
-                  <p>{item.body}</p>
-                </>
-              ) : type === "requests" ? (
+              {type === "requests" ? (
                 <>
                   <strong>{item.status}</strong>
                   <p>{item.note}</p>

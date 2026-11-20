@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ActionForm } from "@/components/forms/action-form";
-import { sendFollowUp, requestMeeting, finishMeeting } from "./meeting-actions";
+import { requestMeeting, finishMeeting } from "./meeting-actions";
 import { MeetingScheduler } from "./meeting-scheduler";
+import { meetingSlots, meetingTopics, meetingZones } from "./meeting-options";
 import type { ConsultationCase } from "./payment-panel";
 export async function CaseSupport({
   record,
@@ -15,13 +16,7 @@ export async function CaseSupport({
 }) {
   if (!advisor) return null;
   const db = await createClient();
-  const [messages, requests, meetings] = await Promise.all([
-    db
-      .from("consultation_messages")
-      .select("id,author_id,body,created_at")
-      .eq("user_id", record.user_id)
-      .order("created_at", { ascending: false })
-      .limit(100),
+  const [requests, meetings] = await Promise.all([
     db
       .from("meeting_requests")
       .select("id,note,status,created_at")
@@ -35,12 +30,12 @@ export async function CaseSupport({
       .order("starts_at", { ascending: false })
       .limit(100),
   ]);
-  if (messages.error || requests.error || meetings.error) throw Error("Consultation support unavailable");
+  if (requests.error || meetings.error) throw Error("Consultation support unavailable");
   return (
     <>
       <p className="case-history">
         Full history:
-        {["messages", "requests", "meetings"].map((type) => (
+        {["requests", "meetings"].map((type) => (
           <Link
             className="text-link"
             key={type}
@@ -61,13 +56,42 @@ export async function CaseSupport({
         ) : (
           <ActionForm action={requestMeeting} label="Request an advisor meeting">
             <label>
-              Availability and topics
-              <textarea
-                name="note"
-                maxLength={1000}
-                required
-                placeholder="Include your time zone and a few suitable dates."
-              />
+              Preferred date
+              <input name="date" type="date" required min={new Date().toISOString().slice(0, 10)} />
+            </label>
+            <label>
+              Preferred time
+              <select name="time" defaultValue="10:00">
+                {meetingSlots.map((slot) => (
+                  <option key={slot} value={slot}>
+                    {slot}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Your time zone
+              <select name="zone" defaultValue="Africa/Dar_es_Salaam">
+                {meetingZones.map((zone) => (
+                  <option key={zone} value={zone}>
+                    {zone.replace(/_/g, " ")}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Topic
+              <select name="topic">
+                {meetingTopics.map((topic) => (
+                  <option key={topic} value={topic}>
+                    {topic}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Anything else? (optional)
+              <input name="details" maxLength={200} />
             </label>
           </ActionForm>
         )}
@@ -125,31 +149,6 @@ export async function CaseSupport({
             ))}
           </div>
         )}
-      </section>
-      <section className="workspace-panel">
-        <h2>{staff ? "Messages with applicant" : "Ask your advisor"}</h2>
-        <p>
-          Ask as many follow-up questions as you need. No additional consultation fee applies. Keep sensitive
-          documents in the document area.
-        </p>
-        <ActionForm action={sendFollowUp} label={staff ? "Send reply" : "Send question"}>
-          <input type="hidden" name="user" value={record.user_id} />
-          <label>
-            {staff ? "Reply" : "Your question"}
-            <textarea name="body" required maxLength={2000} />
-          </label>
-        </ActionForm>
-        <ol className="notification-history">
-          {messages.data?.map((m) => (
-            <li key={m.id}>
-              <strong>{m.author_id === record.user_id ? "Applicant" : "ISG team"}</strong>
-              <p>{m.body}</p>
-              <small>
-                {new Date(m.created_at).toLocaleString("en-GB", { timeZone: "Africa/Dar_es_Salaam" })} EAT
-              </small>
-            </li>
-          ))}
-        </ol>
       </section>
     </>
   );

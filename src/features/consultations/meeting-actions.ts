@@ -3,32 +3,29 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import type { ActionState } from "@/components/forms/action-form";
+import { meetingRequestNote, meetingSlots, meetingTopics, meetingZones } from "./meeting-options";
 function refresh(id: string) {
   revalidatePath("/dashboard/consultations");
   revalidatePath(`/admin/cases/${id}`);
   revalidatePath(`/advisor/cases/${id}`);
   revalidatePath("/dashboard/application");
 }
-export async function sendFollowUp(_: ActionState, fd: FormData): Promise<ActionState> {
-  const { db } = await requireUser();
-  const parsed = z
-    .object({ user: z.uuid(), body: z.string().trim().min(1).max(2000) })
-    .safeParse(Object.fromEntries(fd));
-  if (!parsed.success) return { error: "Enter a question or reply, up to 2,000 characters." };
-  const { error } = await db.rpc("send_consultation_message", {
-    p_user: parsed.data.user,
-    p_body: parsed.data.body,
-  });
-  if (error)
-    return { error: "This message could not be sent. Check payment verification and try again shortly." };
-  refresh(parsed.data.user);
-  return { message: "Message saved to the consultation." };
-}
 export async function requestMeeting(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db, user } = await requireUser();
-  const note = z.string().trim().min(1).max(1000).safeParse(fd.get("note"));
-  if (!note.success) return { error: "Tell us your availability and the topics you want to discuss." };
-  const { error } = await db.rpc("request_consultation_meeting", { p_note: note.data });
+  const parsed = z
+    .object({
+      date: z.iso.date(),
+      time: z.enum(meetingSlots),
+      zone: z.enum(meetingZones),
+      topic: z.enum(meetingTopics),
+      details: z.string().trim().max(200).optional(),
+    })
+    .safeParse(Object.fromEntries(fd));
+  if (!parsed.success) return { error: "Choose a date, time and topic for the meeting." };
+  const { date, time, zone, topic, details } = parsed.data;
+  if (date < new Date().toISOString().slice(0, 10)) return { error: "Choose today or a later date." };
+  const note = meetingRequestNote(date, time, zone, topic, details);
+  const { error } = await db.rpc("request_consultation_meeting", { p_note: note });
   if (error)
     return { error: "A meeting could not be requested. Check payment verification or try again shortly." };
   refresh(user.id);
