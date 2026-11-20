@@ -37,6 +37,14 @@ export async function ApplicationList({
     request = request.eq("package_state", query.status);
   const { data: applications, error, count } = await request;
   if (error) throw Error("Applications unavailable");
+  const ids = (applications ?? []).map((a) => a.user_id);
+  const people =
+    staff && ids.length
+      ? ((await db.from("profiles").select("id,first_name,last_name").in("id", ids)).data ?? [])
+      : [];
+  const names = new Map(
+    people.map((p) => [p.id, `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim()]),
+  );
   const base = staff ? (admin ? "/admin/applications" : "/advisor/applications") : "/dashboard/applications";
   const pageLink = (n: number) => `${base}?page=${n}&status=${encodeURIComponent(query.status || "")}`;
   return (
@@ -86,6 +94,11 @@ export async function ApplicationList({
               <article className="workspace-panel" key={a.id}>
                 <span className="status-pill">{packageStatus(a.package_state, a.status)}</span>
                 <h2>{p.data.name}</h2>
+                {staff && (
+                  <p className="application-owner">
+                    {names.get(a.user_id) || `Applicant ${a.user_id.slice(0, 8)}`}
+                  </p>
+                )}
                 <p>
                   {p.data.provider} · {p.data.destination}
                 </p>

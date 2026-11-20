@@ -96,6 +96,7 @@ export async function ApplicationDetail({
                 )}
               </dd>
             </div>
+            {(staff || p.data.providerFee !== null) && (
             <div>
               <dt>University or provider fee</dt>
               <dd>
@@ -104,6 +105,7 @@ export async function ApplicationDetail({
                   : `${p.data.providerCurrency} ${p.data.providerFee.toLocaleString("en")}`}
               </dd>
             </div>
+          )}
           </dl>
           {p.data.packageFee !== undefined && <p>The TZS 50,000 consultation fee is separate.</p>}
           {!a.package_state && <p>Approval: {a.approval}</p>}

@@ -70,18 +70,17 @@ export async function finishMeeting(_: ActionState, fd: FormData): Promise<Actio
       meeting: z.uuid(),
       user: z.uuid(),
       status: z.enum(["completed", "cancelled"]),
-      note: z.string().trim().min(3).max(1000),
+      note: z.string().trim().max(1000).optional(),
     })
     .safeParse(Object.fromEntries(fd));
-  if (!parsed.success) return { error: "Choose an outcome and enter a note." };
+  if (!parsed.success) return { error: "Choose an outcome." };
   const x = parsed.data;
   const { error } = await db.rpc("finish_consultation_meeting", {
     p_meeting: x.meeting,
     p_status: x.status,
-    p_note: x.note,
+    p_note: x.note ?? "",
   });
-  if (error)
-    return { error: "The meeting could not be updated. A future meeting cannot be marked completed." };
+  if (error) return { error: "The meeting could not be updated. Try again shortly." };
   refresh(x.user);
   return { message: "Meeting history updated." };
 }

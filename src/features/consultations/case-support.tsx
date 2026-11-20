@@ -47,6 +47,44 @@ export async function CaseSupport({
       </p>
       <section className="workspace-panel">
         <h2>{staff ? "Advisor meetings" : `Meet with ${advisor}`}</h2>
+        {!meetings.data?.length ? (
+          <p>No meetings have been scheduled yet.</p>
+        ) : (
+          <div className="operation-grid">
+            {meetings.data.map((m) => (
+              <article className="operation-card" key={m.id}>
+                <span className="status-pill">{m.status}</span>
+                <h3>{new Date(m.starts_at).toLocaleString("en-GB", { timeZone: m.time_zone })}</h3>
+                <p>
+                  {m.time_zone} · {Math.round((Date.parse(m.ends_at) - Date.parse(m.starts_at)) / 60000)}{" "}
+                  minutes
+                </p>
+                {m.status === "scheduled" && (
+                  <a className="text-link" href={m.meet_url} target="_blank" rel="noopener noreferrer">
+                    Join meeting ↗
+                  </a>
+                )}
+                {m.note && <p>{m.note}</p>}
+                {staff && m.status === "scheduled" && (
+                  <ActionForm action={finishMeeting} label="Update meeting">
+                    <input type="hidden" name="user" value={record.user_id} />
+                    <input type="hidden" name="meeting" value={m.id} />
+                    <label>
+                      Outcome
+                      <select name="status" required>
+                        <option value="">Select outcome</option>
+                        <option value="completed">Completed — unlock application form</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </label>
+                  </ActionForm>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
+      
+      
         {staff ? (
           <MeetingScheduler user={record.user_id} requests={requests.data || []} />
         ) : (
@@ -104,46 +142,6 @@ export async function CaseSupport({
               ))}
             </ul>
           </>
-        )}
-        {!meetings.data?.length ? (
-          <p>No meetings have been scheduled yet.</p>
-        ) : (
-          <div className="operation-grid">
-            {meetings.data.map((m) => (
-              <article className="operation-card" key={m.id}>
-                <span className="status-pill">{m.status}</span>
-                <h3>{new Date(m.starts_at).toLocaleString("en-GB", { timeZone: m.time_zone })}</h3>
-                <p>
-                  {m.time_zone} · {Math.round((Date.parse(m.ends_at) - Date.parse(m.starts_at)) / 60000)}{" "}
-                  minutes
-                </p>
-                {m.status === "scheduled" && (
-                  <a className="text-link" href={m.meet_url} target="_blank" rel="noopener noreferrer">
-                    Join meeting ↗
-                  </a>
-                )}
-                {m.note && <p>{m.note}</p>}
-                {staff && m.status === "scheduled" && (
-                  <ActionForm action={finishMeeting} label="Update meeting">
-                    <input type="hidden" name="user" value={record.user_id} />
-                    <input type="hidden" name="meeting" value={m.id} />
-                    <label>
-                      Outcome
-                      <select name="status" required>
-                        <option value="">Select outcome</option>
-                        <option value="completed">Completed — unlock application form</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                    </label>
-                    <label>
-                      Note visible to applicant
-                      <textarea name="note" minLength={3} maxLength={1000} required />
-                    </label>
-                  </ActionForm>
-                )}
-              </article>
-            ))}
-          </div>
         )}
       </section>
     </>
