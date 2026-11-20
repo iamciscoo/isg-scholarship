@@ -2,6 +2,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 import { saveProfile } from "./actions";
 type Profile = {
   first_name: string;
@@ -55,7 +56,16 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         </p>
       )}
       <div>
-        <Button disabled={pending}>{pending ? "Saving…" : "Save profile"}</Button>
+        <Button disabled={pending}>
+          {pending ? (
+            <>
+              Saving
+              <LoadingDots />
+            </>
+          ) : (
+            "Save profile"
+          )}
+        </Button>
       </div>
     </form>
   );

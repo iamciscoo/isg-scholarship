@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Check, CheckCircle2, CircleCheck } from "lucide-react";
 import { assessmentFields, assessmentSchema, type AssessmentInput } from "@/lib/validation/assessment";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 import { Turnstile } from "@/components/forms/turnstile";
 import { steps, consentFields } from "./fields";
 import { AssessmentReview } from "./assessment-review";
@@ -25,6 +27,7 @@ export function AssessmentForm({
   initial?: Partial<AssessmentInput>;
   initialStep?: number;
 }) {
+  const router = useRouter();
   const [step, setStep] = useState(initialStep);
   const [key] = useState(requestId);
   const [token, setToken] = useState("");
@@ -34,6 +37,10 @@ export function AssessmentForm({
   const [resetKey, setResetKey] = useState(0);
   const [reference, setReference] = useState("");
   const heading = useRef<HTMLHeadingElement>(null);
+  const done = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (reference) done.current?.scrollIntoView({ block: "center" });
+  }, [reference]);
   const form = useForm<AssessmentInput>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
@@ -98,6 +105,11 @@ export function AssessmentForm({
         body: JSON.stringify({ data, idempotencyKey: key, turnstileToken: token, website }),
       });
       const result = await response.json();
+      // A second submission means the first one already landed; send the applicant to their consultation.
+      if (response.status === 409) {
+        router.push("/dashboard/consultations");
+        return;
+      }
       if (!response.ok)
         throw new Error(result.error || "We couldn’t submit your assessment. Please try again.");
       setReference(result.reference);
@@ -112,7 +124,7 @@ export function AssessmentForm({
   }
   if (reference)
     return (
-      <section className="success-panel" role="status">
+      <section className="success-panel" role="status" ref={done}>
         <CheckCircle2 size={44} />
         <h1>Consultation submitted</h1>
         <div className="reference">{reference}</div>
@@ -256,13 +268,16 @@ export function AssessmentForm({
             type="submit"
             disabled={pending || (step === 3 && (!enabled || (challengeRequired && !token)))}
           >
-            {pending
-              ? step === 3
-                ? "Submitting…"
-                : "Saving…"
-              : step === 3
-                ? "Submit consultation"
-                : "Continue"}
+            {pending ? (
+              <>
+                {step === 3 ? "Submitting" : "Saving"}
+                <LoadingDots />
+              </>
+            ) : step === 3 ? (
+              "Submit consultation"
+            ) : (
+              "Continue"
+            )}
             <ArrowRight size={17} />
           </Button>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 export function FileUpload({
   kind,
   category = "payment_receipt",
@@ -72,7 +73,16 @@ export function FileUpload({
         </p>
       )}
       <Button disabled={pending}>
-        {pending ? "Checking and uploading…" : kind === "receipt" ? "Upload receipt" : "Upload document"}
+        {pending ? (
+          <>
+            Checking and uploading
+            <LoadingDots />
+          </>
+        ) : kind === "receipt" ? (
+          "Upload receipt"
+        ) : (
+          "Upload document"
+        )}
       </Button>
     </form>
   );

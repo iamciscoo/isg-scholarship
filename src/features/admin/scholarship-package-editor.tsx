@@ -3,6 +3,7 @@ import { ActionForm } from "@/components/forms/action-form";
 import { type ScholarshipPackage, marketingImageSchema } from "@/lib/validation/opportunities";
 import { getMarketingImages } from "@/server/repositories/marketing-images";
 import { ApprovedImagePicker } from "./approved-image-picker";
+import { PackagePriceField } from "./package-price-field";
 import { saveScholarshipPackage } from "./scholarship-package-actions";
 
 export async function ScholarshipPackageEditor({ value }: { value?: ScholarshipPackage }) {
@@ -41,19 +42,7 @@ export async function ScholarshipPackageEditor({ value }: { value?: ScholarshipP
         What ISG support is included? (optional)
         <textarea name="supportSummary" defaultValue={value?.support_summary} maxLength={3000} />
       </label>
-      <label>
-        ISG package fee (TZS)
-        <input
-          name="packageFee"
-          type="number"
-          min={0}
-          max={100000000}
-          step={1}
-          defaultValue={value?.package_fee_tzs ?? ""}
-          required
-        />
-        <small>Enter the full fee for this package. The consultation is charged separately.</small>
-      </label>
+      <PackagePriceField defaultValue={value?.package_fee_tzs ?? undefined} />
       <div className="form-grid">
         <label>
           University or provider fee (optional)

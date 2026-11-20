@@ -7,6 +7,7 @@ import { useActionState, useId, useState } from "react";
 import { approvedImages } from "@/lib/validation/opportunities";
 import type { MarketingImage } from "@/server/repositories/marketing-images";
 import { uploadMarketingImage, type MarketingUploadState } from "./marketing-actions";
+import { LoadingDots } from "@/components/ui/loading-dots";
 const labels = [
   "Students exploring a university library",
   "Students working together in a library",
@@ -134,7 +135,14 @@ function ImageUpload({ onUploaded }: { onUploaded: (image: MarketingImage) => vo
         </p>
       )}
       <button className="button button-primary" disabled={pending}>
-        {pending ? "Uploading…" : "Upload public image"}
+        {pending ? (
+          <>
+            Uploading
+            <LoadingDots />
+          </>
+        ) : (
+          "Upload public image"
+        )}
       </button>
     </form>
   );

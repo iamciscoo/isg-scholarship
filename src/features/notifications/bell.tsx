@@ -135,7 +135,12 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
                     {new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(n.created_at))}
                   </time>
                   <div>
-                    {n.link && <Link href={n.link}>{t.readMore}</Link>}
+                    {n.link && (
+                      // Opening the details counts as reading it, so mark it before navigating away.
+                      <Link href={n.link} onClick={() => !n.is_read && void markNotificationsRead(n.id)}>
+                        {t.readMore}
+                      </Link>
+                    )}
                     {!n.is_read && (
                       <button onClick={() => read(n.id)} disabled={pending}>
                         {t.markRead}

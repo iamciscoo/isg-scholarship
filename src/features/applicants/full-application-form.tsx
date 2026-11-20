@@ -8,6 +8,7 @@ import {
 } from "@/lib/validation/application-form";
 import { saveFullApplication } from "./application-actions";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 export function FullApplicationForm({ initial }: { initial: Partial<FullApplication> }) {
   const [state, action, pending] = useActionState(saveFullApplication, {});
   const [answers, setAnswers] = useState(initial);
@@ -103,7 +104,14 @@ export function FullApplicationForm({ initial }: { initial: Partial<FullApplicat
           Save draft
         </Button>
         <Button name="intent" value="declare" disabled={pending}>
-          {pending ? "Saving…" : "Submit with declaration"}
+          {pending ? (
+            <>
+              Saving
+              <LoadingDots />
+            </>
+          ) : (
+            "Submit with declaration"
+          )}
         </Button>
       </div>
     </form>

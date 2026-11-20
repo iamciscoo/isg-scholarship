@@ -54,15 +54,17 @@ export default async function Promotions({
                   <p>
                     {p.published ? "Published" : "Private draft"} · {p.destination} · {p.study_level}
                   </p>
-                  <Link className="text-link" href={`/admin/promotions?edit=${p.id}&page=${page}`}>
-                    Edit promotion →
-                  </Link>
-                  <DeleteForm
-                    action={deletePromotion}
-                    id={p.id}
-                    label="Delete promotion"
-                    confirm={`Delete ${p.title}? This cannot be undone.`}
-                  />
+                  <div className="row-actions">
+                    <Link className="text-link" href={`/admin/promotions?edit=${p.id}&page=${page}`}>
+                      Edit promotion →
+                    </Link>
+                    <DeleteForm
+                      action={deletePromotion}
+                      id={p.id}
+                      label="Delete promotion"
+                      confirm={`Delete ${p.title}? This cannot be undone.`}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>

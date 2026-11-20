@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
+import { DeleteForm } from "@/components/forms/delete-form";
+import { deleteContactEnquiry } from "@/features/admin/enquiry-actions";
 export default async function Enquiries({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const { db, user, role } = await requireStaff(true);
   const page = Math.min(10000, Math.max(1, Number.parseInt((await searchParams).page || "1", 10) || 1));
@@ -36,6 +38,7 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
                   <th>Topic</th>
                   <th>Message</th>
                   <th>Received</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
@@ -52,6 +55,14 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
                       {new Date(row.created_at).toLocaleDateString("en-GB", {
                         timeZone: "Africa/Dar_es_Salaam",
                       })}
+                    </td>
+                    <td>
+                      <DeleteForm
+                        action={deleteContactEnquiry}
+                        id={row.id}
+                        label="Delete"
+                        confirm={`Delete the enquiry from ${row.name}? This cannot be undone.`}
+                      />
                     </td>
                   </tr>
                 ))}

@@ -49,9 +49,15 @@ export async function POST(request: Request) {
     p_user: user.id,
   });
   if (result.error) {
-    console.error("assessment_store_failed", { code: result.error.code });
+    // 23505 here is the one-consultation-per-applicant index, not a transient failure.
+    if (result.error.code === "23505")
+      return NextResponse.json(
+        { error: "You already have a consultation. Open your dashboard to continue." },
+        { status: 409 },
+      );
+    console.error("assessment_store_error", result.error.code);
     return NextResponse.json(
-      { error: "We couldn’t save your assessment. Keep this page open and try again." },
+      { error: "We couldn’t save your assessment. Please try again." },
       { status: 500 },
     );
   }

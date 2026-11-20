@@ -2,7 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { dispatchNotifications } from "@/server/services/notifications";
 import { dispatchAdminAlerts } from "@/server/services/admin-alerts";
-import { requestOrigin } from "@/config/site";
+import { publicUrl } from "@/config/site";
 export const maxDuration = 180;
 export async function GET(request: Request) {
   const expected = process.env.CRON_SECRET;
@@ -14,8 +14,7 @@ export async function GET(request: Request) {
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
-    const base = requestOrigin(request.headers);
-    const [email, admin] = await Promise.all([dispatchNotifications(base), dispatchAdminAlerts(base)]);
+    const [email, admin] = await Promise.all([dispatchNotifications(publicUrl), dispatchAdminAlerts(publicUrl)]);
     return NextResponse.json({ email, admin }, { status: email.configured || admin.configured ? 200 : 503 });
   } catch {
     console.error("notification_job_failed");

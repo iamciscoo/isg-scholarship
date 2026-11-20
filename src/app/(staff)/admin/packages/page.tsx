@@ -6,6 +6,7 @@ import { DeleteForm } from "@/components/forms/delete-form";
 import { ScholarshipPackageEditor } from "@/features/admin/scholarship-package-editor";
 import { deleteScholarshipPackage } from "@/features/admin/scholarship-package-actions";
 import type { ScholarshipPackage } from "@/lib/validation/opportunities";
+import { usdLabel } from "@/lib/format";
 
 export default async function ScholarshipPackages({
   searchParams,
@@ -60,17 +61,19 @@ export default async function ScholarshipPackages({
                   <p>
                     {item.package_fee_tzs === null
                       ? "Add a package fee before sharing"
-                      : `TZS ${item.package_fee_tzs.toLocaleString("en")} · ${item.active ? "Available" : "Archived"}`}
+                      : `TZS ${item.package_fee_tzs.toLocaleString("en")} (${usdLabel(item.package_fee_tzs)}) · ${item.active ? "Available" : "Archived"}`}
                   </p>
-                  <Link className="text-link" href={`/admin/packages?edit=${item.id}&page=${page}`}>
-                    Edit package →
-                  </Link>
-                  <DeleteForm
-                    action={deleteScholarshipPackage}
-                    id={item.id}
-                    label="Delete package"
-                    confirm={`Delete ${item.name}? This cannot be undone.`}
-                  />
+                  <div className="row-actions">
+                    <Link className="text-link" href={`/admin/packages?edit=${item.id}&page=${page}`}>
+                      Edit package →
+                    </Link>
+                    <DeleteForm
+                      action={deleteScholarshipPackage}
+                      id={item.id}
+                      label="Delete package"
+                      confirm={`Delete ${item.name}? This cannot be undone.`}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>

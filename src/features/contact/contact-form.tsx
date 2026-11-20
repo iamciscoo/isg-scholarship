@@ -1,6 +1,7 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 import { Turnstile } from "@/components/forms/turnstile";
 import { contactSchema } from "./schema";
 import { site } from "@/config/site";
@@ -23,6 +24,10 @@ export function ContactForm({
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
   const [resetKey, setResetKey] = useState(0);
+  const done = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (sent) done.current?.scrollIntoView({ block: "center" });
+  }, [sent]);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -64,7 +69,7 @@ export function ContactForm({
   }
   if (sent)
     return (
-      <div role="status" className="content-panel">
+      <div role="status" className="content-panel" ref={done}>
         <h2>Your message is with us.</h2>
         <p>
           Your enquiry has been saved securely for ISG to review. We’ll use the email you provided to respond.
@@ -123,7 +128,14 @@ export function ContactForm({
         </p>
       )}
       <Button disabled={!enabled || pending || (challengeRequired && !token)}>
-        {pending ? "Sending…" : "Send enquiry"}
+        {pending ? (
+          <>
+            Sending
+            <LoadingDots />
+          </>
+        ) : (
+          "Send enquiry"
+        )}
       </Button>
     </form>
   );

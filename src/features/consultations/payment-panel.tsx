@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { usdLabel } from "@/lib/format";
 import { FileUpload } from "./file-upload";
 import { ReceiptPreview } from "./receipt-preview";
 export type ConsultationCase = {
@@ -46,7 +47,10 @@ export function PaymentPanel({
   return (
     <section className="workspace-panel payment-panel">
       <span className="status-pill">{labels[record.payment_status]}</span>
-      <h2>Consultation fee · TZS {record.fee_tzs.toLocaleString("en")}</h2>
+      <h2>
+        Consultation fee · TZS {record.fee_tzs.toLocaleString("en")}{" "}
+        <span className="fee-usd">{usdLabel(record.fee_tzs)}</span>
+      </h2>
       <p>
         {record.payment_status === "verified" && !advisor
           ? "ISG will assign an advisor. Then you can request a meeting or send a message."

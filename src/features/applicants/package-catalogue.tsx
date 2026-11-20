@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ActionForm } from "@/components/forms/action-form";
 import { proposalSchema } from "@/lib/validation/opportunities";
+import { usdLabel } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import { selectPackage } from "./tracking-actions";
 
@@ -36,6 +37,7 @@ export async function PackageCatalogue({ applicant }: { applicant: string }) {
                 </p>
                 <p>
                   ISG package fee · <strong>TZS {info.packageFee.toLocaleString("en")}</strong>
+                  <small>{usdLabel(info.packageFee)}</small>
                 </p>
                 {info.supportSummary && <p>{info.supportSummary}</p>}
                 <ActionForm action={selectPackage} label="I’m interested">

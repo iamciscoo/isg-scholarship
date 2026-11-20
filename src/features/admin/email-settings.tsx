@@ -3,6 +3,7 @@ import { useActionState, useState } from "react";
 import { Mail, Plus, X } from "lucide-react";
 import { saveEmails } from "./settings-actions";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 export function EmailSettings({ emails }: { emails: string[] }) {
   const [state, action, pending] = useActionState(saveEmails, {});
   const [recipients, setRecipients] = useState(emails);
@@ -76,7 +77,16 @@ export function EmailSettings({ emails }: { emails: string[] }) {
           {state.message}
         </p>
       )}
-      <Button disabled={pending}>{pending ? "Saving…" : "Save recipients"}</Button>
+      <Button disabled={pending}>
+        {pending ? (
+          <>
+            Saving
+            <LoadingDots />
+          </>
+        ) : (
+          "Save recipients"
+        )}
+      </Button>
     </form>
   );
 }

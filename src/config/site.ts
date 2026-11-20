@@ -4,12 +4,8 @@ export const site = {
   email: "hello@isgscholarship.com",
   url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
 };
-// Public origin the request arrived on. Local jobs reach the app directly, so they keep the configured URL.
-export function requestOrigin(headers: Headers) {
-  const host = headers.get("x-forwarded-host")?.split(",")[0]?.trim();
-  if (!host) return site.url;
-  return `${headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https"}://${host}`;
-}
+// Links in outbound messages must point at the public site, never at a tunnel or preview host the request arrived on.
+export const publicUrl = process.env.PUBLIC_APP_URL || site.url;
 export const navigation = [
   { href: "/about", label: "About ISG" },
   { href: "/services", label: "Our services" },

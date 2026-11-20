@@ -5,6 +5,7 @@ import { PreviousPackageQuote } from "./package-panel";
 import { PackageCatalogue } from "./package-catalogue";
 import { packageStatus } from "./package-status";
 import { applicationStatuses, proposalSchema } from "@/lib/validation/opportunities";
+import { usdLabel } from "@/lib/format";
 export type ApplicationQuery = { page?: string; status?: string };
 export async function ApplicationList({
   query,
@@ -91,6 +92,7 @@ export async function ApplicationList({
                 {p.data.packageFee !== undefined && (
                   <p>
                     ISG package fee · <strong>TZS {p.data.packageFee.toLocaleString("en")}</strong>
+                    <small>{usdLabel(p.data.packageFee)}</small>
                   </p>
                 )}
                 {a.package_state === "paid" && (

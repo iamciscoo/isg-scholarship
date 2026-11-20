@@ -2,6 +2,7 @@
 import { useActionState } from "react";
 import { leadStages, stageLabel } from "@/lib/validation/leads";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 import { reviewLead } from "./actions";
 import type { Lead } from "./types";
 export function ReviewForm({ lead }: { lead: Lead }) {
@@ -36,7 +37,16 @@ export function ReviewForm({ lead }: { lead: Lead }) {
         </p>
       )}
       <div>
-        <Button disabled={pending}>{pending ? "Saving…" : "Save status"}</Button>
+        <Button disabled={pending}>
+          {pending ? (
+            <>
+              Saving
+              <LoadingDots />
+            </>
+          ) : (
+            "Save status"
+          )}
+        </Button>
       </div>
     </form>
   );

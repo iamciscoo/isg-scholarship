@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { Camera, Upload, UserRound } from "lucide-react";
 import { uploadAvatar } from "./avatar-actions";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 export function AvatarForm({ version }: { version: string | null }) {
   const [state, action, pending] = useActionState(uploadAvatar, {});
   const [selection, setSelection] = useState<{ url: string; name: string } | null>(null);
@@ -63,7 +64,14 @@ export function AvatarForm({ version }: { version: string | null }) {
             </Button>
             <Button disabled={!selection || pending}>
               <Upload size={16} />
-              {pending ? "Saving…" : "Save photo"}
+              {pending ? (
+                <>
+                  Saving
+                  <LoadingDots />
+                </>
+              ) : (
+                "Save photo"
+              )}
             </Button>
           </div>
           {selection && <span className="avatar-file-name">{selection.name}</span>}

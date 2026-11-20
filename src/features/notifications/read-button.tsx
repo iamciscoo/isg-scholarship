@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { markNotificationsRead } from "./actions";
+import { LoadingDots } from "@/components/ui/loading-dots";
 export function NotificationReadButton({ id = null }: { id?: string | null }) {
   const [pending, start] = useTransition();
   const [error, setError] = useState(false);
@@ -27,7 +28,16 @@ export function NotificationReadButton({ id = null }: { id?: string | null }) {
           })
         }
       >
-        {pending ? "Updating…" : id ? "Mark as read" : "Mark all as read"}
+        {pending ? (
+          <>
+            Updating
+            <LoadingDots />
+          </>
+        ) : id ? (
+          "Mark as read"
+        ) : (
+          "Mark all as read"
+        )}
       </button>
       {error && <span role="alert">Please try again.</span>}
     </>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { z } from "zod";
+import { usdLabel } from "@/lib/format";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { ActionForm } from "@/components/forms/action-form";
@@ -85,9 +86,14 @@ export async function ApplicationDetail({
             <div>
               <dt>ISG package fee</dt>
               <dd>
-                {p.data.packageFee === undefined
-                  ? "Ask your advisor"
-                  : `TZS ${p.data.packageFee.toLocaleString("en")}`}
+                {p.data.packageFee === undefined ? (
+                  "Ask your advisor"
+                ) : (
+                  <>
+                    TZS {p.data.packageFee.toLocaleString("en")}
+                    <small>{usdLabel(p.data.packageFee)}</small>
+                  </>
+                )}
               </dd>
             </div>
             <div>

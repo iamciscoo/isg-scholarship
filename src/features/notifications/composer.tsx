@@ -1,6 +1,7 @@
 "use client";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 import { publishNotification } from "./actions";
 export function NotificationComposer({
   recipients,
@@ -90,7 +91,14 @@ export function NotificationComposer({
         </p>
       )}
       <Button disabled={pending || Boolean(state.message)}>
-        {pending ? "Publishing…" : "Publish notification"}
+        {pending ? (
+          <>
+            Publishing
+            <LoadingDots />
+          </>
+        ) : (
+          "Publish notification"
+        )}
       </Button>
     </form>
   );

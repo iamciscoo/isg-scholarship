@@ -11,7 +11,8 @@ Never commit real values. Copy them from the local `.env*.local` files or the ha
 | `NEXT_PUBLIC_SUPABASE_URL` | Public | `https://mfqkzausvpplknvyhywg.supabase.co` | `authConfigured()` → login, session refresh in `src/proxy.ts`. Without it `/login` renders `configured:false` and no account can sign in. |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Public | `sb_publishable_…` | Same gate. Shipped to the browser; RLS is the only thing protecting data behind it. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server only | `sb_secret_…` | `intakeConfigured()` / `contactConfigured()`, `src/lib/supabase/admin.ts`. Bypasses RLS — never prefix with `NEXT_PUBLIC_`. Missing = forms and admin writes silently refuse. |
-| `NEXT_PUBLIC_SITE_URL` | Public | `https://www.isgscholarship.org` | Canonical origin. Used by the same-origin check in `src/lib/security/request.ts` (CSRF guard), email templates, and alert links. Wrong value = form posts rejected as cross-origin. |
+| `NEXT_PUBLIC_SITE_URL` | Public | `https://www.isgscholarship.org` | Canonical origin. Used by the same-origin check in `src/lib/security/request.ts` (CSRF guard). Wrong value = form posts rejected as cross-origin. |
+| `PUBLIC_APP_URL` | Server only | `https://www.isgscholarship.org` | Origin used in outbound notification links (`src/config/site.ts`). Set it when the app is served behind a tunnel or preview host, otherwise WhatsApp and email links carry the tunnel domain. Falls back to `NEXT_PUBLIC_SITE_URL`. |
 
 ## 2. Production hardening (should not be left at the dev default)
 

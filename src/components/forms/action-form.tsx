@@ -1,6 +1,7 @@
 "use client";
-import { useActionState } from "react";
+import { useEffect, useRef, useActionState } from "react";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 export type ActionState = { error?: string; message?: string };
 export function ActionForm({
   action,
@@ -20,8 +21,13 @@ export function ActionForm({
   };
 }) {
   const [state, submit, pending] = useActionState(action, {});
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (state.message || state.error) formRef.current?.scrollIntoView({ block: "center" });
+  }, [state]);
   return (
     <form
+      ref={formRef}
       action={submit}
       className={className}
       aria-busy={pending}
@@ -43,7 +49,14 @@ export function ActionForm({
       {decisions ? (
         <div className="workspace-action-row">
           <Button type="submit" disabled={pending} name={decisions.name} value={decisions.primary.value}>
-            {pending ? "Saving…" : decisions.primary.label}
+            {pending ? (
+              <>
+                Saving
+                <LoadingDots />
+              </>
+            ) : (
+              decisions.primary.label
+            )}
           </Button>
           <Button
             type="submit"
@@ -56,7 +69,16 @@ export function ActionForm({
           </Button>
         </div>
       ) : (
-        <Button disabled={pending}>{pending ? "Saving…" : label}</Button>
+        <Button disabled={pending}>
+          {pending ? (
+            <>
+              Saving
+              <LoadingDots />
+            </>
+          ) : (
+            label
+          )}
+        </Button>
       )}
     </form>
   );

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { usdLabel } from "@/lib/format";
 
 export async function PreviousPackageQuote({ user }: { user: string }) {
   const db = await createClient();
@@ -17,9 +18,17 @@ export async function PreviousPackageQuote({ user }: { user: string }) {
         <h2>{data.package_name}</h2>
         <p>{data.package_description}</p>
         <p>Accepted {new Date(data.accepted_at).toLocaleDateString("en-GB")}</p>
-        <p>Original fee · TZS {data.gross_tzs.toLocaleString("en")}</p>
-        <p>Credit on this quote · TZS {data.consultation_credit_tzs.toLocaleString("en")}</p>
-        <strong>Agreed fee after credit · TZS {data.remaining_tzs.toLocaleString("en")}</strong>
+        <p>
+          Original fee · TZS {data.gross_tzs.toLocaleString("en")} <small>{usdLabel(data.gross_tzs)}</small>
+        </p>
+        <p>
+          Credit on this quote · TZS {data.consultation_credit_tzs.toLocaleString("en")}{" "}
+          <small>{usdLabel(data.consultation_credit_tzs)}</small>
+        </p>
+        <strong>
+          Agreed fee after credit · TZS {data.remaining_tzs.toLocaleString("en")}{" "}
+          <small>{usdLabel(data.remaining_tzs)}</small>
+        </strong>
       </details>
     </section>
   );
