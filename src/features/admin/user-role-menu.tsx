@@ -6,7 +6,6 @@ import { setUserRole } from "./settings-actions";
 
 const roles = [
   ["admin", "Admin"],
-  ["advisor", "Advisor"],
   ["applicant", "Applicant"],
 ] as const;
 

@@ -24,12 +24,10 @@ export function FileUpload({
   kind,
   category = "payment_receipt",
   application,
-  allowWhatsApp = true,
 }: {
   kind: "receipt" | "document";
   category?: string;
   application?: string;
-  allowWhatsApp?: boolean;
 }) {
   const [pending, setPending] = useState(false),
     [message, setMessage] = useState("");
@@ -39,7 +37,6 @@ export function FileUpload({
       className="form-stack"
       onSubmit={async (e) => {
         e.preventDefault();
-        const shareReceipt = new FormData(e.currentTarget).get("shareReceipt");
         const file = ref.current?.files?.[0];
         if (!file) return;
         if (file.size > 8 * 1024 * 1024) {
@@ -54,7 +51,6 @@ export function FileUpload({
           data.set("kind", kind);
           data.set("category", category);
           if (application) data.set("application", application);
-          if (shareReceipt === "on") data.set("shareReceipt", "on");
           const r = await fetch("/api/case-files", { method: "POST", body: data });
           // Gateway errors (413 and friends) are not JSON, so read text and parse defensively.
           const text = await r.text();
@@ -91,12 +87,10 @@ export function FileUpload({
         />
       </label>
       <p>JPEG, PNG, WebP or PDF, up to 8 MB.</p>
-      {kind === "receipt" && allowWhatsApp && (
-        <label className="checkbox-field">
-          <input type="checkbox" name="shareReceipt" disabled={pending} />
-          Share this redacted receipt in ISG’s private staff WhatsApp group. I’ve permanently removed account
-          numbers and sensitive details from this copy.
-        </label>
+      {kind === "receipt" && (
+        <p className="field-help">
+          Your receipt is sent automatically to ISG’s private staff WhatsApp group for verification.
+        </p>
       )}
       {message && (
         <p role="alert" className="notice notice-error">

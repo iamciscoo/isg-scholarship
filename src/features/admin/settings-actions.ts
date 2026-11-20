@@ -25,7 +25,7 @@ export async function saveEmails(
 export async function assignRole(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireStaff(true);
   const input = z
-    .object({ user: z.uuid(), role: z.enum(["applicant", "advisor", "admin"]) })
+    .object({ user: z.uuid(), role: z.enum(["applicant", "admin"]) })
     .safeParse({ user: fd.get("user"), role: fd.get("role") });
   if (!input.success) return { error: "Choose a role for an active account." };
   const { user, role } = input.data;
@@ -37,7 +37,7 @@ export async function assignRole(_: ActionState, fd: FormData): Promise<ActionSt
   revalidatePath("/admin/settings");
   revalidatePath("/admin/users");
   return {
-    message: `Saved as ${role === "admin" ? "Admin" : role === "advisor" ? "Advisor" : "Applicant"}.`,
+    message: `Saved as ${role === "admin" ? "Admin" : "Applicant"}.`,
   };
 }
 

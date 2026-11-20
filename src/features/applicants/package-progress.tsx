@@ -89,7 +89,7 @@ export async function PackageProgress({
                   {state === "receipt_rejected" && receipt.data?.review_note && (
                     <p>{receipt.data.review_note}</p>
                   )}
-                  <FileUpload kind="receipt" application={id} allowWhatsApp={!testPackage} />
+                  <FileUpload kind="receipt" application={id} />
                 </>
               )}
             </>

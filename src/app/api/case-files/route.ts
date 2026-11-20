@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       ["verified", "pending_verification"].includes(record.payment_status)
     )
       throw Error("Your payment is already submitted.");
-    let shareReceipt = kind === "receipt" && fd.get("shareReceipt") === "on";
+    let shareReceipt = kind === "receipt";
     if (application.data) {
       const { data: target } = await db
         .from("study_applications")

@@ -77,7 +77,7 @@ export default async function Settings() {
       </section>
       <section className="workspace-panel">
         <h2>Account roles</h2>
-        <p>Advisors work with assigned applicants. Admins also manage payments, packages and team access.</p>
+        <p>Admins advise applicants and also manage payments, packages and team access. Everyone else is an applicant.</p>
         <ul className="account-role-list">
           {accounts.data
             .filter((a: { role: string }) => a.role !== "applicant")
@@ -91,7 +91,6 @@ export default async function Settings() {
                     Role
                     <select name="role" defaultValue={a.role} aria-label={`Role for ${a.email}`}>
                       <option value="applicant">Applicant</option>
-                      <option value="advisor">Advisor</option>
                       <option value="admin">Admin</option>
                     </select>
                   </label>
