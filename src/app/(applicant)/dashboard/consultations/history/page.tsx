@@ -62,7 +62,7 @@ export default async function History({
                   </p>
                   {item.status === "scheduled" && (
                     <a className="text-link" href={item.meet_url} rel="noopener noreferrer" target="_blank">
-                      Join Google Meet ↗
+                      Join meeting ↗
                     </a>
                   )}
                   <p>{item.note}</p>

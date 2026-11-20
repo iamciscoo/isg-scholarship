@@ -39,12 +39,13 @@ export async function scheduleMeeting(_: ActionState, fd: FormData): Promise<Act
       start: z.iso.datetime(),
       end: z.iso.datetime(),
       zone: z.string().min(1).max(80),
-      url: z.string().regex(/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/),
+      url: z
+        .url()
+        .refine((link) => link.startsWith("https://"), "Use an https link"),
       request: z.union([z.uuid(), z.literal("")]),
     })
     .safeParse(Object.fromEntries(fd));
-  if (!parsed.success)
-    return { error: "Choose a date and paste a valid Google Meet link created by your account." };
+  if (!parsed.success) return { error: "Choose a date and paste a valid https meeting link." };
   const x = parsed.data;
   const { error } = await db.rpc("schedule_consultation_meeting", {
     p_user: x.user,

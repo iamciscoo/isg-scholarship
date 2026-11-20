@@ -47,10 +47,6 @@ export async function CaseSupport({
       </p>
       <section className="workspace-panel">
         <h2>{staff ? "Advisor meetings" : `Meet with ${advisor}`}</h2>
-        <p>
-          Additional requests are included in your consultation fee. ISG confirms availability before
-          scheduling.
-        </p>
         {staff ? (
           <MeetingScheduler user={record.user_id} requests={requests.data || []} />
         ) : (
@@ -123,7 +119,7 @@ export async function CaseSupport({
                 </p>
                 {m.status === "scheduled" && (
                   <a className="text-link" href={m.meet_url} target="_blank" rel="noopener noreferrer">
-                    Join Google Meet ↗
+                    Join meeting ↗
                   </a>
                 )}
                 {m.note && <p>{m.note}</p>}

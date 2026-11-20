@@ -24,7 +24,7 @@ export function MeetingScheduler({
   requests: { id: string; note: string; status: string }[];
 }) {
   return (
-    <ActionForm action={submitMeeting} label="Schedule Google Meet">
+    <ActionForm action={submitMeeting} label="Schedule meeting">
       <input type="hidden" name="user" value={user} />
       <label>
         Start time (your local time)
@@ -41,12 +41,12 @@ export function MeetingScheduler({
         </select>
       </label>
       <label>
-        Google Meet link
+        Meeting link
         <input name="url" type="url" required placeholder="https://meet.google.com/abc-defg-hij" />
       </label>
       <p>
-        Create a real meeting in Google Meet or Calendar, then paste its link. ISG does not create a Google
-        meeting automatically.
+        Create the meeting in Google Meet, Zoom, Teams or any other service, then paste its https link. ISG does
+        not create the meeting automatically.
       </p>
       <label>
         Related request

@@ -294,9 +294,28 @@ p {
 
 /* iOS zooms the whole page when a focused field is under 16px. */
 @media (max-width: 760px) {
-  input,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
   select,
-  textarea {
-    font-size: 16px;
+  textarea,
+  .field input,
+  .field select,
+  .field textarea,
+  .input {
+    font-size: 16px !important;
+  }
+  .field input,
+  .field select {
+    min-width: 0;
+    max-width: 100%;
+  }
+  /* iOS date/time widgets keep an intrinsic width that overflows the card. */
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"] {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
   }
 }
