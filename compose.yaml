@@ -12,6 +12,13 @@ services:
     env_file:
       - path: .env.local
         required: false
+      # Optional local integration secrets. Without these the delivery job reports itself unconfigured.
+      - path: .env.integrations.local
+        required: false
+      - path: .env.green-api.local
+        required: false
+      - path: .env.sender-testing.local
+        required: false
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3002}

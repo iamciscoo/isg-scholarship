@@ -16,8 +16,8 @@ export async function GET(request: Request) {
   try {
     const [email, admin] = await Promise.all([dispatchNotifications(publicUrl), dispatchAdminAlerts(publicUrl)]);
     return NextResponse.json({ email, admin }, { status: email.configured || admin.configured ? 200 : 503 });
-  } catch {
-    console.error("notification_job_failed");
+  } catch (error) {
+    console.error("notification_job_failed", error instanceof Error ? error.message : "unknown");
     return NextResponse.json({ error: "Delivery job unavailable" }, { status: 503 });
   }
 }
