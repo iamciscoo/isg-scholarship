@@ -76,7 +76,7 @@ export async function ScholarshipPackageEditor({ value }: { value?: ScholarshipP
       <label>
         {value?.private_image_id ? "Replace package image (optional)" : "Upload package image (optional)"}
         <input name="privateImage" type="file" accept="image/jpeg,image/png,image/webp" />
-        <small>JPEG, PNG or WebP up to 3 MB. Shared with the applicant when you send the package.</small>
+        <small>JPEG, PNG or WebP up to 5 MB. Shared with the applicant when you send the package.</small>
       </label>
       <details className="package-gallery">
         <summary>{value?.private_image_id ? "Switch to a gallery image" : "Choose a gallery image"}</summary>

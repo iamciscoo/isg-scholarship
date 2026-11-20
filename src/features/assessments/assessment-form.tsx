@@ -181,9 +181,7 @@ export function AssessmentForm({
                     aria-describedby={`${field.name}-error`}
                     defaultValue=""
                   >
-                    <option value="" disabled>
-                      Select an option
-                    </option>
+                    <option value="">Select an option</option>
                     {field.options.map((option) => (
                       <option key={option}>{option}</option>
                     ))}

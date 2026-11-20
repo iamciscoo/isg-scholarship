@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth/session";
 import { adminClient } from "@/lib/supabase/admin";
+import { UserRoleMenu } from "@/features/admin/user-role-menu";
 
 const date = (value: string | null | undefined) =>
   value
@@ -86,6 +87,7 @@ export default async function AdminUsers() {
                   <th>Applications</th>
                   <th>Joined</th>
                   <th>Last sign-in</th>
+                  <th />
                 </tr>
               </thead>
               <tbody>
@@ -122,6 +124,9 @@ export default async function AdminUsers() {
                       <td>{applicationCount.get(user.id) || 0}</td>
                       <td>{date(profile?.created_at || user.created_at)}</td>
                       <td>{date(user.last_sign_in_at)}</td>
+                      <td>
+                        <UserRoleMenu id={user.id} role={role} />
+                      </td>
                     </tr>
                   );
                 })}

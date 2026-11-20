@@ -79,8 +79,10 @@ export default async function Settings() {
         <h2>Account roles</h2>
         <p>Advisors work with assigned applicants. Admins also manage payments, packages and team access.</p>
         <ul className="account-role-list">
-          {accounts.data.map((a: { id: string; email: string; role: string; status: string }) => (
-            <li key={a.id}>
+          {accounts.data
+            .filter((a: { role: string }) => a.role !== "applicant")
+            .map((a: { id: string; email: string; role: string; status: string }) => (
+              <li key={a.id}>
               <strong>{a.email}</strong>
               {a.status === "active" ? (
                 <ActionForm action={assignRole} label="Save role" className="account-role-form">

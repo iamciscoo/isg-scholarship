@@ -20,9 +20,9 @@ export async function uploadMarketingImage(
     !label.success ||
     !(file instanceof File) ||
     !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-    file.size > 3 * 1024 * 1024
+    file.size > 5 * 1024 * 1024
   )
-    return { error: "Choose a JPEG, PNG or WebP under 3 MB and give it a short public label." };
+    return { error: "Choose a JPEG, PNG or WebP under 5 MB and give it a short public label." };
   const admin = adminClient();
   const rate = await admin.rpc("consume_rate_limit", {
     p_key: `marketing-upload:${user.id}`,

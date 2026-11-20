@@ -38,9 +38,7 @@ export function NotificationComposer({
         <label>
           Recipient
           <select name="recipient" required defaultValue="" disabled={Boolean(state.message)}>
-            <option value="" disabled>
-              Select an account
-            </option>
+            <option value="">Select an account</option>
             {recipients.map((p) => (
               <option value={p.id} key={p.id}>
                 {p.name}

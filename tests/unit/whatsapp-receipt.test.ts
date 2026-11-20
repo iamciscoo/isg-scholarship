@@ -7,15 +7,18 @@ function fixture(allowed: boolean) {
   const download = vi
     .fn()
     .mockResolvedValue({ data: new Blob(["%PDF-test-only"], { type: "application/pdf" }) });
+  const createSignedUrl = vi.fn().mockResolvedValue({
+    data: { signedUrl: "https://signed.example/receipt" },
+  });
   const db = {
     rpc: vi.fn().mockReturnValue({
       maybeSingle: async () => ({
         data: allowed ? { storage_path: "approved.pdf", mime: "application/pdf" } : null,
       }),
     }),
-    storage: { from: vi.fn().mockReturnValue({ download }) },
+    storage: { from: vi.fn().mockReturnValue({ download, createSignedUrl }) },
   };
-  return { db: db as unknown as Parameters<typeof sendReceiptAttachment>[0], download };
+  return { db: db as unknown as Parameters<typeof sendReceiptAttachment>[0], download, createSignedUrl };
 }
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -37,12 +40,27 @@ it("uploads the approved receipt as multipart media for the authorized group", a
   expect(body.get("file").name).toBe("ISG-payment-receipt.pdf");
 });
 
-it("falls back to the secure link when attachment permission is absent or the provider refuses the file", async () => {
-  const fetcher = vi.fn().mockResolvedValue(new Response(null, { status: 415 }));
+it("skips the attachment when the receipt is not shared with the group", async () => {
+  const fetcher = vi.fn();
   vi.stubGlobal("fetch", fetcher);
   const denied = fixture(false);
   expect(await sendReceiptAttachment(denied.db, id, group, "")).toBeNull();
   expect(denied.download).not.toHaveBeenCalled();
   expect(fetcher).not.toHaveBeenCalled();
-  expect(await sendReceiptAttachment(fixture(true).db, id, group, "")).toBeNull();
+});
+
+it("falls back to a five-minute signed link when the media upload is refused", async () => {
+  vi.stubEnv("GREEN_API_INSTANCE_ID", "123456");
+  vi.stubEnv("GREEN_API_TOKEN", "fixture-token");
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce(new Response(null, { status: 415 }))
+    .mockResolvedValueOnce(Response.json({ idMessage: "link-message" }));
+  vi.stubGlobal("fetch", fetcher);
+  const { db, createSignedUrl } = fixture(true);
+  expect((await sendReceiptAttachment(db, id, group, "Open ISG to verify."))?.ok).toBe(true);
+  expect(createSignedUrl).toHaveBeenCalledWith("approved.pdf", 300);
+  const [url, { body }] = fetcher.mock.calls[1];
+  expect(url).toBe("https://7107.api.greenapi.com/waInstance123456/sendFileByUrl/fixture-token");
+  expect(JSON.parse(body).urlFile).toBe("https://signed.example/receipt");
 });

@@ -291,3 +291,12 @@ p {
     transition: none !important;
   }
 }
+
+/* iOS zooms the whole page when a focused field is under 16px. */
+@media (max-width: 760px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

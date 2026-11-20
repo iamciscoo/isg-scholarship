@@ -30,7 +30,7 @@ export function AvatarForm({ version }: { version: string | null }) {
         </div>
         <div className="avatar-editor-copy">
           <h2>Your profile photo</h2>
-          <p>Choose a clear photo of yourself. JPEG, PNG or WebP, up to 3 MB.</p>
+          <p>Choose a clear photo of yourself. JPEG, PNG or WebP, up to 5 MB.</p>
           <input
             ref={input}
             className="sr-only"
@@ -48,9 +48,9 @@ export function AvatarForm({ version }: { version: string | null }) {
               }
               setSelection(null);
               if (!file) return;
-              if (file.size > 3145728 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+              if (file.size > 5242880 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
                 event.target.value = "";
-                setError("Choose a JPEG, PNG or WebP image under 3 MB.");
+                setError("Choose a JPEG, PNG or WebP image under 5 MB.");
                 return;
               }
               objectUrl.current = URL.createObjectURL(file);

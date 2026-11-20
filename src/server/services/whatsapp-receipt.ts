@@ -32,10 +32,31 @@ export async function sendReceiptAttachment(
   body.set("file", contents, name);
   body.set("fileName", name);
   body.set("caption", caption);
-  const response = await fetch(
-    `https://media.green-api.com/waInstance${process.env.GREEN_API_INSTANCE_ID}/sendFileByUpload/${process.env.GREEN_API_TOKEN}`,
-    { method: "POST", body, redirect: "error", signal },
-  );
-  // Only an explicit rejection can fall back to a link. A timeout may already have queued the attachment.
-  return [400, 404, 405, 415, 422].includes(response.status) ? null : response;
+  // Direct upload is preferred, but the media host drops connections from some networks.
+  try {
+    const uploaded = await fetch(
+      `https://media.green-api.com/waInstance${process.env.GREEN_API_INSTANCE_ID}/sendFileByUpload/${process.env.GREEN_API_TOKEN}`,
+      { method: "POST", body, redirect: "error", signal },
+    );
+    if (uploaded.ok) return uploaded;
+  } catch {
+    /* fall through to the signed-link send */
+  }
+  // Fallback: a five-minute signed link keeps the private object reachable for the provider only.
+  const signed = await db.storage.from("case-files").createSignedUrl(receipt.data.storage_path, 300);
+  if (signed.error || !signed.data?.signedUrl) return null;
+  try {
+    const sent = await fetch(
+      `https://7107.api.greenapi.com/waInstance${process.env.GREEN_API_INSTANCE_ID}/sendFileByUrl/${process.env.GREEN_API_TOKEN}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chatId: group, urlFile: signed.data.signedUrl, fileName: name, caption }),
+        signal: AbortSignal.timeout(20000),
+      },
+    );
+    return sent.ok ? sent : null;
+  } catch {
+    return null;
+  }
 }

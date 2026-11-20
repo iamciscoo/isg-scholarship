@@ -20,7 +20,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   return new Response(data, {
     headers: {
       "Content-Type": "image/webp",
-      "Cache-Control": "public, max-age=3600, immutable",
+      "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800, immutable",
       "X-Content-Type-Options": "nosniff",
     },
   });

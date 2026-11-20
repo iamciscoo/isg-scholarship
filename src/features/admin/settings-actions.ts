@@ -35,7 +35,15 @@ export async function assignRole(_: ActionState, fd: FormData): Promise<ActionSt
   if (error?.message === "Account unavailable") return { error: "This account is no longer active." };
   if (error) return { error: "The role could not be saved. Refresh the page and try again." };
   revalidatePath("/admin/settings");
+  revalidatePath("/admin/users");
   return {
     message: `Saved as ${role === "admin" ? "Admin" : role === "advisor" ? "Advisor" : "Applicant"}.`,
   };
+}
+
+// Form-friendly wrapper for the per-row menu on the users directory.
+export async function setUserRole(fd: FormData) {
+  const result = await assignRole({}, fd);
+  revalidatePath("/admin/users");
+  return result;
 }

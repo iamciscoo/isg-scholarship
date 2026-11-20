@@ -2,6 +2,24 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
+
+// Large phone photos exceed gateway body limits, so shrink them in the browser before upload.
+async function shrink(file: File) {
+  if (!file.type.startsWith("image/") || file.size < 1_500_000) return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 1800 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+    if (!blob || blob.size >= file.size) return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+  } catch {
+    return file;
+  }
+}
 export function FileUpload({
   kind,
   category = "payment_receipt",
@@ -32,14 +50,27 @@ export function FileUpload({
         setMessage("");
         try {
           const data = new FormData();
-          data.set("file", file);
+          data.set("file", await shrink(file));
           data.set("kind", kind);
           data.set("category", category);
           if (application) data.set("application", application);
           if (shareReceipt === "on") data.set("shareReceipt", "on");
           const r = await fetch("/api/case-files", { method: "POST", body: data });
-          const result = await r.json();
-          if (!r.ok) throw Error(result.error || "Upload failed.");
+          // Gateway errors (413 and friends) are not JSON, so read text and parse defensively.
+          const text = await r.text();
+          let result: { error?: string } = {};
+          try {
+            result = JSON.parse(text);
+          } catch {
+            /* keep the generic message below */
+          }
+          if (!r.ok)
+            throw Error(
+              result.error ||
+                (r.status === 413
+                  ? "That file is too large. Choose a smaller photo."
+                  : "Upload failed. Please try again."),
+            );
           window.location.reload();
         } catch (err) {
           setMessage(err instanceof Error ? err.message : "Upload failed. Please try again.");

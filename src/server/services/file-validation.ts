@@ -58,8 +58,8 @@ export async function validateCaseFile(file: File) {
     return {
       data: await image
         .rotate()
-        .resize({ width: 2400, height: 3200, fit: "inside", withoutEnlargement: true })
-        .webp({ quality: 90 })
+        .resize({ width: 2000, height: 2600, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: 85 })
         .toBuffer(),
       mime: "image/webp",
       extension: "webp",
