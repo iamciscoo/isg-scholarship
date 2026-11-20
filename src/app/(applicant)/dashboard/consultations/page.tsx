@@ -34,6 +34,7 @@ export default async function Consultations() {
   ]);
   if (payment.error || files.error || instructions.error || advisor.error)
     throw Error("Consultation payment unavailable");
+  const paid = payment.data?.payment_status === "verified";
   return (
     <Workspace role={role} email={user.email || ""} active="consultations">
       <div className="workspace-page-heading">
@@ -50,7 +51,7 @@ export default async function Consultations() {
           </Button>
         )}
       </div>
-      {payment.data && (
+      {payment.data && !paid && (
         <PaymentPanel
           record={payment.data}
           files={files.data || []}
@@ -59,6 +60,14 @@ export default async function Consultations() {
         />
       )}
       {payment.data && <CaseSupport record={payment.data} advisor={advisor.data} />}
+      {payment.data && paid && (
+        <PaymentPanel
+          record={payment.data}
+          files={files.data || []}
+          instructions={instructions.data || ""}
+          advisor={advisor.data}
+        />
+      )}
       {draft.data && (
         <section className="workspace-panel consultation-draft">
           <span className="status-pill">In progress</span>

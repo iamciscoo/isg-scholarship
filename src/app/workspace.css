@@ -196,6 +196,16 @@ td small {
   min-width: 0;
   max-width: 100%;
 }
+.case-history {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  color: var(--muted);
+}
+.case-history a {
+  text-transform: capitalize;
+}
 .workspace-top form {
   display: inline;
 }

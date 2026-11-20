@@ -38,7 +38,7 @@ export async function CaseSupport({
   if (messages.error || requests.error || meetings.error) throw Error("Consultation support unavailable");
   return (
     <>
-      <p className="workspace-action-row">
+      <p className="case-history">
         Full history:
         {["messages", "requests", "meetings"].map((type) => (
           <Link
