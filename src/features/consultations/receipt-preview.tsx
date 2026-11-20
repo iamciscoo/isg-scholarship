@@ -11,7 +11,7 @@ export function ReceiptPreview({ id, mime }: { id: string; mime: string }) {
       ) : (
         <iframe src={preview} title="Payment receipt PDF preview" loading="lazy" />
       )}
-      <div className="workspace-action-row">
+      <div className="receipt-links">
         <Link href={preview} target="_blank" rel="noopener" className="text-link">
           Open receipt in a new tab
         </Link>

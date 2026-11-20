@@ -102,6 +102,21 @@
   width: 100%;
   min-height: min(65vh, 600px);
 }
+.receipt-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 0;
+  max-width: 100%;
+}
+.receipt-links a {
+  overflow-wrap: anywhere;
+}
+.receipt-links a + a {
+  margin-left: 20px;
+  padding-left: 20px;
+  border-left: 1px solid var(--line);
+}
 .case-file-list {
   list-style: none;
   padding: 0;
