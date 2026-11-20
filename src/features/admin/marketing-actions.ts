@@ -20,9 +20,9 @@ export async function uploadMarketingImage(
     !label.success ||
     !(file instanceof File) ||
     !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-    file.size > 2 * 1024 * 1024
+    file.size > 3 * 1024 * 1024
   )
-    return { error: "Choose a JPEG, PNG or WebP under 2 MB and give it a short public label." };
+    return { error: "Choose a JPEG, PNG or WebP under 3 MB and give it a short public label." };
   const admin = adminClient();
   const rate = await admin.rpc("consume_rate_limit", {
     p_key: `marketing-upload:${user.id}`,
@@ -57,6 +57,26 @@ export async function uploadMarketingImage(
     return { error: "This image could not be read. Please choose another image." };
   }
 }
+export async function deleteMarketingImage(_: ActionState, fd: FormData): Promise<ActionState> {
+  const { db } = await requireStaff(true);
+  const id = z.uuid().safeParse(fd.get("id"));
+  if (!id.success) return { error: "Choose an image to remove." };
+  const result = await db.rpc("delete_marketing_image", { p_id: id.data });
+  if (result.error) {
+    const text = result.error.message || "";
+    return {
+      error: /^(This image|Image not found)/.test(text)
+        ? text
+        : "The image could not be removed. Refresh and try again.",
+    };
+  }
+  if (typeof result.data === "string")
+    await adminClient().storage.from("marketing-images").remove([result.data]);
+  revalidatePath("/admin/website");
+  revalidatePath("/");
+  return { message: "Image removed." };
+}
+
 export async function saveHomepageImage(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireStaff(true);
   const image = marketingImageSchema.safeParse(fd.get("image"));

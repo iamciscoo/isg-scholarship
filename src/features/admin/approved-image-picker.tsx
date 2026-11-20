@@ -128,7 +128,7 @@ function ImageUpload({ onUploaded }: { onUploaded: (image: MarketingImage) => vo
         Image file
         <input type="file" name="file" accept="image/jpeg,image/png,image/webp" required disabled={pending} />
       </label>
-      <small>JPEG, PNG or WebP, up to 2 MB. Location metadata is removed.</small>
+      <small>JPEG, PNG or WebP, up to 3 MB. Location metadata is removed and the file is saved as WebP.</small>
       {state.error && (
         <p role="alert" className="notice notice-error">
           {state.error}

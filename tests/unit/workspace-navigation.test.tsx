@@ -35,12 +35,15 @@ it("shares ordered applicant links and one current page with the mobile menu", (
   ]);
   expect(account).toEqual({ name: "fixture@example.invalid", avatar: null });
 });
-it("keeps all admin destinations and puts profile after the first section", () => {
-  mock.pathname.mockReturnValue("/admin/inbox");
+it("keeps all admin destinations, puts users first and applications above payments", () => {
+  mock.pathname.mockReturnValue("/admin/users");
   const { links } = render("admin");
   expect(links.slice(0, 2).map((l: { id: string }) => l.id)).toEqual(["overview", "profile"]);
-  expect(links.map((l: { href: string }) => l.href)).toContain("/admin/inbox");
-  expect(links.map((l: { href: string }) => l.href)).toContain("/admin/settings");
+  const hrefs = links.map((l: { href: string }) => l.href);
+  expect(hrefs).toContain("/admin/users");
+  expect(hrefs).toContain("/admin/settings");
+  expect(hrefs).not.toContain("/admin/inbox");
+  expect(hrefs.indexOf("/admin/applications")).toBeLessThan(hrefs.indexOf("/admin/payments"));
   expect(links.filter((l: { current: boolean }) => l.current)).toHaveLength(1);
 });
 it("excludes administrator menus for advisors", () => {

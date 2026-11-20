@@ -14,8 +14,8 @@ export async function uploadAvatar(_previous: State, fd: FormData): Promise<Stat
   });
   if (rate.error || !rate.data) return { error: "Please wait 15 minutes before uploading another photo." };
   const file = fd.get("avatar");
-  if (!(file instanceof File) || file.size === 0 || file.size > 2 * 1024 * 1024)
-    return { error: "Choose a JPEG, PNG or WebP image under 2 MB." };
+  if (!(file instanceof File) || file.size === 0 || file.size > 3 * 1024 * 1024)
+    return { error: "Choose a JPEG, PNG or WebP image under 3 MB." };
   let image: Buffer;
   try {
     const input = sharp(Buffer.from(await file.arrayBuffer()), {

@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, ClipboardList, Home, Mail, CircleCheck, UserRound, ImageIcon, LogOut } from "lucide-react";
+import { Bell, ClipboardList, Home, Mail, CircleCheck, UserRound, Users, ImageIcon, LogOut } from "lucide-react";
 import { LanguageSelector } from "./language-selector";
 import { NotificationBell } from "@/features/notifications/bell";
 import { signOut } from "@/features/auth/actions";
@@ -49,7 +49,8 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
 
         ...(role === "admin"
           ? [
-              { href: "/admin/inbox", label: "Your notifications", icon: Bell, id: "inbox" },
+              { href: "/admin/users", label: "Users", icon: Users, id: "users" },
+              { href: "/admin/applications", label: "Applications", icon: ClipboardList, id: "applications" },
               { href: "/admin/payments", label: "Payments", icon: ClipboardList, id: "payments" },
               {
                 href: "/admin/packages",
@@ -69,8 +70,7 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
               { href: "/admin/settings", label: "Team & notifications", icon: CircleCheck, id: "settings" },
               { href: "/admin/website", label: "Website images", icon: ImageIcon, id: "website" },
             ]
-          : []),
-        { href: `${base}/applications`, label: "Applications", icon: ClipboardList, id: "applications" },
+          : [{ href: `${base}/applications`, label: "Applications", icon: ClipboardList, id: "applications" }]),
       ]
     : [
         { href: "/dashboard", label: "My overview", icon: Home, id: "overview" },
