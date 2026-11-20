@@ -5,6 +5,7 @@ import { sameOrigin } from "@/lib/security/request";
 import { validateCaseFile } from "@/server/services/file-validation";
 import { authConfigured } from "@/lib/supabase/config";
 import { z } from "zod";
+import { isPreviewPackage } from "@/lib/validation/opportunities";
 export async function POST(request: Request) {
   if (!sameOrigin(request.headers.get("origin"), request.headers))
     return Response.json({ error: "Request origin is not allowed." }, { status: 403 });
@@ -66,10 +67,11 @@ export async function POST(request: Request) {
       ["verified", "pending_verification"].includes(record.payment_status)
     )
       throw Error("Your payment is already submitted.");
+    let shareReceipt = kind === "receipt" && fd.get("shareReceipt") === "on";
     if (application.data) {
       const { data: target } = await db
         .from("study_applications")
-        .select("package_state,status")
+        .select("package_state,status,proposal")
         .eq("id", application.data)
         .eq("user_id", user.id)
         .maybeSingle();
@@ -79,6 +81,7 @@ export async function POST(request: Request) {
         !["awaiting_receipt", "receipt_rejected"].includes(target.package_state)
       )
         throw Error("Package payment is not available. Refresh your application.");
+      if (isPreviewPackage(target.proposal?.name)) shareReceipt = false;
     }
     if (kind === "document" && !record.completed_at)
       throw Error("Your application form is not unlocked yet.");
@@ -99,7 +102,7 @@ export async function POST(request: Request) {
       p_bytes: validated.data.length,
       p_hash: createHash("sha256").update(validated.data).digest("hex"),
       p_application: application.data,
-      p_share_receipt: kind === "receipt" && fd.get("shareReceipt") === "on",
+      p_share_receipt: shareReceipt,
     });
     if (registered.error) {
       if (/^(22|23|42|P0)/.test(registered.error.code)) await admin.storage.from("case-files").remove([path]);

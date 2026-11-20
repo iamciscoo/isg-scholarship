@@ -25,7 +25,7 @@ export default async function Consultations() {
     db.from("consultation_cases").select("*").eq("user_id", user.id).maybeSingle(),
     db
       .from("case_files")
-      .select("id,user_id,kind,category,review_status,review_note,created_at")
+      .select("id,user_id,kind,mime,category,review_status,review_note,created_at")
       .eq("user_id", user.id)
       .is("application_id", null)
       .order("created_at", { ascending: false }),

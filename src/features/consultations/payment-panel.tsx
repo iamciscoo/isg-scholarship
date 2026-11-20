@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FileUpload } from "./file-upload";
+import { ReceiptPreview } from "./receipt-preview";
 export type ConsultationCase = {
   user_id: string;
   lead_id: string;
@@ -12,6 +13,7 @@ export type CaseFile = {
   id: string;
   user_id: string;
   kind: string;
+  mime: string;
   category: string;
   review_status: string;
   review_note: string;
@@ -62,16 +64,22 @@ export function PaymentPanel({
               ISG is preparing payment instructions. Contact the team before making any payment.
             </p>
           )}
-          {instructions && <FileUpload kind="receipt" />}
+          {(instructions || record.payment_status === "rejected") && <FileUpload kind="receipt" />}
         </>
       )}
       {!!receipts.length && (
         <ul className="case-file-list">
-          {receipts.map((f) => (
+          {receipts.map((f, index) => (
             <li key={f.id}>
               <Link href={`/api/case-files/${f.id}`}>Download your receipt</Link>
               <span>{f.review_status === "pending" ? "Pending verification" : f.review_status}</span>
               {f.review_note && <p>{f.review_note}</p>}
+              {index === 0 && (
+                <details className="package-gallery">
+                  <summary>Preview receipt</summary>
+                  <ReceiptPreview id={f.id} mime={f.mime} />
+                </details>
+              )}
             </li>
           ))}
         </ul>

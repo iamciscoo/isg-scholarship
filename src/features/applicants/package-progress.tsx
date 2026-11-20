@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ActionForm } from "@/components/forms/action-form";
 import { createClient } from "@/lib/supabase/server";
 import { FileUpload } from "@/features/consultations/file-upload";
+import { ReceiptPreview } from "@/features/consultations/receipt-preview";
 import { approveApplication } from "./tracking-actions";
 
 export async function PackageProgress({
@@ -11,6 +12,7 @@ export async function PackageProgress({
   fee,
   staff,
   admin,
+  testPackage,
 }: {
   id: string;
   state: string;
@@ -18,17 +20,18 @@ export async function PackageProgress({
   fee: number | undefined;
   staff: boolean;
   admin: boolean;
+  testPackage: boolean;
 }) {
   const db = await createClient();
   const canUpload = status === "Starting" && ["awaiting_receipt", "receipt_rejected"].includes(state);
   const [instructions, receipt] = await Promise.all([
-    !staff && canUpload
+    !staff && canUpload && !testPackage
       ? db.rpc("package_payment_instructions", { p_application: id })
       : { data: null, error: null },
     !staff || admin
       ? db
           .from("case_files")
-          .select("id,review_status,review_note")
+          .select("id,mime,review_status,review_note")
           .eq("application_id", id)
           .order("created_at", { ascending: false })
           .limit(1)
@@ -76,7 +79,9 @@ export async function PackageProgress({
                 <p>Waiting for the applicant to upload a receipt.</p>
               ) : (
                 <>
-                  {instructions.data ? (
+                  {testPackage ? (
+                    <p className="notice">Preview test only. Upload a sample receipt. Do not send money.</p>
+                  ) : instructions.data ? (
                     <p className="preserve-lines">{instructions.data}</p>
                   ) : (
                     <p>Ask your advisor for payment instructions before sending money.</p>
@@ -84,7 +89,7 @@ export async function PackageProgress({
                   {state === "receipt_rejected" && receipt.data?.review_note && (
                     <p>{receipt.data.review_note}</p>
                   )}
-                  <FileUpload kind="receipt" application={id} />
+                  <FileUpload kind="receipt" application={id} allowWhatsApp={!testPackage} />
                 </>
               )}
             </>
@@ -104,6 +109,12 @@ export async function PackageProgress({
         >
           {admin ? "Open payment receipt →" : "Download your receipt"}
         </Link>
+      )}
+      {receipt.data && !staff && (
+        <details className="package-gallery">
+          <summary>Preview receipt</summary>
+          <ReceiptPreview id={receipt.data.id} mime={receipt.data.mime} />
+        </details>
       )}
     </section>
   );

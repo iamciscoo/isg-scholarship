@@ -2,7 +2,8 @@
 import * as Popover from "@radix-ui/react-popover";
 import { Bell, CheckCheck } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useLocale } from "@/lib/i18n/provider";
 import { markNotificationsRead } from "./actions";
 import type { Inbox } from "./types";
@@ -14,42 +15,51 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
   const [inbox, setInbox] = useState<Inbox | null>(null);
   const [error, setError] = useState(false);
   const [pending, start] = useTransition();
-  const refresh = useCallback(
-    async (signal?: AbortSignal) => {
-      if (!signedIn) return;
-      try {
-        const result = await fetch("/api/notifications", { cache: "no-store", signal });
-        if (!result.ok) throw new Error("inbox_unavailable");
-        setInbox(await result.json());
-        setError(false);
-      } catch (e) {
-        if (!(e instanceof DOMException && e.name === "AbortError")) setError(true);
-      }
-    },
-    [signedIn],
-  );
-  useEffect(() => {
+  const path = usePathname();
+  const request = useRef<AbortController | null>(null);
+  const receiptTasks = inbox?.receiptTasks || [];
+  const count = (inbox?.unread || 0) + (inbox?.receiptTaskCount || 0);
+  const refresh = useCallback(async () => {
+    if (!signedIn) return;
+    request.current?.abort();
     const controller = new AbortController();
+    request.current = controller;
+    try {
+      const result = await fetch("/api/notifications", { cache: "no-store", signal: controller.signal });
+      if (!result.ok) throw new Error("inbox_unavailable");
+      const latest = await result.json();
+      if (request.current !== controller || controller.signal.aborted) return;
+      setInbox(latest);
+      setError(false);
+    } catch {
+      if (!controller.signal.aborted && request.current === controller) setError(true);
+    } finally {
+      if (request.current === controller) request.current = null;
+    }
+  }, [signedIn]);
+  useEffect(() => {
+    if (!signedIn) return;
     const load = () => {
-      if (!document.hidden) void refresh(controller.signal);
+      if (!document.hidden) void refresh();
     };
     load();
-    const interval = setInterval(load, 15000);
+    const interval = setInterval(() => {
+      if (!request.current) load();
+    }, 5000);
     window.addEventListener("focus", load);
     window.addEventListener("isg:notifications-read", load);
     document.addEventListener("visibilitychange", load);
     return () => {
-      controller.abort();
+      request.current?.abort();
       clearInterval(interval);
       window.removeEventListener("focus", load);
       window.removeEventListener("isg:notifications-read", load);
       document.removeEventListener("visibilitychange", load);
     };
-  }, [refresh]);
+  }, [refresh, path, signedIn]);
   const read = (id: string | null) =>
     start(async () => {
       if (await markNotificationsRead(id)) {
-        await refresh();
         window.dispatchEvent(new Event("isg:notifications-read"));
       } else setError(true);
     });
@@ -61,12 +71,10 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
     >
       <Popover.Trigger
         className="bell-trigger"
-        aria-label={`${t.notifications}${inbox?.unread ? ` (${inbox.unread} ${t.unread})` : ""}`}
+        aria-label={`${t.notifications}${count ? ` (${count})` : ""}`}
       >
         <Bell size={18} />
-        {Boolean(inbox?.unread) && (
-          <span className="notification-count">{inbox!.unread > 99 ? "99+" : inbox!.unread}</span>
-        )}
+        {count > 0 && <span className="notification-count">{count > 99 ? "99+" : count}</span>}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
@@ -84,6 +92,19 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
               </button>
             )}
           </div>
+          {!!receiptTasks.length && (
+            <ul className="notification-list" aria-label="Receipts to upload">
+              {receiptTasks.map((task) => (
+                <li key={task.link} className="is-unread">
+                  <h3>{task.replacement ? "Upload a replacement receipt" : "Upload your receipt"}</h3>
+                  <p>{task.title}</p>
+                  <div>
+                    <Link href={task.link}>Open payment →</Link>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
           {!signedIn ? (
             <div className="notification-empty">
               <p>{t.guestNotifications}</p>
@@ -91,7 +112,7 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
                 {t.signIn}
               </Link>
             </div>
-          ) : error ? (
+          ) : error && !inbox ? (
             <div className="notification-empty">
               <p role="alert">{t.retry}</p>
               <button className="text-link" onClick={() => void refresh()}>
@@ -103,7 +124,7 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
               {t.wait}
             </p>
           ) : !inbox.items.length ? (
-            <p className="notification-empty">{t.emptyNotifications}</p>
+            !receiptTasks.length && <p className="notification-empty">{t.emptyNotifications}</p>
           ) : (
             <ul className="notification-list">
               {inbox.items.map((n) => (

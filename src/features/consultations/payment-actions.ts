@@ -30,8 +30,15 @@ export async function reviewPayment(_: ActionState, fd: FormData): Promise<Actio
     p_approve: value.data.approve === "true",
     p_feedback: value.data.note,
   });
-  if (error) return { error: "This payment could not be reviewed. It may already have been reviewed." };
+  if (error?.message === "Already reviewed")
+    return { error: "This receipt has already been reviewed. Refresh to see its current status." };
+  if (error?.message === "Receipt unavailable") return { error: "This receipt is no longer available." };
+  if (error) {
+    console.error("receipt_review_failed", { code: error.code });
+    return { error: "The review could not be saved. Please try again." };
+  }
   revalidatePath("/admin/payments");
+  revalidatePath("/admin/cases/[id]", "page");
   revalidatePath("/dashboard/consultations");
   revalidatePath("/dashboard/applications");
   revalidatePath("/dashboard/applications/[id]", "page");

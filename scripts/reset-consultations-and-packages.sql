@@ -7,7 +7,7 @@ lock table public.eligibility_assessments, public.consultation_cases, public.con
   in share row exclusive mode;
 
 delete from public.account_notifications
-  where author_id is null and link ~ '^/admin/(consultations|payments|applications|receipts/|declarations/)';
+  where author_id is null and link ~ '^/(admin/(consultations|payments|applications|receipts/|declarations/)|dashboard/(consultations|applications)(/|$))';
 delete from private.integration_events where event ~
   '^(consultation\.|lead\.updated$|payment\.|meeting\.|application\.|package\.)';
 delete from private.notification_outbox

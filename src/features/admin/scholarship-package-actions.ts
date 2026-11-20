@@ -29,7 +29,8 @@ export async function saveScholarshipPackage(_: ActionState, form: FormData): Pr
     ].map((key) => [key, form.get(key) ?? ""]),
   );
   const file = form.get("privateImage");
-  const hasUpload = file instanceof File && file.name !== "";
+  // Server Actions may give an unselected file input a synthetic filename.
+  const hasUpload = file instanceof File && file.size > 0;
   const input = scholarshipPackageSchema.safeParse({
     ...values,
     active: form.get("active") === "on",
@@ -40,7 +41,6 @@ export async function saveScholarshipPackage(_: ActionState, form: FormData): Pr
   let imageId: string | null = null;
   if (hasUpload) {
     if (
-      file.size < 1 ||
       file.size > 2 * 1024 * 1024 ||
       !["image/jpeg", "image/png", "image/webp"].includes(file.type)
     )

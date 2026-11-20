@@ -7,11 +7,17 @@ export function ActionForm({
   children,
   label = "Save",
   className = "form-stack",
+  decisions,
 }: {
   action: (state: ActionState, data: FormData) => Promise<ActionState>;
   children: React.ReactNode;
   label?: string;
   className?: string;
+  decisions?: {
+    name: string;
+    primary: { label: string; value: string };
+    secondary: { label: string; value: string };
+  };
 }) {
   const [state, submit, pending] = useActionState(action, {});
   return (
@@ -34,7 +40,24 @@ export function ActionForm({
           {state.message}
         </p>
       )}
-      <Button disabled={pending}>{pending ? "Saving…" : label}</Button>
+      {decisions ? (
+        <div className="workspace-action-row">
+          <Button type="submit" disabled={pending} name={decisions.name} value={decisions.primary.value}>
+            {pending ? "Saving…" : decisions.primary.label}
+          </Button>
+          <Button
+            type="submit"
+            variant="outline"
+            disabled={pending}
+            name={decisions.name}
+            value={decisions.secondary.value}
+          >
+            {decisions.secondary.label}
+          </Button>
+        </div>
+      ) : (
+        <Button disabled={pending}>{pending ? "Saving…" : label}</Button>
+      )}
     </form>
   );
 }

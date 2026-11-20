@@ -58,13 +58,17 @@ const config: NextConfig = {
         source: "/:path*",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
           ...(process.env.NODE_ENV === "production"
             ? [{ key: "Strict-Transport-Security", value: "max-age=31536000" }]
             : []),
         ],
+      },
+      {
+        // The authenticated file route sets its own frame policy based on file kind.
+        source: "/((?!api/case-files/[0-9a-f-]{36}$).*)",
+        headers: [{ key: "X-Frame-Options", value: "DENY" }],
       },
     ];
   },

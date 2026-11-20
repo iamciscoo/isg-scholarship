@@ -5,10 +5,12 @@ export function FileUpload({
   kind,
   category = "payment_receipt",
   application,
+  allowWhatsApp = true,
 }: {
   kind: "receipt" | "document";
   category?: string;
   application?: string;
+  allowWhatsApp?: boolean;
 }) {
   const [pending, setPending] = useState(false),
     [message, setMessage] = useState("");
@@ -57,7 +59,7 @@ export function FileUpload({
         />
       </label>
       <p>JPEG, PNG, WebP or PDF, up to 8 MB.</p>
-      {kind === "receipt" && (
+      {kind === "receipt" && allowWhatsApp && (
         <label className="checkbox-field">
           <input type="checkbox" name="shareReceipt" disabled={pending} />
           Share this redacted receipt in ISG’s private staff WhatsApp group. I’ve permanently removed account

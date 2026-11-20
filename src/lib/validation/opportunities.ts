@@ -17,6 +17,9 @@ export const marketingImageSchema = z.union([
   z.string().regex(/^\/api\/marketing-images\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/),
 ]);
 const title = (max = 160) => z.string().trim().min(1).max(max);
+export function isPreviewPackage(name: unknown) {
+  return typeof name === "string" && name.startsWith("Preview test · ");
+}
 export const scholarshipImageSchema = z.string().regex(/^\/api\/scholarship-images\/[0-9a-f-]{36}$/);
 export const scholarshipPackageSchema = z
   .object({

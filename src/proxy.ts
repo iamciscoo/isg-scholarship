@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 export async function proxy(request: NextRequest) {
   const nonce = Buffer.from(randomUUID()).toString("base64");
   const development = process.env.NODE_ENV !== "production";
-  const csp = `default-src 'self'; script-src 'self' 'nonce-${nonce}' ${development ? "'unsafe-eval'" : ""} https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' ${development ? "ws: http://localhost:* http://127.0.0.1:*" : ""} https://*.supabase.co https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';`;
+  const csp = `default-src 'self'; script-src 'self' 'nonce-${nonce}' ${development ? "'unsafe-eval'" : ""} https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' ${development ? "ws: http://localhost:* http://127.0.0.1:*" : ""} https://*.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';`;
   const headers = new Headers(request.headers);
   headers.set("x-nonce", nonce);
   headers.set("Content-Security-Policy", csp);
@@ -35,7 +35,10 @@ export async function proxy(request: NextRequest) {
     );
     await supabase.auth.getUser();
   }
-  response.headers.set("Content-Security-Policy", csp);
+  const receiptPreview =
+    /^\/api\/case-files\/[0-9a-f-]{36}$/.test(request.nextUrl.pathname) &&
+    request.nextUrl.searchParams.get("preview") === "1";
+  if (!receiptPreview) response.headers.set("Content-Security-Policy", csp);
   if (/^\/(admin|advisor|dashboard|auth|mfa|api)(\/|$)/.test(request.nextUrl.pathname)) {
     response.headers.set("Cache-Control", "private, no-store");
     response.headers.set("X-Robots-Tag", "noindex, nofollow");

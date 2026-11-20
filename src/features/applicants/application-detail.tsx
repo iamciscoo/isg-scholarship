@@ -5,7 +5,12 @@ import { z } from "zod";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { ActionForm } from "@/components/forms/action-form";
-import { applicationStatuses, providerDecisions, proposalSchema } from "@/lib/validation/opportunities";
+import {
+  applicationStatuses,
+  isPreviewPackage,
+  providerDecisions,
+  proposalSchema,
+} from "@/lib/validation/opportunities";
 import { approveApplication, updateApplication, commitPlace } from "./tracking-actions";
 import { PackageProgress } from "./package-progress";
 import { packageStatus } from "./package-status";
@@ -125,6 +130,7 @@ export async function ApplicationDetail({
             fee={p.data.packageFee}
             staff={staff}
             admin={admin}
+            testPackage={isPreviewPackage(p.data.name)}
           />
         )}
         {canWork && (

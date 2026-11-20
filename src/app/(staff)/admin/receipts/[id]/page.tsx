@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { ReceiptReview } from "@/features/consultations/receipt-review";
+import { ReceiptPreview } from "@/features/consultations/receipt-preview";
 import { proposalSchema } from "@/lib/validation/opportunities";
 export default async function Receipt({ params }: { params: Promise<{ id: string }> }) {
   const { db, user, role } = await requireStaff(true);
@@ -11,7 +12,7 @@ export default async function Receipt({ params }: { params: Promise<{ id: string
   if (!z.uuid().safeParse(id).success) notFound();
   const { data: f, error } = await db
     .from("case_files")
-    .select("id,user_id,application_id,review_status,review_note,study_applications(proposal)")
+    .select("id,user_id,application_id,mime,review_status,review_note,study_applications(proposal)")
     .eq("id", id)
     .eq("kind", "receipt")
     .maybeSingle();
@@ -23,6 +24,9 @@ export default async function Receipt({ params }: { params: Promise<{ id: string
   return (
     <Workspace role={role} email={user.email || ""} active="payments">
       <h1>{f.application_id ? "Package payment receipt" : "Consultation payment receipt"}</h1>
+      <Link className="text-link" href="/admin/payments">
+        ← All payments
+      </Link>
       <Link
         className="text-link"
         href={f.application_id ? `/admin/applications/${f.application_id}` : `/admin/cases/${f.user_id}`}
@@ -36,6 +40,7 @@ export default async function Receipt({ params }: { params: Promise<{ id: string
         </h2>
         {pkg && <p>{pkg.name}</p>}
         <p>Match the receipt against the payment received before verifying it.</p>
+        <ReceiptPreview id={f.id} mime={f.mime} />
         <ReceiptReview id={f.id} status={f.review_status} note={f.review_note} />
       </section>
     </Workspace>

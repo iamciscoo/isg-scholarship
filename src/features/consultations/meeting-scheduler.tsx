@@ -1,7 +1,21 @@
 "use client";
-import { useState } from "react";
-import { ActionForm } from "@/components/forms/action-form";
+import { ActionForm, type ActionState } from "@/components/forms/action-form";
 import { scheduleMeeting } from "./meeting-actions";
+
+const durations = [30, 45, 60, 90, 120];
+
+async function submitMeeting(state: ActionState, data: FormData) {
+  const start = new Date(String(data.get("localStart") ?? ""));
+  const minutes = Number(data.get("duration"));
+  if (!Number.isFinite(start.getTime()) || !durations.includes(minutes)) {
+    return { error: "Choose a start time and meeting duration." };
+  }
+  data.set("start", start.toISOString());
+  data.set("end", new Date(start.getTime() + minutes * 60_000).toISOString());
+  data.set("zone", Intl.DateTimeFormat().resolvedOptions().timeZone);
+  return scheduleMeeting(state, data);
+}
+
 export function MeetingScheduler({
   user,
   requests,
@@ -9,37 +23,17 @@ export function MeetingScheduler({
   user: string;
   requests: { id: string; note: string; status: string }[];
 }) {
-  const [start, setStart] = useState(""),
-    [minutes, setMinutes] = useState(45);
-  const date = start ? new Date(start) : null;
-  const valid = date && !Number.isNaN(date.getTime());
-  const [zone, setZone] = useState("");
   return (
-    <ActionForm action={scheduleMeeting} label="Schedule Google Meet">
+    <ActionForm action={submitMeeting} label="Schedule Google Meet">
       <input type="hidden" name="user" value={user} />
-      <input type="hidden" name="start" value={valid ? date.toISOString() : ""} />
-      <input
-        type="hidden"
-        name="end"
-        value={valid ? new Date(date.getTime() + minutes * 60000).toISOString() : ""}
-      />
-      <input type="hidden" name="zone" value={zone} />
       <label>
-        Start time ({zone || "your local time"})
-        <input
-          type="datetime-local"
-          required
-          value={start}
-          onChange={(e) => {
-            setStart(e.target.value);
-            setZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
-          }}
-        />
+        Start time (your local time)
+        <input name="localStart" type="datetime-local" required />
       </label>
       <label>
         Duration
-        <select value={minutes} onChange={(e) => setMinutes(Number(e.target.value))}>
-          {[30, 45, 60, 90, 120].map((n) => (
+        <select name="duration" defaultValue={45}>
+          {durations.map((n) => (
             <option value={n} key={n}>
               {n} minutes
             </option>
