@@ -15,7 +15,7 @@ export async function getMarketingImages(): Promise<MarketingImage[]> {
 export async function getHomepageImage() {
   if (!authConfigured()) return "/images/study-together.webp";
   const db = await createClient();
-  const { data, error } = await db.from("site_presentation").select("hero_image").eq("id", true).single();
-  if (error) throw Error("Homepage image unavailable");
-  return data.hero_image as string;
+  const { data } = await db.from("site_presentation").select("hero_image").eq("id", true).maybeSingle();
+  // The single config row can be absent on a freshly wiped database; fall back to the shipped asset.
+  return (data?.hero_image as string) || "/images/study-together.webp";
 }
