@@ -15,7 +15,7 @@ export default function Pricing() {
       <div className="container page-body operation-grid">
         <section className="content-panel">
           <h2>
-            Consultation · TZS 50,000 <span className="fee-usd">≈ USD 20</span>
+            Consultation · TZS 50,000 <span className="fee-usd">USD 20</span>
           </h2>
           <p>
             Pay once, then upload your receipt in your workspace. Follow-up questions and further meeting

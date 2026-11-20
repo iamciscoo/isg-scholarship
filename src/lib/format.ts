@@ -4,5 +4,5 @@ export function usdQuote(tzs: number) {
   return Math.ceil(tzs / TZS_PER_USD / 10) * 10;
 }
 export function usdLabel(tzs: number) {
-  return `≈ USD ${usdQuote(tzs).toLocaleString("en")}`;
+  return `USD ${usdQuote(tzs).toLocaleString("en")}`;
 }

@@ -20,7 +20,7 @@ export function PackagePriceField({ defaultValue }: { defaultValue?: number }) {
       />
       <small>
         {amount > 0
-          ? `USD quote · ${usdLabel(amount)}`
+          ? usdLabel(amount)
           : "Enter the full fee for this package. The consultation is charged separately."}
       </small>
     </label>

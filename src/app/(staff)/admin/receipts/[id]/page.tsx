@@ -24,15 +24,17 @@ export default async function Receipt({ params }: { params: Promise<{ id: string
   return (
     <Workspace role={role} email={user.email || ""} active="payments">
       <h1>{f.application_id ? "Package payment receipt" : "Consultation payment receipt"}</h1>
-      <Link className="text-link" href="/admin/payments">
-        ← All payments
-      </Link>
-      <Link
-        className="text-link"
-        href={f.application_id ? `/admin/applications/${f.application_id}` : `/admin/cases/${f.user_id}`}
-      >
-        {f.application_id ? "Open application →" : "Open consultation and assign advisor →"}
-      </Link>
+      <div className="page-links">
+        <Link className="text-link" href="/admin/payments">
+          ← All payments
+        </Link>
+        <Link
+          className="text-link"
+          href={f.application_id ? `/admin/applications/${f.application_id}` : `/admin/cases/${f.user_id}`}
+        >
+          {f.application_id ? "Open application →" : "Open consultation and assign advisor →"}
+        </Link>
+      </div>
       <section className="workspace-panel">
         <h2>
           {amount === undefined ? "Check the package fee" : `TZS ${amount.toLocaleString("en")}`} ·{" "}
