@@ -123,6 +123,28 @@
   object-fit: cover;
   border-radius: 8px;
 }
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.panel-head h2 {
+  margin: 0;
+}
+.package-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.package-row-thumb {
+  flex-shrink: 0;
+  width: 96px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+}
 .case-file-list {
   list-style: none;
   padding: 0;

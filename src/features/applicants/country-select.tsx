@@ -12,23 +12,57 @@ const countries = codes
   .sort((a, b) => a.name.localeCompare(b.name));
 const flag = (code: string) =>
   String.fromCodePoint(...[...code].map((letter) => 0x1f1e6 + letter.charCodeAt(0) - 65));
+// Nationality reads as a demonym: picking Tanzania stores "Tanzanian". Unknown codes fall back to the name.
+const demonyms: Record<string, string> = {
+  TZ: "Tanzanian", KE: "Kenyan", UG: "Ugandan", RW: "Rwandan", BI: "Burundian", SS: "South Sudanese",
+  SD: "Sudanese", ET: "Ethiopian", ER: "Eritrean", SO: "Somali", DJ: "Djiboutian", EG: "Egyptian",
+  LY: "Libyan", TN: "Tunisian", DZ: "Algerian", MA: "Moroccan", NG: "Nigerian", GH: "Ghanaian",
+  SN: "Senegalese", ML: "Malian", BF: "Burkinabé", NE: "Nigerien", TD: "Chadian", CM: "Cameroonian",
+  CF: "Central African", GA: "Gabonese", CG: "Congolese", CD: "Congolese", AO: "Angolan", ZM: "Zambian",
+  ZW: "Zimbabwean", MW: "Malawian", MZ: "Mozambican", MG: "Malagasy", MU: "Mauritian",
+  SC: "Seychellois", KM: "Comorian", ZA: "South African", NA: "Namibian", GM: "Gambian", GN: "Guinean",
+  SL: "Sierra Leonean", LR: "Liberian", TG: "Togolese", BJ: "Beninese", CI: "Ivorian", MR: "Mauritanian",
+  CV: "Cape Verdean", GB: "British", IE: "Irish", FR: "French", DE: "German", IT: "Italian", ES: "Spanish",
+  PT: "Portuguese", NL: "Dutch", BE: "Belgian", CH: "Swiss", AT: "Austrian", SE: "Swedish", NO: "Norwegian",
+  DK: "Danish", FI: "Finnish", PL: "Polish", CZ: "Czech", SK: "Slovak", HU: "Hungarian", RO: "Romanian",
+  BG: "Bulgarian", GR: "Greek", TR: "Turkish", RU: "Russian", UA: "Ukrainian", BY: "Belarusian",
+  LT: "Lithuanian", LV: "Latvian", EE: "Estonian", HR: "Croatian", RS: "Serbian", BA: "Bosnian",
+  AL: "Albanian", MK: "Macedonian", SI: "Slovenian", IS: "Icelandic", MT: "Maltese", CY: "Cypriot",
+  LU: "Luxembourgish", IN: "Indian", PK: "Pakistani", BD: "Bangladeshi", LK: "Sri Lankan", NP: "Nepali",
+  CN: "Chinese", JP: "Japanese", KR: "South Korean", KP: "North Korean", MN: "Mongolian", VN: "Vietnamese",
+  TH: "Thai", MY: "Malaysian", SG: "Singaporean", ID: "Indonesian", PH: "Filipino", MM: "Burmese",
+  KH: "Cambodian", LA: "Lao", BN: "Bruneian", AE: "Emirati", SA: "Saudi", QA: "Qatari", KW: "Kuwaiti",
+  BH: "Bahraini", OM: "Omani", YE: "Yemeni", JO: "Jordanian", LB: "Lebanese", SY: "Syrian", IQ: "Iraqi",
+  IR: "Iranian", IL: "Israeli", PS: "Palestinian", AF: "Afghan", KZ: "Kazakh", UZ: "Uzbek", KG: "Kyrgyz",
+  TJ: "Tajik", TM: "Turkmen", AZ: "Azerbaijani", AM: "Armenian", GE: "Georgian", US: "American",
+  CA: "Canadian", MX: "Mexican", BR: "Brazilian", AR: "Argentine", CL: "Chilean", PE: "Peruvian",
+  CO: "Colombian", VE: "Venezuelan", EC: "Ecuadorian", BO: "Bolivian", PY: "Paraguayan", UY: "Uruguayan",
+  CU: "Cuban", HT: "Haitian", DO: "Dominican", JM: "Jamaican", TT: "Trinidadian", AU: "Australian",
+  NZ: "New Zealander", FJ: "Fijian", PG: "Papua New Guinean",
+};
 
 export function CountrySelect({
   id,
   name,
   defaultValue = "",
+  mode = "country",
 }: {
   id: string;
   name: string;
   defaultValue?: string;
+  mode?: "country" | "demonym";
 }) {
+  const label = (country: { code: string; name: string }) =>
+    mode === "demonym" ? (demonyms[country.code] ?? country.name) : country.name;
   const [value, setValue] = useState(defaultValue);
   const [query, setQuery] = useState(defaultValue);
   const [open, setOpen] = useState(false);
   const matches = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term || term === value.toLowerCase()) return countries;
-    return countries.filter((country) => country.name.toLowerCase().includes(term));
+    return countries.filter(
+      (country) => country.name.toLowerCase().includes(term) || label(country).toLowerCase().includes(term),
+    );
   }, [query, value]);
   return (
     <div className="country-select">
@@ -57,16 +91,17 @@ export function CountrySelect({
               <button
                 type="button"
                 role="option"
-                aria-selected={value === country.name}
+                aria-selected={value === label(country)}
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => {
-                  setValue(country.name);
-                  setQuery(country.name);
+                  setValue(label(country));
+                  setQuery(label(country));
                   setOpen(false);
                 }}
               >
                 <span aria-hidden>{flag(country.code)}</span>
                 {country.name}
+                {mode === "demonym" && <small>{label(country)}</small>}
               </button>
             </li>
           ))}

@@ -9,7 +9,6 @@ export default async function Packages() {
   return (
     <Workspace role={role} email={user.email || ""} active="packages">
       <h1>Scholarship packages.</h1>
-      <p>Pick the package that fits your goals. Your advisor confirms the details with you before payment.</p>
       <PackageCatalogue applicant={user.id} />
     </Workspace>
   );

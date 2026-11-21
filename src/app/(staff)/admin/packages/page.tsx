@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { Plus } from "lucide-react";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
@@ -27,10 +29,6 @@ export default async function ScholarshipPackages({
   return (
     <Workspace role={role} email={user.email || ""} active="packages">
       <h1>Scholarship packages</h1>
-      <p>
-        Set up the scholarship, ISG support and fees together. Share a package from the applicant’s
-        consultation.
-      </p>
       <div className="operation-grid scholarship-admin-grid">
         <section className="workspace-panel">
           <h2>{selected ? "Edit package" : "Create a package"}</h2>
@@ -47,22 +45,42 @@ export default async function ScholarshipPackages({
           <ScholarshipPackageEditor value={selected || undefined} />
         </section>
         <section className="workspace-panel">
-          <h2>Saved packages</h2>
+          <div className="panel-head">
+            <h2>Saved packages</h2>
+            <Link className="button button-outline" href="/admin/packages">
+              <Plus size={16} />
+              New package
+            </Link>
+          </div>
           {!list.data?.length ? (
             <p>Add your first package to start sharing scholarships with applicants.</p>
           ) : (
             <ul className="notification-history">
               {(list.data as ScholarshipPackage[]).map((item) => (
                 <li key={item.id}>
-                  <strong>{item.name}</strong>
-                  <p>
-                    {item.provider} · {item.destination}
-                  </p>
-                  <p>
-                    {item.package_fee_tzs === null
-                      ? "Add a package fee before sharing"
-                      : `TZS ${item.package_fee_tzs.toLocaleString("en")} (${usdLabel(item.package_fee_tzs)}) · ${item.active ? "Available" : "Archived"}`}
-                  </p>
+                  <div className="package-row">
+                    {item.image && (
+                      <Image
+                        className="package-row-thumb"
+                        src={item.image}
+                        alt=""
+                        width={96}
+                        height={64}
+                        unoptimized
+                      />
+                    )}
+                    <div>
+                      <strong>{item.name}</strong>
+                      <p>
+                        {item.provider} · {item.destination}
+                      </p>
+                      <p>
+                        {item.package_fee_tzs === null
+                          ? "Add a package fee before sharing"
+                          : `TZS ${item.package_fee_tzs.toLocaleString("en")} (${usdLabel(item.package_fee_tzs)}) · ${item.active ? "Available" : "Archived"}`}
+                      </p>
+                    </div>
+                  </div>
                   <div className="row-actions">
                     <Link className="text-link" href={`/admin/packages?edit=${item.id}&page=${page}`}>
                       Edit package →
