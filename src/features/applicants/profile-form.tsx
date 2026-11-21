@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { saveProfile } from "./actions";
+import { CountrySelect } from "./country-select";
 type Profile = {
   first_name: string;
   last_name: string;
@@ -27,14 +28,18 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         ).map((field) => (
           <div className="field" key={field.name}>
             <label htmlFor={field.name}>{field.label}</label>
-            <input
-              id={field.name}
-              name={field.name}
-              autoComplete={field.auto}
-              defaultValue={profile[field.name]}
-              required={field.name.endsWith("name")}
-              maxLength={field.name === "phone" ? 25 : 80}
-            />
+            {field.name === "residence" ? (
+              <CountrySelect id={field.name} name={field.name} defaultValue={profile[field.name]} />
+            ) : (
+              <input
+                id={field.name}
+                name={field.name}
+                autoComplete={field.auto}
+                defaultValue={profile[field.name]}
+                required={field.name.endsWith("name")}
+                maxLength={field.name === "phone" ? 25 : 80}
+              />
+            )}
           </div>
         ))}
       </div>

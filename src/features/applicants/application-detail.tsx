@@ -191,23 +191,7 @@ export async function ApplicationDetail({
                   ))}
                 </select>
               </label>
-              <label>
-                Official decision date
-                <input name="decisionDate" type="date" defaultValue={a.provider_decision_date || ""} />
-              </label>
-              <label>
-                Next action date
-                <input name="nextDate" type="date" defaultValue={a.next_date || ""} />
-              </label>
             </div>
-            <label>
-              Official decision source / evidence summary
-              <textarea name="evidence" defaultValue={a.provider_evidence} maxLength={2000} />
-            </label>
-            <label>
-              History note visible to applicant
-              <textarea name="note" minLength={3} maxLength={2000} required />
-            </label>
             <label>
               Next step
               <textarea name="next" defaultValue={a.next_step} maxLength={1000} />

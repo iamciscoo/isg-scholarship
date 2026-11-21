@@ -40,7 +40,7 @@ export async function PackageCatalogue({ applicant }: { applicant: string }) {
                   <small>{usdLabel(info.packageFee)}</small>
                 </p>
                 {info.supportSummary && <p>{info.supportSummary}</p>}
-                <ActionForm action={selectPackage} label="I’m interested">
+                <ActionForm action={selectPackage} label="Apply">
                   <input name="package" type="hidden" value={id} />
                 </ActionForm>
               </article>

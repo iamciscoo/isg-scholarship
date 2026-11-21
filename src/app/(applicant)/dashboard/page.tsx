@@ -86,11 +86,7 @@ export default async function Dashboard() {
       </section>
       <section className="workspace-panel">
         <h2>What happens next?</h2>
-        <p>
-          An advisor reviews your assessment and contacts you about next steps. Your account currently
-          supports your contact profile and assessment history. Document requests and application tracking
-          will be introduced in the next platform phase.
-        </p>
+        <p>An advisor reviews your assessment and contacts you about next steps.</p>
         <Link className="text-link mt-5" href="/contact">
           Contact ISG
         </Link>

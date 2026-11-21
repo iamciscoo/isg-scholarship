@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
+import { prepareImage } from "@/lib/images";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
 
@@ -47,7 +48,7 @@ export function FileUpload({
         setMessage("");
         try {
           const data = new FormData();
-          data.set("file", await shrink(file));
+          data.set("file", await shrink(await prepareImage(file)));
           data.set("kind", kind);
           data.set("category", category);
           if (application) data.set("application", application);
@@ -69,7 +70,12 @@ export function FileUpload({
             );
           window.location.reload();
         } catch (err) {
-          setMessage(err instanceof Error ? err.message : "Upload failed. Please try again.");
+          const reason = err instanceof Error ? err.message : "";
+          setMessage(
+            reason === "decode" || reason === "encode"
+              ? "This photo could not be read. Try a JPEG or PNG."
+              : reason || "Upload failed. Please try again.",
+          );
         } finally {
           setPending(false);
         }
@@ -81,12 +87,12 @@ export function FileUpload({
           ref={ref}
           name="file"
           type="file"
-          accept="image/jpeg,image/png,image/webp,application/pdf"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf,.heic,.heif"
           required
           disabled={pending}
         />
       </label>
-      <p>JPEG, PNG, WebP or PDF, up to 8 MB.</p>
+      <p>JPEG, PNG, WebP, iPhone HEIC or PDF, up to 8 MB.</p>
       {kind === "receipt" && (
         <p className="field-help">
           Your receipt is sent automatically to ISG’s private staff WhatsApp group for verification.

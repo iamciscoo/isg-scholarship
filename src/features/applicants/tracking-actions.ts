@@ -59,29 +59,28 @@ export async function approveApplication(_: ActionState, fd: FormData): Promise<
 }
 export async function updateApplication(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db } = await requireStaff();
-  const date = z.union([z.iso.date(), z.literal("")]);
   const x = z
     .object({
       id: z.uuid(),
       status: z.enum(applicationStatuses),
       decision: z.enum(providerDecisions),
-      decisionDate: date,
-      evidence: z.string().trim().max(2000),
-      note: z.string().trim().min(3).max(2000),
-      next: z.string().trim().max(1000),
-      nextDate: date,
+      decisionDate: z.union([z.iso.date(), z.literal("")]).optional(),
+      evidence: z.string().trim().max(2000).optional(),
+      note: z.string().trim().max(2000).optional(),
+      next: z.string().trim().max(1000).optional(),
+      nextDate: z.union([z.iso.date(), z.literal("")]).optional(),
     })
     .safeParse(Object.fromEntries(fd));
-  if (!x.success) return { error: "Check the status, official decision, dates and history note." };
+  if (!x.success) return { error: "Choose a workflow state and official decision." };
   const d = x.data;
   const { error } = await db.rpc("update_study_application", {
     p_application: d.id,
     p_status: d.status,
     p_decision: d.decision,
     p_decision_date: d.decisionDate || null,
-    p_evidence: d.evidence,
-    p_note: d.note,
-    p_next: d.next,
+    p_evidence: d.evidence ?? "",
+    p_note: d.note || d.status,
+    p_next: d.next ?? "",
     p_next_date: d.nextDate || null,
   });
   if (error)
