@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ActionForm } from "@/components/forms/action-form";
 import { proposalSchema } from "@/lib/validation/opportunities";
@@ -31,6 +32,16 @@ export async function PackageCatalogue({ applicant }: { applicant: string }) {
             if (!info || info.packageFee === undefined) return null;
             return (
               <article className="operation-card" key={id}>
+                {info.image && (
+                  <Image
+                    className="package-thumb"
+                    src={info.image}
+                    alt=""
+                    width={480}
+                    height={220}
+                    unoptimized
+                  />
+                )}
                 <h3>{info.name}</h3>
                 <p>
                   {info.provider} · {info.destination} · {info.studyLevel}

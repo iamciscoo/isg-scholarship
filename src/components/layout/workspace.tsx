@@ -3,7 +3,18 @@ import { createContext, useContext, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Bell, ClipboardList, Home, Mail, CircleCheck, UserRound, Users, ImageIcon, LogOut } from "lucide-react";
+import {
+  Bell,
+  ClipboardList,
+  GraduationCap,
+  Home,
+  Mail,
+  CircleCheck,
+  UserRound,
+  Users,
+  ImageIcon,
+  LogOut,
+} from "lucide-react";
 import { LanguageSelector } from "./language-selector";
 import { NotificationBell } from "@/features/notifications/bell";
 import { signOut } from "@/features/auth/actions";
@@ -82,6 +93,12 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
           id: "consultations",
         },
         { href: "/dashboard/applications", label: "Applications", icon: ClipboardList, id: "applications" },
+        {
+          href: "/dashboard/packages",
+          label: "Scholarship packages",
+          icon: GraduationCap,
+          id: "packages",
+        },
       ];
   const navigation = links.map((item) => ({
     ...item,

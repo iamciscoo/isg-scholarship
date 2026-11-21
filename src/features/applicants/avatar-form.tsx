@@ -26,7 +26,13 @@ export function AvatarForm({ version }: { version: string | null }) {
       <div className="avatar-editor">
         <div className={`avatar-preview${busy ? " is-busy" : ""}`}>
           {photo ? (
-            <Image unoptimized src={photo} width={104} height={104} alt="Profile photo preview" />
+            selection ? (
+              // Blob preview: next/image is unnecessary for an object URL shown once.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={photo} alt="Profile photo preview" width={104} height={104} />
+            ) : (
+              <Image unoptimized src={photo} width={104} height={104} alt="Profile photo preview" />
+            )
           ) : (
             <UserRound size={38} strokeWidth={1.4} />
           )}
@@ -38,7 +44,7 @@ export function AvatarForm({ version }: { version: string | null }) {
         </div>
         <div className="avatar-editor-copy">
           <h2>Your profile photo</h2>
-          <p>Choose a clear photo of yourself. JPEG, PNG, WebP or iPhone HEIC, up to 5 MB.</p>
+          <p>Choose a clear photo of yourself. JPEG, PNG, WebP or iPhone HEIC, up to 8 MB.</p>
           <input
             ref={input}
             className="sr-only"
@@ -59,9 +65,9 @@ export function AvatarForm({ version }: { version: string | null }) {
               setPreparing(true);
               try {
                 const file = await prepareImage(picked);
-                if (file.size > 5242880 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+                if (file.size > 8388608 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
                   event.target.value = "";
-                  setError("Choose a JPEG, PNG or WebP image under 5 MB.");
+                  setError("Choose a JPEG, PNG or WebP image under 8 MB.");
                   return;
                 }
                 const transfer = new DataTransfer();

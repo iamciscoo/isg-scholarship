@@ -2,7 +2,6 @@ import Link from "next/link";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { PreviousPackageQuote } from "./package-panel";
-import { PackageCatalogue } from "./package-catalogue";
 import { packageStatus } from "./package-status";
 import { applicationStatuses, proposalSchema } from "@/lib/validation/opportunities";
 import { usdLabel } from "@/lib/format";
@@ -146,12 +145,7 @@ export async function ApplicationList({
           {page * 20 < (count || 0) && <Link href={pageLink(page + 1)}> Next →</Link>}
         </div>
       </div>
-      {own && (
-        <>
-          <PackageCatalogue applicant={user.id} />
-          <PreviousPackageQuote user={user.id} />
-        </>
-      )}
+      {own && <PreviousPackageQuote user={user.id} />}
     </Workspace>
   );
 }

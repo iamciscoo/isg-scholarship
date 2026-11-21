@@ -107,7 +107,6 @@ export async function ApplicationDetail({
             </div>
           )}
           </dl>
-          {p.data.packageFee !== undefined && <p>The TZS 50,000 consultation fee is separate.</p>}
           {!a.package_state && <p>Approval: {a.approval}</p>}
           {!staff && !a.package_state && a.approval === "pending" && (
             <ActionForm action={approveApplication} label="Record my decision">

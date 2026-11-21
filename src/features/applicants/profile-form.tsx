@@ -19,16 +19,16 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       <div className="form-grid">
         {(
           [
+            { name: "residence", label: "Country of residence (optional)", auto: "country-name" },
+            { name: "nationality", label: "Nationality (optional)", auto: "off" },
             { name: "first_name", label: "First name", auto: "given-name" },
             { name: "last_name", label: "Last name", auto: "family-name" },
             { name: "phone", label: "Phone / WhatsApp (optional)", auto: "tel" },
-            { name: "nationality", label: "Nationality (optional)", auto: "off" },
-            { name: "residence", label: "Country of residence (optional)", auto: "country-name" },
           ] as const
         ).map((field) => (
           <div className="field" key={field.name}>
             <label htmlFor={field.name}>{field.label}</label>
-            {field.name === "residence" ? (
+            {field.name === "residence" || field.name === "nationality" ? (
               <CountrySelect id={field.name} name={field.name} defaultValue={profile[field.name]} />
             ) : (
               <input

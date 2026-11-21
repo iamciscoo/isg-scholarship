@@ -29,6 +29,7 @@ it("shares ordered applicant links and one current page with the mobile menu", (
     "My profile",
     "Consultations",
     "Applications",
+    "Scholarship packages",
   ]);
   expect(links.filter((l: { current: boolean }) => l.current).map((l: { id: string }) => l.id)).toEqual([
     "consultations",
