@@ -23,7 +23,7 @@ export type CaseFile = {
   original_name?: string;
 };
 const nextStep: Record<string, string> = {
-  awaiting_receipt: "Pay using the instructions below, then upload your receipt.",
+  awaiting_receipt: "Pay, then upload your receipt.",
   pending_verification: "We’ll review your receipt and update this page.",
   rejected: "Check the feedback below and upload a replacement receipt.",
   verified: "Your consultation payment is confirmed.",

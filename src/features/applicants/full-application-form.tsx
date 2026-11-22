@@ -2,10 +2,20 @@
 import { useActionState, useState } from "react";
 import { applicationFields, declarationText, type FullApplication } from "@/lib/validation/application-form";
 import { saveFullApplication } from "./application-actions";
+import { saveStaffApplication } from "./staff-application-actions";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
-export function FullApplicationForm({ initial }: { initial: Partial<FullApplication> }) {
-  const [state, action, pending] = useActionState(saveFullApplication, {});
+export function FullApplicationForm({
+  initial,
+  applicant,
+}: {
+  initial: Partial<FullApplication>;
+  applicant?: string;
+}) {
+  const [state, action, pending] = useActionState(
+    applicant ? saveStaffApplication.bind(null, applicant) : saveFullApplication,
+    {},
+  );
   const [answers, setAnswers] = useState(initial);
   const [declaration, setDeclaration] = useState(false);
   return (
@@ -65,11 +75,13 @@ export function FullApplicationForm({ initial }: { initial: Partial<FullApplicat
           }
           disabled={pending}
         />
-        My nominated contact has given me permission to share their details with ISG.
+        {applicant
+          ? "The applicant confirmed permission to share this contact’s details."
+          : "My nominated contact has given me permission to share their details with ISG."}
       </label>
       <section className="notice">
-        <h3>Declaration</h3>
-        <p>{declarationText}</p>
+        <h3>{applicant ? "Staff confirmation" : "Declaration"}</h3>
+        {!applicant && <p>{declarationText}</p>}
         <label className="checkbox-field">
           <input
             type="checkbox"
@@ -78,7 +90,9 @@ export function FullApplicationForm({ initial }: { initial: Partial<FullApplicat
             onChange={(event) => setDeclaration(event.target.checked)}
             disabled={pending}
           />
-          I sign this declaration electronically.
+          {applicant
+            ? "I have checked these details against the information provided by the applicant."
+            : "I sign this declaration electronically."}
         </label>
       </section>
       {state.error && (
@@ -101,6 +115,8 @@ export function FullApplicationForm({ initial }: { initial: Partial<FullApplicat
               Saving
               <LoadingDots />
             </>
+          ) : applicant ? (
+            "Save application for applicant"
           ) : (
             "Submit application"
           )}

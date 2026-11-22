@@ -156,12 +156,15 @@
 .notification-empty .text-link {
   margin-top: 12px;
 }
+.notification-scroll {
+  max-height: min(520px, 70dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .notification-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: min(460px, 65dvh);
-  overflow: auto;
 }
 .notification-list li {
   padding: 18px 20px;
@@ -197,7 +200,10 @@
   font-size: 11px;
   border: 0;
   background: none;
-  padding: 5px 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 6px;
   text-decoration: underline;
   cursor: pointer;
 }

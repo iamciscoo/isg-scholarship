@@ -10,7 +10,6 @@ export async function reviewLead(_state: ReviewState, fd: FormData): Promise<Rev
   const parsed = leadReviewSchema.safeParse({
     id: fd.get("id"),
     stage: fd.get("stage"),
-    followUp: fd.get("followUp"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const data = parsed.data;
@@ -22,7 +21,7 @@ export async function reviewLead(_state: ReviewState, fd: FormData): Promise<Rev
     p_stage: data.stage,
     p_reason: "",
     p_advisor: lead.advisor_id,
-    p_follow_up: data.followUp || null,
+    p_follow_up: null,
   });
   if (error)
     return {

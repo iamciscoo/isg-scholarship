@@ -61,7 +61,7 @@
   .workspace-signout-label {
     display: none;
   }
-  .workspace-action-row,
+  .workspace-top .workspace-action-row,
   .workspace-utilities {
     flex-wrap: nowrap;
     gap: 4px;

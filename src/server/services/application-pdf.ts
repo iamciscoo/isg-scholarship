@@ -8,6 +8,8 @@ export async function applicationPdf(record: {
   accepted_at: string;
   data: FullApplication;
   snapshot_hash: string;
+  submission_method?: string;
+  submitted_by?: string | null;
 }) {
   const font = path.join(process.cwd(), "public/fonts/Manrope.ttf");
   const doc = new PDFDocument({
@@ -29,7 +31,9 @@ export async function applicationPdf(record: {
     .moveDown(0.5)
     .fontSize(10)
     .fillColor("#566274")
-    .text("Applicant-declared information. This is not a university admission or scholarship offer.");
+    .text(
+      `${record.submission_method === "staff" ? "Information recorded by ISG staff." : "Applicant-declared information."} This is not a university admission or scholarship offer.`,
+    );
   for (const section of applicationFields) {
     if (doc.y > 670) doc.addPage();
     doc.moveDown(1).fillColor("#0d2c62").fontSize(15).text(section.title);
@@ -45,10 +49,27 @@ export async function applicationPdf(record: {
     }
   }
   if (doc.y > 570) doc.addPage();
-  doc.moveDown().fillColor("#0d2c62").fontSize(15).text("Applicant declaration");
-  doc.moveDown(0.5).fontSize(10).fillColor("#172b46").text(declarationText, { lineGap: 4 });
-  doc.moveDown().text(`Accepted electronically: ${new Date(record.accepted_at).toISOString()}`);
-  doc.text(`Declaration version: ${record.version}`);
+  const staff = record.submission_method === "staff";
+  doc
+    .moveDown()
+    .fillColor("#0d2c62")
+    .fontSize(15)
+    .text(staff ? "Staff record" : "Applicant declaration");
+  doc
+    .moveDown(0.5)
+    .fontSize(10)
+    .fillColor("#172b46")
+    .text(
+      staff
+        ? "ISG staff recorded these details from information provided by the applicant. No applicant electronic signature was captured for this submission."
+        : declarationText,
+      { lineGap: 4 },
+    );
+  doc
+    .moveDown()
+    .text(`${staff ? "Recorded" : "Accepted electronically"}: ${new Date(record.accepted_at).toISOString()}`);
+  if (staff && record.submitted_by) doc.text(`Recorded by staff account: ${record.submitted_by}`);
+  doc.text(`Form version: ${record.version}`);
   doc.text(`Guardian contact permission: ${record.data.guardianPermission ? "Confirmed" : "Not confirmed"}`);
   doc.moveDown().fontSize(8).text(`Record: ${record.id}`).text(`Snapshot SHA-256: ${record.snapshot_hash}`);
   const range = doc.bufferedPageRange();

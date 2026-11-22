@@ -14,7 +14,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   if (!user) return new Response(null, { status: 401 });
   const { data: record, error } = await db
     .from("application_declarations")
-    .select("id,user_id,version,data,accepted_at,snapshot_hash")
+    .select("id,user_id,version,data,accepted_at,snapshot_hash,submitted_by,submission_method")
     .eq("id", id)
     .maybeSingle();
   if (error || !record) return new Response(null, { status: 404 });

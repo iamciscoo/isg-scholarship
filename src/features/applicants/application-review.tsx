@@ -15,7 +15,7 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
   if (!z.uuid().safeParse(id).success) notFound();
   const { data: declaration, error } = await db
     .from("application_declarations")
-    .select("id,user_id,data,accepted_at")
+    .select("id,user_id,data,accepted_at,submission_method")
     .eq("id", id)
     .maybeSingle();
   if (error) throw Error("Application submission unavailable");
@@ -49,15 +49,17 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
         <div>
           <h1>{name}</h1>
           <p>Submitted {applicationDate(declaration.accepted_at)}</p>
+          {declaration.submission_method === "staff" && <p>Recorded by ISG staff</p>}
         </div>
         <span className="status-pill">
           {current ? fullApplicationStatusLabel(status) : "Earlier submission"}
         </span>
       </div>
-      <div className="workspace-action-row">
+      <div className="workspace-action-row case-actions">
         <Link className="text-link" href={`/api/application-pdf/${id}`}>
-          Download signed application
+          Download application
         </Link>
+        {current && <Link href={`${area}/cases/${declaration.user_id}/application`}>Edit application</Link>}
         <Link className="text-link" href={`${area}/cases/${declaration.user_id}`}>
           View consultation
         </Link>

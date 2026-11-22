@@ -8,7 +8,6 @@ import { proposeApplication } from "@/features/applicants/tracking-actions";
 import { getLead } from "@/server/repositories/leads";
 import { packageStatus } from "@/features/applicants/package-status";
 import { receiptLabels } from "./progress";
-import { SupportingFiles } from "./supporting-files";
 
 export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
   const { db, user, role } = await requireStaff(admin);
@@ -20,7 +19,7 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
     .maybeSingle();
   if (error) throw Error("Consultation unavailable");
   if (!record) notFound();
-  const [assessment, receipt, applications, support, opportunities] = await Promise.all([
+  const [assessment, receipt, applications, opportunities] = await Promise.all([
     getLead(db, record.lead_id),
     db
       .from("case_files")
@@ -37,17 +36,9 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
       .eq("user_id", id)
       .neq("status", "Cancelled")
       .order("created_at", { ascending: false }),
-    db.from("case_files").select("id,original_name").eq("user_id", id).eq("kind", "support"),
     record.payment_status === "verified" ? db.rpc("staff_opportunity_choices") : { data: [], error: null },
   ]);
-  if (
-    assessment.error ||
-    !assessment.lead ||
-    receipt.error ||
-    applications.error ||
-    support.error ||
-    opportunities.error
-  )
+  if (assessment.error || !assessment.lead || receipt.error || applications.error || opportunities.error)
     throw Error("Consultation details unavailable");
   const form = assessment.lead.eligibility_assessments;
   const phone = form.phone.replace(/\D/g, "");
@@ -62,8 +53,8 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
       </p>
       <section className="workspace-panel">
         <span className="status-pill">{receiptLabels[record.payment_status]}</span>
-        <div className="workspace-action-row">
-          {receipt.data && (
+        <div className="workspace-action-row case-actions">
+          {receipt.data && admin && (
             <Link className="text-link" href={`/admin/receipts/${receipt.data.id}`}>
               {receipt.data.review_status === "pending" ? "Review receipt" : "View receipt"}
             </Link>
@@ -87,6 +78,11 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
                   {application.proposal?.name}
                 </Link>
                 <p>{packageStatus(application.package_state, application.status)}</p>
+                {application.package_state === "paid" && (
+                  <Link className="button button-outline" href={`/${area}/cases/${id}/application`}>
+                    Enter application details
+                  </Link>
+                )}
               </div>
             ))
           ) : admin ? (
@@ -109,7 +105,6 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
           )}
         </section>
       )}
-      <SupportingFiles files={support.data || []} staff />
     </Workspace>
   );
 }

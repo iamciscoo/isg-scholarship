@@ -106,13 +106,7 @@ test("consultation, receipt correction, admin package assignment, application an
   await expect(student.getByText("We’ll review your receipt and update this page.")).toBeVisible({
     timeout: 20_000,
   });
-  await student.getByLabel("Supporting files (optional)").setInputFiles([
-    { name: "support-photo.png", mimeType: "image/png", buffer: png },
-    { name: "support-letter.pdf", mimeType: "application/pdf", buffer: pdf },
-  ]);
-  await student.getByRole("button", { name: "Upload files", exact: true }).click();
-  await expect(student.getByRole("link", { name: "support-letter.pdf" })).toBeVisible({ timeout: 20_000 });
-  await expect(student.getByRole("link", { name: "support-photo.png" })).toBeVisible();
+  await expect(student.getByRole("heading", { name: "Consultation supporting files" })).toHaveCount(0);
   expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 
   async function openReceipt() {
@@ -143,6 +137,20 @@ test("consultation, receipt correction, admin package assignment, application an
     student.getByText("Your application form opens after ISG verifies your package payment."),
   ).toBeVisible();
   await admin.goto(caseLink!);
+  await admin.setViewportSize({ width: 874, height: 850 });
+  const actions = await admin.locator(".case-actions").evaluate((element) => ({
+    display: getComputedStyle(element).display,
+    gap: parseFloat(getComputedStyle(element).gap),
+    heights: Array.from(element.querySelectorAll("a")).map((link) => link.getBoundingClientRect().height),
+  }));
+  expect(actions.display).toBe("flex");
+  expect(actions.gap).toBeGreaterThanOrEqual(12);
+  expect(actions.heights.every((height) => height >= 44)).toBe(true);
+  await admin.screenshot({ path: info.outputPath("consultation-actions.png") });
+  await admin.getByRole("link", { name: "Consultation details", exact: true }).click();
+  await expect(admin.getByLabel("Follow-up date (optional)")).toHaveCount(0);
+  await admin.goto(caseLink!);
+  await admin.setViewportSize({ width: 1100, height: 850 });
   await expect(admin.getByRole("link", { name: "Contact on WhatsApp" })).toBeVisible();
   await admin.locator('select[name="opportunity"]').selectOption({ index: 1 });
   await admin.getByRole("button", { name: "Assign package" }).click();
@@ -213,10 +221,70 @@ test("consultation, receipt correction, admin package assignment, application an
   await student.getByRole("button", { name: "Send for review" }).click();
   await expect(student.getByText("Engineering is my first choice.", { exact: true })).toBeVisible();
 
+  await admin.getByRole("link", { name: "Edit application", exact: true }).click();
+  const staffForm = admin.locator("form").filter({ has: admin.locator('[name="institutionName"]') });
+  await staffForm.locator('[name="institutionName"]').fill("Staff entered college");
+  await staffForm.locator('[name="declaration"]').check();
+  await admin.getByRole("button", { name: "Save application for applicant" }).click();
+  await expect(admin.getByText("Application recorded. You can add files below.")).toBeVisible();
+  const extra = admin
+    .locator("article")
+    .filter({ has: admin.getByRole("heading", { name: "Other supporting documents", exact: true }) });
+  await extra.locator('input[type="file"]').setInputFiles([
+    { name: "staff-document.pdf", mimeType: "application/pdf", buffer: pdf },
+    { name: "staff-image.png", mimeType: "image/png", buffer: png },
+  ]);
+  await extra.getByRole("button", { name: "Upload files", exact: true }).click();
+  await expect(extra.getByRole("link", { name: "staff-document.pdf" })).toBeVisible();
+  await expect(extra.getByRole("link", { name: "staff-image.png" })).toBeVisible();
+  const fieldPosition = await staffForm.locator('[name="firstName"]').boundingBox();
+  const filePosition = await extra.locator('input[type="file"]').boundingBox();
+  expect(fieldPosition!.y).toBeLessThan(filePosition!.y);
+  await admin.getByRole("link", { name: "Review recorded application" }).click();
+  await expect(admin.getByText("Recorded by ISG staff", { exact: true })).toBeVisible();
+  await expect(admin.getByText("Staff entered college", { exact: true })).toBeVisible();
+  await student.goto("/dashboard/application");
+  await expect(student.getByRole("link", { name: "staff-document.pdf" })).toBeVisible();
+  await expect(student.locator('[name="institutionName"]')).toHaveValue("Staff entered college");
+
+  await student.goto("/dashboard");
+  const bell = student.getByRole("button", { name: /^Notifications/ });
+  await expect(bell).toHaveAccessibleName(/Notifications \(\d+\)/);
+  let notificationGets = 0;
+  student.on("request", (request) => {
+    if (request.url().endsWith("/api/notifications") && request.method() === "GET") notificationGets++;
+  });
+  for (let i = 0; i < 2; i++) {
+    await bell.click();
+    await expect(student.locator(".notification-popover")).toBeVisible();
+    await student.keyboard.press("Escape");
+  }
+  expect(notificationGets).toBeLessThanOrEqual(1);
+  await bell.click();
+  const popover = student.locator(".notification-popover");
+  await expect(popover.getByRole("heading", { name: "Notifications", exact: true })).toBeVisible();
+  let releasePatch!: () => void;
+  const delayedPatch = new Promise<void>((resolve) => {
+    releasePatch = resolve;
+  });
+  await student.route("**/api/notifications", async (route) => {
+    if (route.request().method() !== "PATCH") return route.continue();
+    const response = await route.fetch();
+    await delayedPatch;
+    await route.fulfill({ response });
+  });
+  await popover.getByRole("button", { name: "Mark all as read" }).click();
+  await expect(popover.getByRole("button", { name: "Mark all as read" })).toHaveCount(0);
+  releasePatch();
+  await student.unrouteAll({ behavior: "wait" });
+  await popover.getByRole("link").first().click();
+  await expect(popover).toHaveCount(0);
+
   await login(other, "other", "/dashboard");
   expect((await other.request.get(documentPath!)).status()).toBe(404);
   await other.goto(applicationUrl);
   await expect(other).toHaveURL(/\/dashboard$/);
+  await student.goto("/dashboard");
   await student.screenshot({ path: info.outputPath("student-application.png") });
   await admin.screenshot({ path: info.outputPath("admin-application.png") });
 });

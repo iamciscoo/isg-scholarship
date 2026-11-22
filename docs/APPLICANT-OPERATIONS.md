@@ -15,20 +15,23 @@ Implemented on the existing Next.js/Supabase platform, 18–19 November 2026. Th
 
 Meeting requests, meeting scheduling, applicant package selection and package acceptance controls are retired. The database denies these earlier mutation entry points. Each applicant has one active assigned package.
 
+After package payment is verified, authorized staff can enter application details and upload files on the applicant’s behalf from the consultation or application page. Staff submissions record the staff account and are labelled as staff records in the dashboard and PDF. They do not record an applicant electronic signature. Application fields appear before document uploads, and consultation uploads are limited to payment receipts.
+
 ## Staff controls
 
-| Page                                                  | Purpose                                                                                            |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `/admin/settings`                                     | Payment instructions, notification recipients and account roles                                    |
-| `/admin/payments`                                     | Paginated pending/all receipt claims and audited manual verification                               |
-| `/admin/receipts/[id]`                                | Administrator-only receipt review linked from staff alerts                                         |
-| `/admin/consultations`                                | Existing lead inbox, assignments and access to case support                                        |
-| `/admin/cases/[user_id]` / `/advisor/cases/[user_id]` | Applicant WhatsApp contact, consultation review and package assignment                             |
-| `/admin/declarations/[id]`                            | Immutable submitted form and private PDF review                                                    |
-| `/admin/applications` / `/advisor/applications`       | Scoped application tracking and history                                                            |
-| `/admin/opportunities`                                | Private named catalogue, source, deadline, requirements, fees, image and staff-only research notes |
-| `/admin/promotions`                                   | Separately authored broad public destinations, levels, fields, funding types and eligibility       |
-| `/admin/packages`                                     | ISG package scope/prices and explicit public visibility                                            |
+| Page                                                                          | Purpose                                                                                            |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `/admin/settings`                                                             | Payment instructions, notification recipients and account roles                                    |
+| `/admin/payments`                                                             | Paginated pending/all receipt claims and audited manual verification                               |
+| `/admin/receipts/[id]`                                                        | Administrator-only receipt review linked from staff alerts                                         |
+| `/admin/consultations`                                                        | Existing lead inbox, assignments and access to case support                                        |
+| `/admin/cases/[user_id]` / `/advisor/cases/[user_id]`                         | Applicant WhatsApp contact, consultation review and package assignment                             |
+| `/admin/declarations/[id]`                                                    | Immutable submitted form and private PDF review                                                    |
+| `/admin/cases/[user_id]/application` / `/advisor/cases/[user_id]/application` | Staff entry of applicant details and documents after package payment verification                  |
+| `/admin/applications` / `/advisor/applications`                               | Scoped application tracking and history                                                            |
+| `/admin/opportunities`                                                        | Private named catalogue, source, deadline, requirements, fees, image and staff-only research notes |
+| `/admin/promotions`                                                           | Separately authored broad public destinations, levels, fields, funding types and eligibility       |
+| `/admin/packages`                                                             | ISG package scope/prices and explicit public visibility                                            |
 
 No example students, opportunities, fees, payments or outcomes are seeded in development or production. Administrators must enter approved research, package scope and prices. Public programme-area guides are educational content, not a scholarship inventory. University Life is merged into Study Paths; legacy links redirect there. Home degree cards select the relevant level filter. Approved Pexels/campus photos retain their existing provenance in ASSETS.md.
 

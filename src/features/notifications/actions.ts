@@ -1,7 +1,7 @@
 "use server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { requireStaff, requireUser } from "@/lib/auth/session";
+import { requireStaff } from "@/lib/auth/session";
 export type NotificationState = { error?: string; message?: string };
 export async function publishNotification(
   _previous: NotificationState,
@@ -41,10 +41,4 @@ export async function publishNotification(
   if (error) return { error: "The notification could not be published. Check the recipient and try again." };
   revalidatePath("/admin/notifications");
   return { message: "Notification published. It is now available in the recipients’ ISG accounts." };
-}
-export async function markNotificationsRead(id: string | null) {
-  const { db } = await requireUser();
-  if (id !== null && !z.uuid().safeParse(id).success) return false;
-  const { error } = await db.rpc("read_account_notifications", { p_id: id });
-  return !error;
 }

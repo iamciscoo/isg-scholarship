@@ -31,11 +31,10 @@ async function shrink(file: File) {
 
 const labels: Record<CaseUploadKind, string> = {
   receipt: "Private payment receipt",
-  support: "Supporting files (optional)",
   document: "Document",
 };
 
-type UploadTarget = { kind: CaseUploadKind; category: string; application?: string };
+type UploadTarget = { kind: CaseUploadKind; category: string; application?: string; applicant?: string };
 
 async function upload(file: File, target: UploadTarget) {
   const prepared = await shrink(await prepareImage(file));
@@ -46,6 +45,7 @@ async function upload(file: File, target: UploadTarget) {
   data.set("kind", target.kind);
   data.set("category", target.category);
   if (target.application) data.set("application", target.application);
+  if (target.applicant) data.set("applicant", target.applicant);
   const response = await fetch("/api/case-files", { method: "POST", body: data });
   const result = (await response.json().catch(() => null)) as { id?: string; error?: string } | null;
   if (response.ok && result?.id) return;
@@ -56,14 +56,16 @@ async function upload(file: File, target: UploadTarget) {
 
 export function FileUpload({
   kind,
-  category = kind === "support" ? "consultation_support" : "payment_receipt",
+  category = "payment_receipt",
   application,
+  applicant,
   multiple = false,
   label = labels[kind],
 }: {
   kind: CaseUploadKind;
   category?: string;
   application?: string;
+  applicant?: string;
   multiple?: boolean;
   label?: string;
 }) {
@@ -89,7 +91,7 @@ export function FileUpload({
         const messages: string[] = [];
         for (const file of selected) {
           try {
-            await upload(file, { kind, category, application });
+            await upload(file, { kind, category, application, applicant });
           } catch (error) {
             const reason = error instanceof Error ? error.message : "Upload failed. Please try again.";
             const message =
@@ -129,13 +131,9 @@ export function FileUpload({
           }}
         />
       </label>
-      <p className="field-help">
-        Images or PDFs up to 4 MB each. PDFs may be saved as page images. Keep any digitally signed original.
-      </p>
+      <p className="field-help">Images or PDFs · 4 MB each. Keep the original PDF.</p>
       {kind === "receipt" && (
-        <p className="field-help">
-          ISG may share the receipt with its private staff WhatsApp group. Cover unrelated account details.
-        </p>
+        <p className="field-help">Shared privately with ISG staff. Hide unrelated bank details.</p>
       )}
       {errors.length > 0 && (
         <div role="alert" className="notice notice-error break-words">

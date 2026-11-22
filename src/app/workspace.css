@@ -203,6 +203,19 @@ td small {
   gap: 8px 16px;
   color: var(--muted);
 }
+.case-actions {
+  margin-block: 12px;
+  gap: 12px;
+}
+.case-actions > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
 .case-history a {
   text-transform: capitalize;
 }

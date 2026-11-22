@@ -1,7 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { markNotificationsRead } from "./actions";
+import { markInboxRead } from "./inbox-client";
 import { LoadingDots } from "@/components/ui/loading-dots";
 export function NotificationReadButton({ id = null }: { id?: string | null }) {
   const [pending, start] = useTransition();
@@ -16,7 +16,7 @@ export function NotificationReadButton({ id = null }: { id?: string | null }) {
           start(async () => {
             setError(false);
             try {
-              if (!(await markNotificationsRead(id))) {
+              if (!(await markInboxRead(id))) {
                 setError(true);
                 return;
               }

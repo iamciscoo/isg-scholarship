@@ -11,7 +11,6 @@ export const leadStages = [
 export const leadReviewSchema = z.object({
   id: z.uuid(),
   stage: z.enum(leadStages),
-  followUp: z.union([z.iso.date(), z.literal("")]),
 });
 export function stageLabel(stage: string) {
   return stage.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());

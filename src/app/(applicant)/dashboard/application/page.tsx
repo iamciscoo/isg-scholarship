@@ -59,7 +59,7 @@ export default async function ApplicationDetails() {
     record.current_declaration_id
       ? db
           .from("application_declarations")
-          .select("id,accepted_at")
+          .select("id,accepted_at,submission_method")
           .eq("user_id", user.id)
           .eq("id", record.current_declaration_id)
           .maybeSingle()
@@ -102,14 +102,16 @@ export default async function ApplicationDetails() {
               Download submitted application
             </Link>
           </div>
-          <p>Submitted {applicationDate(declaration.data.accepted_at)}</p>
+          <p>
+            {declaration.data.submission_method === "staff" ? "Recorded by ISG" : "Submitted"}{" "}
+            {applicationDate(declaration.data.accepted_at)}
+          </p>
           {needsInformation && (
             <p>Review the request below and send your corrections or additional documents.</p>
           )}
         </section>
       )}
       <ApplicationUpdates updates={updates.data} />
-      <DocumentPanel user={user.id} />
       {editable &&
         (declaration.data ? (
           <details className="workspace-panel package-gallery">
@@ -122,6 +124,7 @@ export default async function ApplicationDetails() {
             <FullApplicationForm initial={initial} />
           </section>
         ))}
+      <DocumentPanel user={user.id} />
       {declaration.data && needsInformation && (
         <section className="workspace-panel">
           <h2>Send requested updates</h2>

@@ -2,71 +2,24 @@
 import * as Popover from "@radix-ui/react-popover";
 import { Bell, CheckCheck } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useState } from "react";
 import { useLocale } from "@/lib/i18n/provider";
-import { markNotificationsRead } from "./actions";
-import type { Inbox } from "./types";
+import { useInbox } from "./use-inbox";
 export function NotificationBell({ signedIn }: { signedIn: boolean }) {
   const {
     locale,
     m: { ui: t },
   } = useLocale();
-  const [inbox, setInbox] = useState<Inbox | null>(null);
-  const [error, setError] = useState(false);
-  const [pending, start] = useTransition();
-  const path = usePathname();
-  const request = useRef<AbortController | null>(null);
+  const [open, setOpen] = useState(false);
+  const { inbox, error, pending, refresh, read } = useInbox(signedIn);
   const receiptTasks = inbox?.receiptTasks || [];
   const count = (inbox?.unread || 0) + (inbox?.receiptTaskCount || 0);
-  const refresh = useCallback(async () => {
-    if (!signedIn) return;
-    request.current?.abort();
-    const controller = new AbortController();
-    request.current = controller;
-    try {
-      const result = await fetch("/api/notifications", { cache: "no-store", signal: controller.signal });
-      if (!result.ok) throw new Error("inbox_unavailable");
-      const latest = await result.json();
-      if (request.current !== controller || controller.signal.aborted) return;
-      setInbox(latest);
-      setError(false);
-    } catch {
-      if (!controller.signal.aborted && request.current === controller) setError(true);
-    } finally {
-      if (request.current === controller) request.current = null;
-    }
-  }, [signedIn]);
-  useEffect(() => {
-    if (!signedIn) return;
-    const load = () => {
-      if (!document.hidden) void refresh();
-    };
-    load();
-    const interval = setInterval(() => {
-      if (!request.current) load();
-    }, 5000);
-    window.addEventListener("focus", load);
-    window.addEventListener("isg:notifications-read", load);
-    document.addEventListener("visibilitychange", load);
-    return () => {
-      request.current?.abort();
-      clearInterval(interval);
-      window.removeEventListener("focus", load);
-      window.removeEventListener("isg:notifications-read", load);
-      document.removeEventListener("visibilitychange", load);
-    };
-  }, [refresh, path, signedIn]);
-  const read = (id: string | null) =>
-    start(async () => {
-      if (await markNotificationsRead(id)) {
-        window.dispatchEvent(new Event("isg:notifications-read"));
-      } else setError(true);
-    });
   return (
     <Popover.Root
-      onOpenChange={(open) => {
-        if (open) void refresh();
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) void refresh();
       }}
     >
       <Popover.Trigger
@@ -92,65 +45,84 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
               </button>
             )}
           </div>
-          {!!receiptTasks.length && (
-            <ul className="notification-list" aria-label="Receipts to upload">
-              {receiptTasks.map((task) => (
-                <li key={task.link} className="is-unread">
-                  <h3>{task.replacement ? "Upload a replacement receipt" : "Upload your receipt"}</h3>
-                  <p>{task.title}</p>
-                  <div>
-                    <Link href={task.link}>Open payment →</Link>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-          {!signedIn ? (
-            <div className="notification-empty">
-              <p>{t.guestNotifications}</p>
-              <Link className="text-link" href="/login">
-                {t.signIn}
-              </Link>
-            </div>
-          ) : error && !inbox ? (
-            <div className="notification-empty">
-              <p role="alert">{t.retry}</p>
-              <button className="text-link" onClick={() => void refresh()}>
-                {t.readMore}
-              </button>
-            </div>
-          ) : !inbox ? (
-            <p className="notification-empty" role="status">
-              {t.wait}
-            </p>
-          ) : !inbox.items.length ? (
-            !receiptTasks.length && <p className="notification-empty">{t.emptyNotifications}</p>
-          ) : (
-            <ul className="notification-list">
-              {inbox.items.map((n) => (
-                <li key={n.id} className={n.is_read ? "" : "is-unread"}>
-                  <h3>{n.title}</h3>
-                  <p>{n.body}</p>
-                  <time dateTime={n.created_at}>
-                    {new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(n.created_at))}
-                  </time>
-                  <div>
-                    {n.link && (
-                      // Opening the details counts as reading it, so mark it before navigating away.
-                      <Link href={n.link} onClick={() => !n.is_read && void markNotificationsRead(n.id)}>
-                        {t.readMore}
+          <div className="notification-scroll">
+            {error && inbox && (
+              <p role="status" className="notification-empty">
+                Updates are delayed.{" "}
+                <button className="text-link" onClick={() => void refresh(true)}>
+                  Retry
+                </button>
+              </p>
+            )}
+            {!!receiptTasks.length && (
+              <ul className="notification-list" aria-label="Receipts to upload">
+                {receiptTasks.map((task) => (
+                  <li key={task.link} className="is-unread">
+                    <h3>{task.replacement ? "Upload a replacement receipt" : "Upload your receipt"}</h3>
+                    <p>{task.title}</p>
+                    <div>
+                      <Link href={task.link} onClick={() => setOpen(false)}>
+                        Open payment →
                       </Link>
-                    )}
-                    {!n.is_read && (
-                      <button onClick={() => read(n.id)} disabled={pending}>
-                        {t.markRead}
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {!signedIn ? (
+              <div className="notification-empty">
+                <p>{t.guestNotifications}</p>
+                <Link className="text-link" href="/login">
+                  {t.signIn}
+                </Link>
+              </div>
+            ) : error && !inbox ? (
+              <div className="notification-empty">
+                <p role="alert">{t.retry}</p>
+                <button className="text-link" onClick={() => void refresh(true)}>
+                  {t.readMore}
+                </button>
+              </div>
+            ) : !inbox ? (
+              <p className="notification-empty" role="status">
+                {t.wait}
+              </p>
+            ) : !inbox.items.length ? (
+              !receiptTasks.length && <p className="notification-empty">{t.emptyNotifications}</p>
+            ) : (
+              <ul className="notification-list">
+                {inbox.items.map((n) => (
+                  <li key={n.id} className={n.is_read ? "" : "is-unread"}>
+                    <h3>{n.title}</h3>
+                    <p>{n.body}</p>
+                    <time dateTime={n.created_at}>
+                      {new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(
+                        new Date(n.created_at),
+                      )}
+                    </time>
+                    <div>
+                      {n.link && (
+                        <Link
+                          href={n.link}
+                          onClick={() => {
+                            setOpen(false);
+                            if (!n.is_read) void read(n.id);
+                          }}
+                        >
+                          {t.readMore}
+                        </Link>
+                      )}
+                      {!n.is_read && (
+                        <button onClick={() => read(n.id)} disabled={pending}>
+                          {t.markRead}
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>

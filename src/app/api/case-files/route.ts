@@ -21,14 +21,6 @@ export async function POST(request: Request) {
     data: { user },
   } = await db.auth.getUser();
   if (!user) return Response.json({ error: "Sign in to upload." }, { status: 401 });
-  const { data: record, error: caseError } = await db
-    .from("consultation_cases")
-    .select("user_id,payment_status,completed_at")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (caseError)
-    return Response.json({ error: "Your consultation could not be loaded. Try again." }, { status: 503 });
-  if (!record) return Response.json({ error: "Submit your consultation first." }, { status: 403 });
   const contentType = request.headers.get("content-type") || "";
   if (!contentType.startsWith("multipart/form-data;"))
     return Response.json({ error: "Choose a valid file to upload." }, { status: 415 });
@@ -67,17 +59,31 @@ export async function POST(request: Request) {
       .regex(/^[a-z][a-z0-9_]{0,79}$/)
       .safeParse(fd.get("category"));
     const application = z.uuid().nullable().safeParse(fd.get("application"));
+    const applicant = z.uuid().nullable().safeParse(fd.get("applicant"));
     if (
       !(file instanceof File) ||
       !kindInput.success ||
       !application.success ||
+      !applicant.success ||
       !category.success ||
       (application.data && kindInput.data !== "receipt")
     )
       throw Error("Choose a valid file and category.");
     const kind = kindInput.data;
-    if (kind === "support" && category.data !== "consultation_support")
-      throw Error("Choose a valid consultation file.");
+    const owner = applicant.data || user.id;
+    const staffUpload = applicant.data !== null;
+    if (staffUpload) {
+      const { data: role } = await db.from("user_roles").select("role").eq("user_id", user.id).single();
+      if (!role || !["admin", "advisor"].includes(role.role) || kind !== "document" || application.data)
+        return Response.json({ error: "You cannot upload for this applicant." }, { status: 403 });
+    }
+    const { data: record, error: caseError } = await db
+      .from("consultation_cases")
+      .select("user_id,payment_status,completed_at")
+      .eq("user_id", owner)
+      .maybeSingle();
+    if (caseError) throw Error("The consultation could not be loaded. Try again.");
+    if (!record) return Response.json({ error: "Consultation unavailable." }, { status: 403 });
     if (
       kind === "receipt" &&
       !application.data &&
@@ -90,7 +96,7 @@ export async function POST(request: Request) {
         .from("study_applications")
         .select("package_state,status,proposal")
         .eq("id", application.data)
-        .eq("user_id", user.id)
+        .eq("user_id", owner)
         .maybeSingle();
       if (
         !target ||
@@ -106,7 +112,7 @@ export async function POST(request: Request) {
       const { data: documentRequest, error } = await db
         .from("document_requests")
         .select("id")
-        .eq("user_id", user.id)
+        .eq("user_id", owner)
         .eq("category", category.data)
         .maybeSingle();
       if (error || !documentRequest)
@@ -114,7 +120,7 @@ export async function POST(request: Request) {
     }
     const validated = await validateCaseFile(file);
     const id = randomUUID(),
-      path = `${user.id}/${id}.${validated.extension}`;
+      path = `${owner}/${id}.${validated.extension}`;
     const upload = await admin.storage
       .from("case-files")
       .upload(path, validated.data, { contentType: validated.mime, upsert: false });
@@ -123,19 +129,31 @@ export async function POST(request: Request) {
     const originalName = (typeof suppliedName === "string" ? suppliedName : file.name)
       .replace(/[\p{Cc}\p{Cf}\/\\]/gu, "")
       .trim();
-    const registered = await admin.rpc("register_uploaded_case_file", {
-      p_user: user.id,
-      p_id: id,
-      p_kind: kind,
-      p_category: category.data,
-      p_path: path,
-      p_mime: validated.mime,
-      p_bytes: validated.data.length,
-      p_hash: createHash("sha256").update(validated.data).digest("hex"),
-      p_application: application.data,
-      p_share_receipt: shareReceipt,
-      p_name: Array.from(originalName).slice(0, 180).join(""),
-    });
+    const name = Array.from(originalName).slice(0, 180).join("");
+    const registered = staffUpload
+      ? await db.rpc("register_staff_application_file", {
+          p_user: owner,
+          p_id: id,
+          p_category: category.data,
+          p_path: path,
+          p_mime: validated.mime,
+          p_bytes: validated.data.length,
+          p_hash: createHash("sha256").update(validated.data).digest("hex"),
+          p_name: name,
+        })
+      : await admin.rpc("register_uploaded_case_file", {
+          p_user: owner,
+          p_id: id,
+          p_kind: kind,
+          p_category: category.data,
+          p_path: path,
+          p_mime: validated.mime,
+          p_bytes: validated.data.length,
+          p_hash: createHash("sha256").update(validated.data).digest("hex"),
+          p_application: application.data,
+          p_share_receipt: shareReceipt,
+          p_name: name,
+        });
     if (registered.error) {
       if (/^(22|23|42|P0)/.test(registered.error.code)) await admin.storage.from("case-files").remove([path]);
       console.error("case_file_registration_failed", { code: registered.error.code });

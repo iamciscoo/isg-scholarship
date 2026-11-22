@@ -58,6 +58,14 @@ export async function ApplicationDetail({
             <Link className="text-link" href={`${area}/cases/${application.user_id}`}>
               View consultation
             </Link>
+            {paid && (
+              <Link
+                className="button button-outline"
+                href={`${area}/cases/${application.user_id}/application`}
+              >
+                Enter application details
+              </Link>
+            )}
             {record.current_declaration_id && (
               <Link
                 className="button button-primary"

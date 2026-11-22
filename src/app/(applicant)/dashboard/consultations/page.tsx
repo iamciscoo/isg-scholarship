@@ -4,7 +4,6 @@ import { requireUser } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { Button } from "@/components/ui/button";
 import { PaymentPanel } from "@/features/consultations/payment-panel";
-import { SupportingFiles } from "@/features/consultations/supporting-files";
 
 export default async function Consultations() {
   const { db, user, role } = await requireUser();
@@ -32,7 +31,7 @@ export default async function Consultations() {
       .from("case_files")
       .select("id,user_id,kind,mime,category,review_status,review_note,created_at,original_name")
       .eq("user_id", user.id)
-      .in("kind", ["receipt", "support"])
+      .eq("kind", "receipt")
       .is("application_id", null)
       .order("created_at", { ascending: false }),
     db.rpc("consultation_payment_instructions"),
@@ -57,7 +56,6 @@ export default async function Consultations() {
       {!paid && payment}
       {paid && <p>ISG will contact you on WhatsApp to discuss your study plans.</p>}
       {paid && payment}
-      <SupportingFiles files={(files.data || []).filter((file) => file.kind === "support")} />
     </Workspace>
   );
 }

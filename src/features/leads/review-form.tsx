@@ -21,10 +21,6 @@ export function ReviewForm({ lead }: { lead: Lead }) {
             ))}
           </select>
         </div>
-        <div className="field">
-          <label htmlFor="followUp">Follow-up date (optional)</label>
-          <input type="date" name="followUp" id="followUp" defaultValue={lead.follow_up || ""} />
-        </div>
       </div>
       {state.error && (
         <p role="alert" className="notice notice-error">

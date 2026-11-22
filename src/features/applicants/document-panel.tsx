@@ -3,7 +3,15 @@ import { createClient } from "@/lib/supabase/server";
 import { FileUpload } from "@/features/consultations/file-upload";
 import { applicationDocumentCategories, applicationDocumentKeys } from "@/lib/validation/application-review";
 
-export async function DocumentPanel({ user, staff = false }: { user: string; staff?: boolean }) {
+export async function DocumentPanel({
+  user,
+  staff = false,
+  editable = false,
+}: {
+  user: string;
+  staff?: boolean;
+  editable?: boolean;
+}) {
   const db = await createClient();
   const [requests, files] = await Promise.all([
     db.from("document_requests").select("category,label,required,note").eq("user_id", user),
@@ -49,10 +57,11 @@ export async function DocumentPanel({ user, staff = false }: { user: string; sta
               <span className="status-pill">{request.required ? "Required" : "Optional"}</span>
               <h3>{request.label}</h3>
               {request.note && <p className="preserve-lines">{request.note}</p>}
-              {!staff && hasRequest && (
+              {(!staff || editable) && hasRequest && (
                 <FileUpload
                   kind="document"
                   category={request.category}
+                  applicant={staff ? user : undefined}
                   multiple={multiple}
                   label={`Choose ${request.label.toLowerCase()}`}
                 />
