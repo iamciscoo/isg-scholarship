@@ -6,13 +6,14 @@ Implemented on the existing Next.js/Supabase platform, 18–19 November 2026. Th
 
 ## Applicant journey
 
-1. Register, then complete the short consultation: contact details, education stage, study interests, broad destinations/timing and general questions. Passports, certificates, transcripts and guardian details are deferred. Known contact fields continue to sync with the profile.
-2. The consultation workspace shows the one-time **TZS 50,000** fee, privately managed CRDB instructions and receipt upload. Uploaded receipts remain **Pending verification** until an administrator matches funds received. Rejected claims can be corrected; verified accounts cannot be charged another consultation fee through this workflow.
-3. Verified payment unlocks follow-up questions and additional meeting requests without another consultation charge. Availability still requires confirmation. Advisors schedule real Google Meet links with dates, duration and a recorded time zone. Overlapping ISG bookings are rejected. Email is queued and the link appears in the workspace; meeting/request/message history is retained and paginated.
-4. A completed consultation unlocks the full application details and document requests. Contact and study information is prefilled; drafts can be saved. The later form follows the supplied Word reference, including education institution, address and guardian/nominated contact. Guardian DOB is optional and only needed if specifically requested. Permission to share the contact's information is recorded.
-5. Submitting with the declaration records its version, acceptance time, immutable answer snapshot and hash. The current acceptance is tracked explicitly: A → B → A produces the correct latest copy; consecutive identical retries do not duplicate acceptance or alerts. Applicants and authorized staff can download its PDF. Validation errors preserve entered answers and checkboxes.
-6. Advisors propose actual private opportunities. Applicants see the provider, requirements, deadlines and known provider fees before approving each independent application. Approval is tied to the disclosed proposal and accepted form copy. Required documents must be approved before the Applying stage.
-7. Each application has Starting, Applying, Waiting for decision, Accepted, Rejected, Cancelled and Completed workflow states. Official provider decisions, evidence/date, next steps and dated history remain separate. Only the applicant confirms commitment to an accepted place. Closing other workflows is an explicit choice and does not pretend to withdraw from external providers automatically.
+1. Register and submit the short consultation form.
+2. Upload the consultation receipt. An admin approves it or requests a replacement.
+3. ISG contacts the applicant directly on WhatsApp using the saved number.
+4. An admin assigns a package. The applicant pays its listed fee and uploads a package receipt.
+5. Package payment verification opens the application form and document uploads. The form follows the supplied Word reference.
+6. The applicant submits their details and files. Admins review the submission and update one application status, with an optional note visible to the applicant.
+
+Meeting requests, meeting scheduling, applicant package selection and package acceptance controls are retired. The database denies these earlier mutation entry points. Each applicant has one active assigned package.
 
 ## Staff controls
 
@@ -22,7 +23,7 @@ Implemented on the existing Next.js/Supabase platform, 18–19 November 2026. Th
 | `/admin/payments`                                     | Paginated pending/all receipt claims and audited manual verification                               |
 | `/admin/receipts/[id]`                                | Administrator-only receipt review linked from staff alerts                                         |
 | `/admin/consultations`                                | Existing lead inbox, assignments and access to case support                                        |
-| `/admin/cases/[user_id]` / `/advisor/cases/[user_id]` | Authorized meetings, follow-ups, declarations, documents and new proposals                         |
+| `/admin/cases/[user_id]` / `/advisor/cases/[user_id]` | Applicant WhatsApp contact, consultation review and package assignment                             |
 | `/admin/declarations/[id]`                            | Immutable submitted form and private PDF review                                                    |
 | `/admin/applications` / `/advisor/applications`       | Scoped application tracking and history                                                            |
 | `/admin/opportunities`                                | Private named catalogue, source, deadline, requirements, fees, image and staff-only research notes |

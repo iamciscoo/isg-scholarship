@@ -67,17 +67,19 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
           </Link>
         )}
       </div>
-      {current && (
+      {current && admin && (
         <section className="workspace-panel">
-          <h2>Post a review update</h2>
-          <ActionForm action={reviewFullApplication} label="Post update">
+          <h2>Application status</h2>
+          <ActionForm action={reviewFullApplication} label="Save status">
             <input name="declaration" type="hidden" value={id} />
             <input name="previous" type="hidden" value={status} />
             <label>
               Application status
               <select name="status" defaultValue={status}>
                 {fullApplicationStatuses
-                  .filter((value) => value !== "submitted" || value === status)
+                  .filter(
+                    (value) => value === status || !["submitted", "approved", "declined"].includes(value),
+                  )
                   .map((value) => (
                     <option key={value} value={value}>
                       {fullApplicationStatusLabel(value)}
@@ -86,13 +88,11 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
               </select>
             </label>
             <label>
-              Update for the applicant
+              Note for the applicant (optional)
               <textarea
                 name="note"
-                required
-                minLength={3}
                 maxLength={2000}
-                placeholder="Explain what happened or what the applicant should send next."
+                placeholder="Add instructions if the applicant needs to do something."
               />
             </label>
           </ActionForm>

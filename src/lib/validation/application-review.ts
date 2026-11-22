@@ -4,6 +4,12 @@ export const fullApplicationStatusLabels = {
   needs_information: "Information requested",
   approved: "Approved by ISG",
   declined: "Declined by ISG",
+  applying: "Applying",
+  waiting: "Waiting for decision",
+  accepted: "Accepted",
+  rejected: "Rejected",
+  completed: "Completed",
+  cancelled: "Cancelled",
 } as const;
 
 export type FullApplicationStatus = keyof typeof fullApplicationStatusLabels;

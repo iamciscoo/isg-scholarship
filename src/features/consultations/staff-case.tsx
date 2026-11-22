@@ -1,18 +1,15 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
-import { CaseSupport } from "./case-support";
-import Link from "next/link";
 import { ActionForm } from "@/components/forms/action-form";
 import { proposeApplication } from "@/features/applicants/tracking-actions";
-import { getAdvisors, getLead } from "@/server/repositories/leads";
-import { AdvisorAssignment } from "./advisor-assignment";
+import { getLead } from "@/server/repositories/leads";
 import { packageStatus } from "@/features/applicants/package-status";
-import { fullApplicationStatusLabel } from "@/lib/validation/application-review";
 import { receiptLabels } from "./progress";
-import { DocumentPanel } from "@/features/applicants/document-panel";
 import { SupportingFiles } from "./supporting-files";
+
 export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
   const { db, user, role } = await requireStaff(admin);
   if (!z.uuid().safeParse(id).success) notFound();
@@ -23,136 +20,96 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
     .maybeSingle();
   if (error) throw Error("Consultation unavailable");
   if (!record) notFound();
-  const { data: profile, error: profileError } = await db
-    .from("profiles")
-    .select("first_name,last_name,phone")
-    .eq("id", id)
-    .single();
-  if (profileError) throw Error("Applicant details unavailable");
-  const [advisor, assessment, receipts, applications, advisors, support] = await Promise.all([
-    db.rpc("consultation_advisor", { p_user: id }),
+  const [assessment, receipt, applications, support, opportunities] = await Promise.all([
     getLead(db, record.lead_id),
-    admin
-      ? db
-          .from("case_files")
-          .select("id,review_status,review_note")
-          .eq("user_id", id)
-          .eq("kind", "receipt")
-          .is("application_id", null)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle()
-      : { data: null, error: null },
+    db
+      .from("case_files")
+      .select("id,review_status,review_note")
+      .eq("user_id", id)
+      .eq("kind", "receipt")
+      .is("application_id", null)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
     db
       .from("study_applications")
       .select("id,proposal,status,package_state")
       .eq("user_id", id)
-      .order("created_at", { ascending: false })
-      .limit(25),
-    admin && record.payment_status === "verified" ? getAdvisors(db) : [],
-    db
-      .from("case_files")
-      .select("id,original_name")
-      .eq("user_id", id)
-      .eq("kind", "support")
+      .neq("status", "Cancelled")
       .order("created_at", { ascending: false }),
+    db.from("case_files").select("id,original_name").eq("user_id", id).eq("kind", "support"),
+    record.payment_status === "verified" ? db.rpc("staff_opportunity_choices") : { data: [], error: null },
   ]);
-  if (advisor.error || assessment.error || receipts.error || applications.error || support.error || !assessment.lead)
+  if (
+    assessment.error ||
+    !assessment.lead ||
+    receipt.error ||
+    applications.error ||
+    support.error ||
+    opportunities.error
+  )
     throw Error("Consultation details unavailable");
-  const lead = assessment.lead;
-  const form = lead.eligibility_assessments;
+  const form = assessment.lead.eligibility_assessments;
+  const phone = form.phone.replace(/\D/g, "");
   const area = admin ? "admin" : "advisor";
-  const opportunities = advisor.data ? await db.rpc("staff_opportunity_choices") : { data: [], error: null };
-  if (opportunities.error) throw Error("Scholarship packages unavailable");
   return (
     <Workspace role={role} email={user.email || ""} active="consultations">
-      <h1>{[profile.first_name, profile.last_name].filter(Boolean).join(" ") || "Applicant consultation"}</h1>
-      <p>{form.reference} · {form.study_level} · {form.preferred_fields}</p>
+      <h1>
+        {form.first_name} {form.last_name}
+      </h1>
+      <p>
+        {form.reference} · {form.preferred_fields}
+      </p>
       <section className="workspace-panel">
-        <h2>Consultation status</h2>
-        <dl className="review-grid">
-          <div><dt>Consultation</dt><dd>{record.completed_at ? "Complete" : record.payment_status === "verified" ? "Approved · call available" : "Submitted"}</dd></div>
-          <div><dt>Receipt</dt><dd>{receiptLabels[record.payment_status]}</dd></div>
-          <div><dt>Scholarship application</dt><dd>{record.current_declaration_id ? fullApplicationStatusLabel(record.application_status) : record.completed_at ? "Unlocked" : "Locked"}</dd></div>
-        </dl>
+        <span className="status-pill">{receiptLabels[record.payment_status]}</span>
         <div className="workspace-action-row">
-          {receipts.data && (
-            <Link className="button button-primary" href={`/admin/receipts/${receipts.data.id}`}>
-              {receipts.data.review_status === "pending" ? "Review receipt" : "View receipt"}
+          {receipt.data && (
+            <Link className="text-link" href={`/admin/receipts/${receipt.data.id}`}>
+              {receipt.data.review_status === "pending" ? "Review receipt" : "View receipt"}
             </Link>
           )}
-          <Link className="text-link" href={`/${area}/leads/${record.lead_id}`}>Review consultation details</Link>
-          {record.current_declaration_id && (
-            <Link className="text-link" href={`/${area}/declarations/${record.current_declaration_id}`}>Review full application</Link>
-          )}
+          <Link className="text-link" href={`/${area}/leads/${record.lead_id}`}>
+            Consultation details
+          </Link>
+          <a className="text-link" href={`https://wa.me/${phone}`} target="_blank" rel="noopener noreferrer">
+            Contact on WhatsApp
+          </a>
         </div>
-        {receipts.data?.review_note && <p>{receipts.data.review_note}</p>}
+        {receipt.data?.review_note && <p>{receipt.data.review_note}</p>}
       </section>
-      <SupportingFiles files={support.data || []} staff />
-      <CaseSupport record={record} advisor={advisor.data} phone={profile.phone || form.phone} staff />
-      {record.completed_at && !record.current_declaration_id && (
-        <details className="workspace-panel package-gallery">
-          <summary>Application documents</summary>
-          <DocumentPanel user={id} staff />
-        </details>
-      )}
-      {admin && record.payment_status === "verified" && (
-        <AdvisorAssignment applicant={id} assigned={lead.advisor_id} advisors={advisors} />
-      )}
-      {advisor.data || applications.data?.length ? (
+      {record.payment_status === "verified" && (
         <section className="workspace-panel">
-          <h2>Scholarship packages</h2>
-          {!!applications.data?.length && (
-            <ul className="notification-history">
-              {applications.data.map((application) => (
-                <li key={application.id}>
-                  <Link
-                    href={`/${admin ? "admin" : "advisor"}/applications/${application.id}`}
-                    className="text-link"
-                  >
-                    {application.proposal?.name || "Scholarship package"}
-                  </Link>
-                  <span className="status-pill">
-                    {packageStatus(application.package_state, application.status)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-          {!advisor.data ? null : !opportunities.data?.length ? (
-            <p>
-              No active scholarship packages.{" "}
-              {admin ? (
-                <Link className="text-link" href="/admin/packages">
-                  Create a package →
+          <h2>Assigned package</h2>
+          {applications.data.length ? (
+            applications.data.map((application) => (
+              <div key={application.id}>
+                <Link className="text-link" href={`/${area}/applications/${application.id}`}>
+                  {application.proposal?.name}
                 </Link>
-              ) : (
-                "Ask an admin to add one."
-              )}
-            </p>
-          ) : (
-            <ActionForm action={proposeApplication} label="Recommend package">
+                <p>{packageStatus(application.package_state, application.status)}</p>
+              </div>
+            ))
+          ) : admin ? (
+            <ActionForm action={proposeApplication} label="Assign package">
               <input type="hidden" name="user" value={id} />
               <label>
-                Scholarship package
+                Package
                 <select name="opportunity" required>
                   <option value="">Choose a package</option>
-                  {opportunities.data.map(
-                    (o: { id: string; name: string; provider: string; destination: string }) => (
-                      <option key={o.id} value={o.id}>
-                        {o.name} · {o.provider} · {o.destination}
-                      </option>
-                    ),
-                  )}
+                  {(opportunities.data || []).map((item: { id: string; name: string }) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
                 </select>
               </label>
             </ActionForm>
+          ) : (
+            <p>An administrator will assign the package.</p>
           )}
-          <Link className="text-link" href={`/${admin ? "admin" : "advisor"}/applications`}>
-            View application tracking →
-          </Link>
         </section>
-      ) : null}
+      )}
+      <SupportingFiles files={support.data || []} staff />
     </Workspace>
   );
 }

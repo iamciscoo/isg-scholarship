@@ -59,12 +59,17 @@ try {
       .filter((f) => f >= "20261119222344")
       .map((f) => `supabase/migrations/${f}`),
     "tests/integration/scholarship-packages.sql",
-    ...migrations.slice(advisorFlow).map((f) => `supabase/migrations/${f}`),
+    ...migrations
+      .slice(advisorFlow)
+      .filter((f) => f < "202611220051")
+      .map((f) => `supabase/migrations/${f}`),
     "tests/integration/notification-delivery.sql",
     "tests/integration/advisor-package-flow.sql",
     "tests/integration/case-uploads.sql",
     "tests/integration/application-review.sql",
     "tests/integration/consultation-workflow.sql",
+    ...migrations.filter((f) => f >= "202611220051").map((f) => `supabase/migrations/${f}`),
+    "tests/integration/admin-led-workflow.sql",
     "scripts/reset-consultations-and-packages.sql",
     "tests/integration/consultation-reset.sql",
   ];

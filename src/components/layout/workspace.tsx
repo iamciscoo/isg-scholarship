@@ -6,7 +6,6 @@ import Link from "next/link";
 import {
   Bell,
   ClipboardList,
-  GraduationCap,
   Home,
   Mail,
   CircleCheck,
@@ -81,7 +80,14 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
               { href: "/admin/settings", label: "Team & notifications", icon: CircleCheck, id: "settings" },
               { href: "/admin/website", label: "Website images", icon: ImageIcon, id: "website" },
             ]
-          : [{ href: `${base}/applications`, label: "Applications", icon: ClipboardList, id: "applications" }]),
+          : [
+              {
+                href: `${base}/applications`,
+                label: "Applications",
+                icon: ClipboardList,
+                id: "applications",
+              },
+            ]),
       ]
     : [
         { href: "/dashboard", label: "My overview", icon: Home, id: "overview" },
@@ -93,12 +99,6 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
           id: "consultations",
         },
         { href: "/dashboard/applications", label: "Applications", icon: ClipboardList, id: "applications" },
-        {
-          href: "/dashboard/packages",
-          label: "Scholarship packages",
-          icon: GraduationCap,
-          id: "packages",
-        },
       ];
   const navigation = links.map((item) => ({
     ...item,

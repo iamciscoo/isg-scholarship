@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { ActionForm } from "@/components/forms/action-form";
 import { createClient } from "@/lib/supabase/server";
 import { FileUpload } from "@/features/consultations/file-upload";
 import { ReceiptPreview } from "@/features/consultations/receipt-preview";
-import { approveApplication } from "./tracking-actions";
 
 export async function PackageProgress({
   id,
@@ -41,35 +39,11 @@ export async function PackageProgress({
   if (instructions.error || receipt.error) throw Error("Package receipt unavailable");
   return (
     <section className="workspace-panel payment-panel">
-      <h2>{state === "interested" || state === "recommended" ? "Next step" : "Package payment"}</h2>
+      <h2>Package payment</h2>
       {status === "Cancelled" ? (
         <p>This application is closed.</p>
       ) : (
         <>
-          {state === "interested" && (
-            <p>
-              {staff
-                ? "Discuss the applicant’s interest, then recommend the package from their consultation."
-                : "Interest saved. Discuss this package with your assigned advisor."}
-            </p>
-          )}
-          {state === "recommended" &&
-            (staff ? (
-              <p>Waiting for the applicant to confirm this package.</p>
-            ) : (
-              <ActionForm action={approveApplication} label="Save my decision">
-                <input type="hidden" name="id" value={id} />
-                <p>Confirm after you and your advisor agree to proceed.</p>
-                <label>
-                  Decision
-                  <select name="approve" required defaultValue="">
-                    <option value="">Choose your decision</option>
-                    <option value="true">Confirm this package</option>
-                    <option value="false">Decline this package</option>
-                  </select>
-                </label>
-              </ActionForm>
-            ))}
           {canUpload && (
             <>
               <p>
@@ -95,7 +69,7 @@ export async function PackageProgress({
             </>
           )}
           {state === "pending_verification" && (
-            <p>ISG is checking the receipt. The advisor can start after payment is verified.</p>
+            <p>ISG is checking your receipt. Your application form opens after verification.</p>
           )}
           {state === "paid" && (
             <p>{fee === 0 ? "No package fee is due." : "The full package fee has been verified."}</p>

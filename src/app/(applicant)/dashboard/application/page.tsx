@@ -19,14 +19,32 @@ export default async function ApplicationDetails() {
   if (error) throw Error("Application access unavailable");
   if (!record?.completed_at || record.payment_status !== "verified")
     return (
-      <Workspace role={role} email={user.email || ""} active="application">
+      <Workspace role={role} email={user.email || ""} active="applications">
         <h1>Scholarship application</h1>
         <section className="workspace-panel">
-          <p>Your advisor will unlock the application after your consultation.</p>
+          <p>Your application form opens after ISG verifies your package payment.</p>
           <Link href="/dashboard/consultations" className="text-link">
             View consultation →
           </Link>
         </section>
+      </Workspace>
+    );
+  const paidPackage = await db
+    .from("study_applications")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("package_state", "paid")
+    .neq("status", "Cancelled")
+    .limit(1);
+  if (paidPackage.error) throw Error("Package payment unavailable");
+  if (!paidPackage.data?.length)
+    return (
+      <Workspace role={role} email={user.email || ""} active="applications">
+        <h1>Scholarship application</h1>
+        <p>Your application form opens after ISG verifies your package payment.</p>
+        <Link href="/dashboard/applications" className="text-link">
+          View package payment
+        </Link>
       </Workspace>
     );
   const [draft, assessment, declaration, updates] = await Promise.all([
@@ -71,10 +89,10 @@ export default async function ApplicationDetails() {
     email: user.email || "",
   };
   const status = record.application_status;
-  const editable = status !== "approved" && status !== "declined";
+  const editable = !status || status === "submitted" || status === "needs_information";
   const needsInformation = status === "needs_information";
   return (
-    <Workspace role={role} email={user.email || ""} active="application">
+    <Workspace role={role} email={user.email || ""} active="applications">
       <h1>Scholarship application</h1>
       {declaration.data && (
         <section className="workspace-panel">

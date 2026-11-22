@@ -13,15 +13,15 @@ const journey = [
   ],
   [
     "Discuss your options",
-    "After verifying payment, ISG assigns an advisor. You can then send questions or request a Google Meet in Consultations.",
+    "After verifying payment, ISG contacts you on WhatsApp to discuss your study plans.",
   ],
   [
-    "Explore and agree on a package",
-    "Browse packages in Applications and save the ones you’re interested in. Discuss them with your advisor and confirm the package they recommend.",
+    "Receive your package",
+    "Your admin assigns a suitable package. Its details, fee and payment instructions appear in Applications.",
   ],
   [
     "Pay for the agreed package",
-    "Pay the full ISG package fee and upload its receipt in the application. Your advisor starts after ISG verifies the payment.",
+    "Pay the full ISG package fee and upload its receipt in the application. Once ISG verifies payment, complete the application form and upload your documents.",
   ],
   [
     "Follow the outcome",

@@ -61,7 +61,7 @@ async function samplePdf() {
   return result;
 }
 
-test("consultation, receipt correction, WhatsApp call, application and review", async ({
+test("consultation, receipt correction, admin package assignment, application and review", async ({
   browser,
   baseURL,
 }, info) => {
@@ -81,9 +81,21 @@ test("consultation, receipt correction, WhatsApp call, application and review", 
       .toBuffer(),
   ]);
   await Promise.all([login(student, "student", "/dashboard"), login(admin, "admin", "/admin")]);
+  await admin.goto("/admin/packages");
+  for (const [name, value] of Object.entries({
+    name: "Local workflow QA",
+    provider: "QA University",
+    destination: "Canada",
+    studyLevel: "Undergraduate",
+    field: "Engineering",
+    packageFee: "100000",
+  }))
+    await admin.locator(`[name="${name}"]`).fill(value);
+  await admin.getByRole("button", { name: "Create package", exact: true }).click();
+  await expect(admin.getByText("Scholarship package created.")).toBeVisible();
   await student.goto("/dashboard/application");
   await expect(
-    student.getByText("Your advisor will unlock the application after your consultation."),
+    student.getByText("Your application form opens after ISG verifies your package payment."),
   ).toBeVisible();
   await submitConsultation(student);
 
@@ -125,21 +137,30 @@ test("consultation, receipt correction, WhatsApp call, application and review", 
   await expect(admin.getByRole("heading", { name: /· approved/i })).toBeVisible();
 
   await student.reload();
-  await student.getByRole("button", { name: "Request WhatsApp call" }).click();
-  await expect(student.getByText("Applicant requested a call.")).toBeVisible();
+  await expect(student.getByRole("button", { name: /Request.*call|Request.*meeting/ })).toHaveCount(0);
+  await student.goto("/dashboard/application");
+  await expect(
+    student.getByText("Your application form opens after ISG verifies your package payment."),
+  ).toBeVisible();
   await admin.goto(caseLink!);
-  await expect(admin.getByText("Applicant requested a call.")).toBeVisible();
-  await admin.getByRole("button", { name: "Cancel call request" }).click();
-  await admin.getByRole("button", { name: "Request WhatsApp call" }).click();
-  await expect(admin.getByText("ISG requested a call.")).toBeVisible();
+  await expect(admin.getByRole("link", { name: "Contact on WhatsApp" })).toBeVisible();
+  await admin.locator('select[name="opportunity"]').selectOption({ index: 1 });
+  await admin.getByRole("button", { name: "Assign package" }).click();
+  await expect(admin.getByRole("link", { name: "Local workflow QA", exact: true })).toBeVisible();
+  await student.goto("/dashboard/applications");
+  await student.getByRole("link", { name: "View application" }).click();
+  await expect(student.getByRole("button", { name: "Save my decision" })).toHaveCount(0);
+  await student
+    .getByLabel("Private payment receipt")
+    .setInputFiles({ name: "package-receipt.pdf", mimeType: "application/pdf", buffer: pdf });
+  await student.getByRole("button", { name: "Upload receipt" }).click();
+  await expect(
+    student.getByText("ISG is checking your receipt. Your application form opens after verification."),
+  ).toBeVisible({ timeout: 20000 });
+  await openReceipt();
+  await admin.getByRole("button", { name: "Verify payment received" }).click();
   await student.reload();
-  await expect(student.getByText("ISG requested a call.")).toBeVisible();
-  await admin.getByText("Complete consultation and unlock application", { exact: true }).click();
-  await admin.getByLabel("The consultation has taken place.").check();
-  await admin.getByRole("button", { name: "Unlock scholarship application" }).click();
-  await expect(admin.getByRole("button", { name: "Unlock scholarship application" })).toHaveCount(0);
-  await student.reload();
-  await student.getByRole("link", { name: "Open scholarship application" }).click();
+  await student.getByRole("link", { name: "Fill application form" }).click();
   await expect(student.getByRole("heading", { name: "Application details" })).toBeVisible();
 
   const awards = student
@@ -169,7 +190,8 @@ test("consultation, receipt correction, WhatsApp call, application and review", 
   await expect(student.getByRole("link", { name: "Download submitted application" })).toBeVisible();
 
   await admin.goto("/admin/applications");
-  await admin.getByRole("link", { name: "QA Scholar" }).click();
+  await admin.getByRole("link", { name: "View application" }).click();
+  await admin.getByRole("link", { name: "Review application", exact: true }).click();
   await expect(admin.getByText("QA College", { exact: true })).toBeVisible();
   await expect(admin.getByRole("link", { name: "award-two.png" })).toBeVisible();
   const applicationUrl = admin.url();
@@ -180,8 +202,8 @@ test("consultation, receipt correction, WhatsApp call, application and review", 
   expect(file.headers()["content-disposition"]).toMatch(/^attachment/);
   const reviewNote = "Please confirm your preferred programme.";
   await admin.getByLabel("Application status").selectOption("needs_information");
-  await admin.getByLabel("Update for the applicant").fill(reviewNote);
-  await admin.getByRole("button", { name: "Post update" }).click();
+  await admin.getByLabel("Note for the applicant (optional)").fill(reviewNote);
+  await admin.getByRole("button", { name: "Save status" }).click();
   await expect(admin.getByText(reviewNote, { exact: true })).toBeVisible();
   await student.goto("/dashboard");
   await expect(student.getByText("Information requested", { exact: true }).first()).toBeVisible();

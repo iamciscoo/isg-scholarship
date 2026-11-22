@@ -18,8 +18,8 @@ export default function Pricing() {
             Consultation · TZS 50,000 <span className="fee-usd">USD 20</span>
           </h2>
           <p>
-            Pay once, then upload your receipt in your workspace. Follow-up questions and further meeting
-            requests are included.
+            Pay once, then upload your receipt in your workspace. ISG will contact you on WhatsApp after
+            verifying payment.
           </p>
           <div className="mt-6">
             <Button asChild>

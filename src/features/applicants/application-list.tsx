@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
-import { PreviousPackageQuote } from "./package-panel";
 import { packageStatus } from "./package-status";
-import { applicationStatuses, proposalSchema } from "@/lib/validation/opportunities";
+import { proposalSchema } from "@/lib/validation/opportunities";
 import { usdLabel } from "@/lib/format";
-export type ApplicationQuery = { page?: string; status?: string; view?: string };
+import { fullApplicationStatusLabel } from "@/lib/validation/application-review";
+export type ApplicationQuery = { page?: string };
 export async function ApplicationList({
   query,
   staff = false,
@@ -20,67 +20,47 @@ export async function ApplicationList({
   const page = Math.max(1, Math.min(100000, Number.parseInt(query.page || "1", 10) || 1));
   let request = db
     .from("study_applications")
-    .select(
-      "id,user_id,proposal,status,package_state,provider_decision,approval,next_step,next_date,created_at",
-      {
-        count: "exact",
-      },
-    )
+    .select("id,user_id,proposal,status,package_state,created_at", {
+      count: "exact",
+    })
     .order("created_at", { ascending: false })
     .order("id")
     .range((page - 1) * 20, page * 20 - 1);
   if (own) request = request.eq("user_id", user.id);
-  if (applicationStatuses.includes(query.status as (typeof applicationStatuses)[number]))
-    request = request.eq("status", query.status);
-  if (query.status === "interested" || query.status === "paid")
-    request = request.eq("package_state", query.status);
   const { data: applications, error, count } = await request;
   if (error) throw Error("Applications unavailable");
   const ids = (applications ?? []).map((a) => a.user_id);
+  const cases = ids.length
+    ? await db
+        .from("consultation_cases")
+        .select("user_id,application_status,current_declaration_id")
+        .in("user_id", ids)
+    : { data: [], error: null };
+  if (cases.error) throw Error("Application status unavailable");
+  const byUser = new Map(cases.data?.map((entry) => [entry.user_id, entry]));
   const people =
     staff && ids.length
-      ? ((await db.from("profiles").select("id,first_name,last_name").in("id", ids)).data ?? [])
-      : [];
-  const names = new Map(people.map((p) => [p.id, `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim()]));
+      ? await db.from("profiles").select("id,first_name,last_name").in("id", ids)
+      : { data: [], error: null };
+  if (people.error) throw Error("Applicant names unavailable");
+  const names = new Map(
+    (people.data ?? []).map((p) => [p.id, `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim()]),
+  );
   const base = staff ? (admin ? "/admin/applications" : "/advisor/applications") : "/dashboard/applications";
   const pageLink = (n: number) =>
     `${base}?${new URLSearchParams({
       page: String(n),
-      status: query.status || "",
-      ...(staff ? { view: "packages" } : {}),
     })}`;
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
-      <div className="workspace-page-heading">
-        <h1>{own ? "Applications" : "Package tracking"}</h1>
-        <Link className="text-link" href={own ? "/dashboard/application" : base}>
-          {own ? "Scholarship application →" : "Scholarship applications →"}
-        </Link>
-      </div>
-      <form className="filter-bar">
-        {staff && <input type="hidden" name="view" value="packages" />}
-        <label className="field">
-          Status
-          <select name="status" defaultValue={query.status || ""}>
-            <option value="">All statuses</option>
-            <option value="interested">Interested</option>
-            <option value="paid">Package paid</option>
-            {applicationStatuses.map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-        </label>
-        <button className="button button-outline" type="submit">
-          Filter applications
-        </button>
-      </form>
+      <h1>Applications</h1>
       {!applications?.length ? (
         <section className="workspace-panel">
           <h2>No applications in this view.</h2>
           <p>
             {own
-              ? "When your advisor shares a scholarship package, you’ll find the details and fees here."
-              : "Open an applicant’s consultation to share a scholarship package."}
+              ? "ISG will assign your package after the consultation."
+              : "Open an applicant’s consultation to assign a scholarship package."}
           </p>
           {own && (
             <Link href="/dashboard/consultations" className="text-link">
@@ -93,9 +73,14 @@ export async function ApplicationList({
           {applications.map((a) => {
             const p = proposalSchema.safeParse(a.proposal);
             if (!p.success) throw Error("Application proposal unavailable");
+            const record = byUser.get(a.user_id);
             return (
               <article className="workspace-panel" key={a.id}>
-                <span className="status-pill">{packageStatus(a.package_state, a.status)}</span>
+                <span className="status-pill">
+                  {record?.application_status
+                    ? fullApplicationStatusLabel(record.application_status)
+                    : packageStatus(a.package_state, a.status)}
+                </span>
                 <h2>{p.data.name}</h2>
                 {staff && (
                   <p className="application-owner">
@@ -109,27 +94,6 @@ export async function ApplicationList({
                   <p>
                     ISG package fee · <strong>TZS {p.data.packageFee.toLocaleString("en")}</strong>
                     <small>{usdLabel(p.data.packageFee)}</small>
-                  </p>
-                )}
-                {a.package_state === "paid" && (
-                  <p>{p.data.packageFee === 0 ? "No package fee due" : "Package payment verified"}</p>
-                )}
-                {(!a.package_state || a.package_state === "paid") && (
-                  <p>
-                    Official provider decision: <strong>{a.provider_decision}</strong>
-                  </p>
-                )}
-                {!a.package_state && (
-                  <p>
-                    {a.approval === "pending"
-                      ? "Waiting for applicant review"
-                      : `Applicant decision: ${a.approval}`}
-                  </p>
-                )}
-                {a.next_step && (
-                  <p>
-                    Next: {a.next_step}
-                    {a.next_date ? ` · ${a.next_date}` : ""}
                   </p>
                 )}
                 <Link className="text-link" href={`${base}/${a.id}`}>
@@ -149,7 +113,6 @@ export async function ApplicationList({
           {page * 20 < (count || 0) && <Link href={pageLink(page + 1)}> Next →</Link>}
         </div>
       </div>
-      {own && <PreviousPackageQuote user={user.id} />}
     </Workspace>
   );
 }

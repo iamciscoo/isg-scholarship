@@ -104,11 +104,11 @@
       ["Verify your consultation payment", "Pay TZS 50,000 once and upload a private receipt."],
       [
         "Meet your advisor",
-        "Book a confirmed meeting, then complete your full details and requested documents. Follow-ups are included."
+        "ISG contacts you on WhatsApp and assigns a suitable package. Pay its fee and upload your receipt."
       ],
       [
-        "Approve and follow applications",
-        "Review the actual provider, approve each application and follow its independent updates."
+        "Apply and track your progress",
+        "After package payment is verified, fill in your application form and follow status updates from ISG."
       ]
     ],
     "fullJourney": "See the full journey",
@@ -157,7 +157,7 @@
     ],
     [
       "How much does the service cost?",
-      "Consultation costs TZS 50,000. Follow-up questions and meeting requests are included. Your advisor explains any separate scholarship package and provider fees before you apply."
+      "Consultation costs TZS 50,000. ISG contacts you on WhatsApp and assigns a package with clear fees. Complete the application after package payment is verified."
     ],
     [
       "How is my information used?",

@@ -43,11 +43,7 @@ const eventCopy: Record<string, [string, string, string]> = {
     consultation,
   ],
   consultation_reply: ["Advisor reply", "Your advisor replied to your consultation question.", consultation],
-  advisor_assigned: [
-    "Advisor assigned",
-    "Open Consultations to see your advisor and request a meeting.",
-    consultation,
-  ],
+  advisor_assigned: ["Advisor assigned", "ISG will contact you on WhatsApp.", consultation],
   application_unlocked: [
     "Application ready to complete",
     "You can now complete your scholarship application and upload your documents.",
@@ -69,8 +65,8 @@ const eventCopy: Record<string, [string, string, string]> = {
     application,
   ],
   package_recommended: [
-    "Scholarship package recommended",
-    "Open Applications to review the package.",
+    "Scholarship package assigned",
+    "Open Applications for the package fee and receipt upload.",
     packages,
   ],
   package_payment_update: [
@@ -107,11 +103,7 @@ const eventCopy: Record<string, [string, string, string]> = {
 
 function receiptCopy(status?: string): [string, string, string] {
   if (status === "Verified")
-    return [
-      "Consultation receipt approved",
-      "Open Consultations to find your advisor and meeting options.",
-      consultation,
-    ];
+    return ["Consultation receipt approved", "ISG will contact you on WhatsApp.", consultation];
   if (status === "Rejected")
     return [
       "New consultation receipt needed",

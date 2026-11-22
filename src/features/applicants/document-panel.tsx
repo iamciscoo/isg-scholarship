@@ -1,15 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { FileUpload } from "@/features/consultations/file-upload";
-import { ActionForm } from "@/components/forms/action-form";
 import { applicationDocumentCategories, applicationDocumentKeys } from "@/lib/validation/application-review";
-import { requestDocument, reviewDocument } from "./application-actions";
-
-const fileStatuses: Record<string, string> = {
-  approved: "Approved",
-  pending: "Awaiting review",
-  rejected: "Correction requested",
-};
 
 export async function DocumentPanel({ user, staff = false }: { user: string; staff?: boolean }) {
   const db = await createClient();
@@ -47,38 +39,6 @@ export async function DocumentPanel({ user, staff = false }: { user: string; sta
           contain multiple files.
         </p>
       )}
-      {staff && (
-        <details className="package-gallery my-4">
-          <summary>Request a document</summary>
-          <ActionForm action={requestDocument} label="Send request">
-            <input type="hidden" name="user" value={user} />
-            <div className="form-grid">
-              <label>
-                Category
-                <select name="category">
-                  {applicationDocumentKeys.map((category) => (
-                    <option key={category} value={category}>
-                      {applicationDocumentCategories[category]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Document title
-                <input name="label" maxLength={160} required />
-              </label>
-            </div>
-            <label>
-              Instructions for the applicant
-              <textarea name="note" maxLength={1000} />
-            </label>
-            <label className="checkbox-field">
-              <input name="required" type="checkbox" defaultChecked />
-              Required for ISG review
-            </label>
-          </ActionForm>
-        </details>
-      )}
       <div className="operation-grid">
         {groups.map((request) => {
           const documents = files.data.filter((file) => file.category === request.category);
@@ -105,38 +65,12 @@ export async function DocumentPanel({ user, staff = false }: { user: string; sta
                         {file.original_name ||
                           `${file.mime === "application/pdf" ? "PDF" : "Image"} ${documents.length - index}`}
                       </Link>
-                      <span>{fileStatuses[file.review_status]}</span>
                       {file.review_note && <p className="preserve-lines">{file.review_note}</p>}
-                      {staff && (
-                        <details className="package-gallery w-full">
-                          <summary>
-                            {file.review_status === "pending" ? "Review file" : "Edit review"}
-                          </summary>
-                          <ActionForm action={reviewDocument} label="Save review">
-                            <input name="id" type="hidden" value={file.id} />
-                            <input name="user" type="hidden" value={user} />
-                            <label>
-                              Decision
-                              <select
-                                name="approve"
-                                defaultValue={file.review_status === "rejected" ? "false" : "true"}
-                              >
-                                <option value="true">Approve</option>
-                                <option value="false">Request correction</option>
-                              </select>
-                            </label>
-                            <label>
-                              Note to applicant (required for corrections)
-                              <textarea name="note" maxLength={1000} defaultValue={file.review_note} />
-                            </label>
-                          </ActionForm>
-                        </details>
-                      )}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="field-help">No files uploaded.</p>
+                <p className="field-help">Will send later.</p>
               )}
             </article>
           );

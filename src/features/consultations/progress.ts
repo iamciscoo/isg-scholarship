@@ -16,7 +16,10 @@ export const receiptLabels: Record<string, string> = {
 
 export function consultationProgress(
   consultation: CaseProgress | null,
-  { hasDraft = false, hasCall = false, hasMeeting = false } = {},
+  {
+    hasDraft = false,
+    assignedPackage = null,
+  }: { hasDraft?: boolean; assignedPackage?: { id: string; package_state: string } | null } = {},
 ) {
   const payment = consultation?.payment_status;
   const application = consultation?.current_declaration_id
@@ -26,42 +29,84 @@ export function consultationProgress(
       : "Locked";
   const stages = {
     consultation: !consultation
-      ? hasDraft ? "Draft" : "Not started"
+      ? hasDraft
+        ? "Draft"
+        : "Not started"
       : consultation.completed_at
         ? "Complete"
-        : payment === "verified" ? "Approved" : "Submitted",
+        : payment === "verified"
+          ? "Approved"
+          : "Submitted",
     receipt: payment ? receiptLabels[payment] : "Not due",
     application,
   };
   const consultationUrl = "/dashboard/consultations";
   const applicationUrl = "/dashboard/application";
-  const step = (stage: string, action: string, href: string, label: string) => ({ ...stages, stage, action, href, label });
+  const step = (stage: string, action: string, href: string, label: string) => ({
+    ...stages,
+    stage,
+    action,
+    href,
+    label,
+  });
   if (!consultation) {
     const label = hasDraft ? "Continue consultation" : "Start consultation";
     return step("Consultation", `${label} to tell ISG about your study goals.`, "/consultation", label);
   }
   if (payment === "awaiting_receipt" || payment === "rejected")
     return step(
-      "Payment", payment === "rejected" ? "Read the feedback and upload a replacement receipt." : "Pay the consultation fee and upload your receipt.",
-      `${consultationUrl}#consultation-payment`, "Upload receipt",
+      "Payment",
+      payment === "rejected"
+        ? "Read the feedback and upload a replacement receipt."
+        : "Pay the consultation fee and upload your receipt.",
+      `${consultationUrl}#consultation-payment`,
+      "Upload receipt",
     );
   if (payment === "pending_verification")
-    return step("Receipt review", "ISG is reviewing your receipt.", `${consultationUrl}#consultation-payment`, "View receipt");
-  if (!consultation.completed_at)
     return step(
-      "Advisor consultation",
-      hasMeeting ? "Check the time and join your scheduled meeting." : hasCall ? "Confirm a time for your WhatsApp call." : "Request a WhatsApp call or online meeting.",
-      consultationUrl, "Open consultation",
+      "Receipt review",
+      "ISG is reviewing your receipt.",
+      `${consultationUrl}#consultation-payment`,
+      "View receipt",
+    );
+  if (!assignedPackage && !consultation.completed_at)
+    return step(
+      "Consultation",
+      "ISG will contact you on WhatsApp and assign a suitable package.",
+      consultationUrl,
+      "View consultation",
+    );
+  if (assignedPackage && assignedPackage.package_state !== "paid")
+    return step(
+      "Package payment",
+      assignedPackage.package_state === "pending_verification"
+        ? "ISG is reviewing your package receipt."
+        : "Pay your assigned package fee and upload the receipt.",
+      `/dashboard/applications/${assignedPackage.id}`,
+      assignedPackage.package_state === "pending_verification" ? "View receipt" : "Upload package receipt",
     );
   if (!consultation.current_declaration_id)
-    return step("Scholarship application", "Complete the form and attach your documents.", applicationUrl, "Open application");
+    return step(
+      "Scholarship application",
+      "Complete the form and attach your documents.",
+      applicationUrl,
+      "Open application",
+    );
   if (consultation.application_status === "needs_information")
-    return step("Information requested", "Review ISG’s request and add the missing information.", applicationUrl, "Respond to request");
+    return step(
+      "Information requested",
+      "Review ISG’s request and add the missing information.",
+      applicationUrl,
+      "Respond to request",
+    );
   return step(
     application,
-    ["approved", "declined"].includes(consultation.application_status || "")
+    ["approved", "declined", "accepted", "rejected", "completed", "cancelled"].includes(
+      consultation.application_status || "",
+    )
       ? "Open your application for ISG’s decision and next steps."
       : "Check your application for progress updates from ISG.",
-    applicationUrl, "View application",
+    applicationUrl,
+    "View application",
   );
 }
