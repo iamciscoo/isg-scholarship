@@ -33,18 +33,18 @@ export default function Privacy() {
         <p>
           When configured, Supabase hosts the database and authentication, Resend delivers service emails, and
           Cloudflare Turnstile checks submissions for abuse. The hosting provider processes requests needed to
-          serve the platform. Student-life imagery is stored locally from Pexels; loading it does not call the
-          Pexels API. GREEN-API sends staff alerts with links that require authorized sign-in. If you choose
-          to share a redacted receipt, GREEN-API processes that copy and sends it to ISG’s private staff
-          WhatsApp group. Cover sensitive details before choosing this option.
+          serve the platform. Student-life imagery from Pexels is served with the site. When WhatsApp delivery
+          is configured, GREEN-API sends alerts and copies of uploaded payment receipts to ISG’s private staff
+          group. Cover unrelated account details before uploading a receipt.
         </p>
         <h2>Later application and payment records</h2>
         <p>
           ISG uses consultation and package receipts to verify payment. When you save an interest or confirm a
           package, ISG records it in your Applications. Advisors may request documents needed for an
           individual provider application. Inform your nominated contact before sharing their details.
-          Provider applications require your separate approval. The platform scans PDFs and re-encodes images
-          before storage.
+          Provider applications require your separate approval. The platform re-encodes images and checks PDFs
+          before storage. When the PDF scanner is unavailable by configuration, the platform saves the visible
+          pages as images in a new PDF. Keep any digitally signed original.
         </p>
         <h2>Consent and communications</h2>
         <p>

@@ -8,6 +8,7 @@ import { authConfigured } from "@/lib/supabase/config";
 import { authSchema, passwordSchema, safeNext } from "@/lib/validation/auth";
 import { clientIdentity, sameOrigin } from "@/lib/security/request";
 import { requireUser } from "@/lib/auth/session";
+import { wakeNotifications } from "@/server/services/notification-delivery";
 export type AuthState = { error?: string; message?: string };
 export async function authenticate(_previous: AuthState, fd: FormData): Promise<AuthState> {
   if (!authConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY)
@@ -62,6 +63,7 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
         error:
           "We couldn’t start registration. Please try again or use password recovery if you already have an account.",
       };
+    wakeNotifications();
     if (registered.session) redirect(safeNext(String(fd.get("next") || "/dashboard")));
     return { message: "Your account was created. Sign in to continue." };
   }

@@ -242,6 +242,13 @@
     grid-template-columns: 1fr;
     gap: 20px;
   }
+  .assessment-form .form-grid:has(.assessment-contact-field) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 12px;
+  }
+  .assessment-contact-field {
+    grid-column: 1 / -1;
+  }
   .auth-card {
     padding: 28px 22px;
   }

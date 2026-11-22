@@ -5,22 +5,26 @@ import { requestMeeting, finishMeeting } from "./meeting-actions";
 import { MeetingScheduler } from "./meeting-scheduler";
 import { meetingSlots, meetingTopics, meetingZones } from "./meeting-options";
 import type { ConsultationCase } from "./payment-panel";
+import { WhatsAppCall } from "./whatsapp-call";
 export async function CaseSupport({
   record,
   advisor,
   staff = false,
+  phone,
 }: {
   record: ConsultationCase;
   advisor: string | null;
   staff?: boolean;
+  phone?: string;
 }) {
-  if (!advisor) return null;
+  if (record.payment_status !== "verified") return null;
   const db = await createClient();
-  const [requests, meetings] = await Promise.all([
+  const [requests, meetings, call] = await Promise.all([
     db
       .from("meeting_requests")
       .select("id,note,status,created_at")
       .eq("user_id", record.user_id)
+      .eq("channel", "online")
       .order("created_at", { ascending: false })
       .limit(100),
     db
@@ -29,12 +33,22 @@ export async function CaseSupport({
       .eq("user_id", record.user_id)
       .order("starts_at", { ascending: false })
       .limit(100),
+    db
+      .from("meeting_requests")
+      .select("id,requested_by,note")
+      .eq("user_id", record.user_id)
+      .eq("channel", "whatsapp")
+      .eq("status", "requested")
+      .maybeSingle(),
   ]);
-  if (requests.error || meetings.error) throw Error("Consultation support unavailable");
+  if (requests.error || meetings.error || call.error) throw Error("Consultation support unavailable");
   return (
     <>
+      <WhatsAppCall user={record.user_id} staff={staff} completed={!!record.completed_at} request={call.data} phone={phone} />
+      {(advisor || !!meetings.data?.length || !!requests.data?.length) && (
+        <>
       <p className="case-history">
-        Full history:
+        History
         {["requests", "meetings"].map((type) => (
           <Link
             className="text-link"
@@ -46,10 +60,8 @@ export async function CaseSupport({
         ))}
       </p>
       <section className="workspace-panel">
-        <h2>{staff ? "Advisor meetings" : `Meet with ${advisor}`}</h2>
-        {!meetings.data?.length ? (
-          <p>No meetings have been scheduled yet.</p>
-        ) : (
+        <h2>{advisor && !staff ? `Online meetings with ${advisor}` : "Online meetings"}</h2>
+        {!!meetings.data?.length && (
           <div className="operation-grid">
             {meetings.data.map((m) => (
               <article className="operation-card" key={m.id}>
@@ -83,9 +95,7 @@ export async function CaseSupport({
             ))}
           </div>
         )}
-      
-      
-        {staff ? (
+        {advisor && (staff ? (
           <MeetingScheduler user={record.user_id} requests={requests.data || []} />
         ) : (
           <ActionForm action={requestMeeting} label="Request an advisor meeting">
@@ -128,7 +138,7 @@ export async function CaseSupport({
               <input name="details" maxLength={200} />
             </label>
           </ActionForm>
-        )}
+        ))}
         {!!requests.data?.length && (
           <>
             <h3>Meeting requests</h3>
@@ -144,6 +154,8 @@ export async function CaseSupport({
           </>
         )}
       </section>
+        </>
+      )}
     </>
   );
 }

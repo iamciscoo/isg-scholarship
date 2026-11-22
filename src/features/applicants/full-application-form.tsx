@@ -1,11 +1,6 @@
 "use client";
 import { useActionState, useState } from "react";
-import {
-  applicationFields,
-  declarationText,
-  declarationVersion,
-  type FullApplication,
-} from "@/lib/validation/application-form";
+import { applicationFields, declarationText, type FullApplication } from "@/lib/validation/application-form";
 import { saveFullApplication } from "./application-actions";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
@@ -46,6 +41,8 @@ export function FullApplicationForm({ initial }: { initial: Partial<FullApplicat
                     name={f.key}
                     type={f.type || "text"}
                     maxLength={f.type === "email" ? 254 : 160}
+                    min={f.type === "number" ? 1950 : undefined}
+                    max={f.type === "number" ? 2099 : undefined}
                     value={String(answers[f.key] || "")}
                     onChange={(event) =>
                       setAnswers((current) => ({ ...current, [f.key]: event.target.value }))
@@ -68,11 +65,10 @@ export function FullApplicationForm({ initial }: { initial: Partial<FullApplicat
           }
           disabled={pending}
         />
-        I have informed this person and have permission to share their contact details with ISG for my
-        application.
+        My nominated contact has given me permission to share their details with ISG.
       </label>
       <section className="notice">
-        <h2>Applicant declaration</h2>
+        <h3>Declaration</h3>
         <p>{declarationText}</p>
         <label className="checkbox-field">
           <input
@@ -82,12 +78,8 @@ export function FullApplicationForm({ initial }: { initial: Partial<FullApplicat
             onChange={(event) => setDeclaration(event.target.checked)}
             disabled={pending}
           />
-          I accept this declaration and submit my application details.
+          I sign this declaration electronically.
         </label>
-        <small>
-          Version {declarationVersion}. Your acceptance time and a snapshot of these answers are recorded when
-          you submit.
-        </small>
       </section>
       {state.error && (
         <p className="notice notice-error" role="alert">
@@ -110,7 +102,7 @@ export function FullApplicationForm({ initial }: { initial: Partial<FullApplicat
               <LoadingDots />
             </>
           ) : (
-            "Submit with declaration"
+            "Submit application"
           )}
         </Button>
       </div>

@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth/session";
 import { leadReviewSchema } from "@/lib/validation/leads";
 import { canReviewLead } from "@/lib/auth/permissions";
+import { wakeNotifications } from "@/server/services/notification-delivery";
 export type ReviewState = { error?: string; message?: string };
 export async function reviewLead(_state: ReviewState, fd: FormData): Promise<ReviewState> {
   const { db, user, role } = await requireStaff();
@@ -27,7 +28,9 @@ export async function reviewLead(_state: ReviewState, fd: FormData): Promise<Rev
     return {
       error: "The status could not be saved. Refresh the consultation and try again.",
     };
+  wakeNotifications();
   revalidatePath("/admin");
+  revalidatePath("/admin/consultations");
   revalidatePath("/advisor");
   revalidatePath(`/admin/leads/${data.id}`);
   revalidatePath(`/advisor/leads/${data.id}`);

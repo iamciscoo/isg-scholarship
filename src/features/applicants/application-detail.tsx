@@ -42,12 +42,12 @@ export async function ApplicationDetail({
     .order("id")
     .range((page - 1) * 20, page * 20 - 1);
   if (history.error) throw Error("Application history unavailable");
-  const base = staff ? (admin ? "/admin/applications" : "/advisor/applications") : "/dashboard/applications";
+  const base = staff ? `/${admin ? "admin" : "advisor"}/applications` : "/dashboard/applications";
   const canWork = !a.package_state || a.package_state === "paid";
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
-      <Link href={base} className="text-link">
-        ← All applications
+      <Link href={staff ? `${base}?view=packages` : base} className="text-link">
+        ← {staff ? "Package tracking" : "Applications"}
       </Link>
       <h1>{p.data.name}</h1>
       <p>

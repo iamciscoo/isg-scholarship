@@ -24,3 +24,33 @@ it.each(["document_request", "document_update"])("links %s directly to the docum
   expect(template.text).toContain("https://isg.example/dashboard/application");
   expect(template.html).toContain('href="https://isg.example/dashboard/application"');
 });
+
+it("explains a rejected receipt and links to the upload workspace", () => {
+  const template = notificationTemplate(
+    "payment_update",
+    {
+      firstName: "Test Applicant",
+      reference: "ISG-TEST",
+      status: "Rejected",
+      nextStep: "Upload a replacement receipt.",
+    },
+    "https://isg.example",
+  );
+  expect(template.subject).toContain("New consultation receipt needed");
+  expect(template.text).toContain("Hello Test Applicant");
+  expect(template.text).toContain("Status: Rejected");
+  expect(template.text).toContain("https://isg.example/dashboard/consultations");
+});
+
+it("includes scheduled time and allows the advisor's HTTPS meeting link", () => {
+  const template = notificationTemplate(
+    "meeting_scheduled",
+    {
+      startsAt: "2026-11-25T10:30:00.000Z",
+      meetUrl: "https://example.com/join?a=1&b=2",
+    },
+    "https://isg.example",
+  );
+  expect(template.text).toContain("2026-11-25 10:30 UTC");
+  expect(template.html).toContain('href="https://example.com/join?a=1&amp;b=2"');
+});

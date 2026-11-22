@@ -105,6 +105,7 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
     current: Boolean(
       pathname === item.href ||
       (item.id === "applications" && pathname === "/dashboard/application") ||
+      (item.id === "applications" && staff && pathname.startsWith(base + "/declarations/")) ||
       (item.href !== "/dashboard" && item.href !== "/advisor" && pathname.startsWith(item.href + "/")) ||
       (item.id === "overview" &&
         staff &&

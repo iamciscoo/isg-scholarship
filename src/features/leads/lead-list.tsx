@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { listLeads, getAdvisors } from "@/server/repositories/leads";
 import { leadStages, stageLabel } from "@/lib/validation/leads";
 import { studyLevels } from "@/lib/validation/assessment";
+import { consultationProgress } from "@/features/consultations/progress";
 type Query = { stage?: string; level?: string; page?: string; advisor?: string; from?: string; to?: string };
 export async function LeadList({ admin, query }: { admin: boolean; query: Query }) {
   const { db, user, role } = await requireStaff(admin);
@@ -14,41 +15,39 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
   const base = admin ? "/admin" : "/advisor";
   const [all, newLeads, reviewing] = await Promise.all([
     db.from("leads").select("id", { count: "exact", head: true }),
-    db.from("leads").select("id", { count: "exact", head: true }).eq("stage", "new"),
-    db.from("leads").select("id", { count: "exact", head: true }).eq("stage", "under_review"),
+    db.from("consultation_cases").select("user_id", { count: "exact", head: true }).eq("payment_status", "pending_verification"),
+    db.from("consultation_cases").select("user_id", { count: "exact", head: true }).in("application_status", ["submitted", "in_review"]),
   ]);
+  const ids = leads.map((lead) => lead.id);
+  const cases = ids.length
+    ? await db.from("consultation_cases").select("lead_id,payment_status,completed_at,current_declaration_id,application_status").in("lead_id", ids)
+    : { data: [], error: null };
+  const byLead = new Map(cases.data?.map((entry) => [entry.lead_id, entry]));
+  const filterPath = admin ? "/admin/consultations" : base;
   const link = (n: number) => {
     const params = new URLSearchParams(
       Object.entries(query).filter((pair): pair is [string, string] => typeof pair[1] === "string"),
     );
     params.set("page", String(n));
-    return `${base}?${params}`;
+    return `${filterPath}?${params}`;
   };
   return (
-    <Workspace role={role} email={user.email || ""}>
-      <h1>{admin ? "The next chapter starts here." : "Your assigned leads."}</h1>
-      <p>
-        {admin
-          ? "Review initial assessments, assign advisors and keep every follow-up clear."
-          : "Review the assessments assigned to you. Unassigned applicants and financial records are restricted."}
-      </p>
+    <Workspace role={role} email={user.email || ""} active="consultations">
+      <h1>Consultations</h1>
       <div className="stat-grid">
         {[
-          ["Total accessible leads", all],
-          ["Awaiting first review", newLeads],
-          ["Under review", reviewing],
-        ].map(([label, result]) => (
-          <div className="stat-box" key={label as string}>
-            <span>{label as string}</span>
-            <strong>
-              {(result as typeof all).error ? "Unavailable" : (result as typeof all).count || 0}
-            </strong>
+          { label: "Consultations", result: all },
+          ...(admin ? [{ label: "Receipts to review", result: newLeads, href: "/admin/payments?status=pending_verification" }] : []),
+          { label: "Applications to review", result: reviewing, href: `${base}/applications` },
+        ].map(({ label, result, ...item }) => (
+          <div className="stat-box" key={label}>
+            {"href" in item && typeof item.href === "string" ? <Link href={item.href}>{label}</Link> : <span>{label}</span>}
+            <strong>{result.error ? "Unavailable" : result.count || 0}</strong>
           </div>
         ))}
       </div>
       <section className="workspace-panel">
-        <h2>Assessment inbox</h2>
-        <form className="filter-bar">
+        <form className="filter-bar" action={filterPath}>
           <div className="field">
             <label htmlFor="filter-stage">Stage</label>
             <select name="stage" id="filter-stage" defaultValue={query.stage || ""}>
@@ -91,22 +90,18 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
             <input type="date" name="to" id="to" defaultValue={query.to} />
           </div>
           <Button size="sm">Apply filters</Button>
-          <Link className="text-link" href={base}>
+          <Link className="text-link" href={filterPath}>
             Reset
           </Link>
         </form>
-        {error ? (
+        {error || cases.error ? (
           <p role="alert" className="notice notice-error">
             We couldn’t load the lead inbox. Please try again.
           </p>
         ) : !leads.length ? (
           <div className="empty-state">
             <ClipboardList size={32} />
-            <h3>No assessments in this view.</h3>
-            <p>
-              New submissions appear here after secure intake. Try changing the filters, or return when a lead
-              is received.
-            </p>
+            <p>No consultations match these filters.</p>
           </div>
         ) : (
           <div className="table-scroll">
@@ -116,15 +111,21 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
                   <th>Applicant</th>
                   <th>Reference</th>
                   <th>Study goal</th>
-                  <th>Stage</th>
+                  <th>Consultation</th>
+                  <th>Receipt</th>
+                  <th>Application</th>
                   <th>Received</th>
                 </tr>
               </thead>
               <tbody>
-                {leads.map((lead) => (
+                {leads.map((lead) => {
+                  const record = byLead.get(lead.id);
+                  const status = consultationProgress(record || null);
+                  const applicantId = lead.eligibility_assessments.applicant_id;
+                  return (
                   <tr key={lead.id}>
                     <td>
-                      <Link href={`${base}/leads/${lead.id}`}>
+                      <Link href={record && applicantId ? `${base}/cases/${applicantId}` : `${base}/leads/${lead.id}`}>
                         {lead.eligibility_assessments.first_name} {lead.eligibility_assessments.last_name}
                       </Link>
                       <small>{lead.eligibility_assessments.email}</small>
@@ -132,15 +133,18 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
                     <td>{lead.eligibility_assessments.reference}</td>
                     <td>{lead.eligibility_assessments.study_level}</td>
                     <td>
-                      <span className="badge">{stageLabel(lead.stage)}</span>
+                      <span className="badge">{record ? status.consultation : stageLabel(lead.stage)}</span>
                     </td>
+                    <td>{record ? status.receipt : "—"}</td>
+                    <td>{record ? status.application : "—"}</td>
                     <td>
                       {new Date(lead.created_at).toLocaleDateString("en-GB", {
                         timeZone: "Africa/Dar_es_Salaam",
                       })}
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

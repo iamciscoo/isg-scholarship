@@ -7,17 +7,19 @@ lock table public.eligibility_assessments, public.consultation_cases, public.con
   in share row exclusive mode;
 
 delete from public.account_notifications
-  where author_id is null and link ~ '^/(admin/(consultations|payments|applications|receipts/|declarations/)|dashboard/(consultations|applications)(/|$))';
+  where author_id is null and link ~ '^/(admin/(consultations|payments|applications|receipts/|declarations/|cases/)|dashboard/(consultations|applications?)(/|$))';
 delete from private.integration_events where event ~
-  '^(consultation\.|lead\.updated$|payment\.|meeting\.|application\.|package\.)';
+  '^(consultation\.|lead\.updated$|payment\.|meeting\.|whatsapp_call\.|application\.|package\.)';
 delete from private.notification_outbox
   where assessment_id is not null
      or event in ('payment_update','meeting_scheduled','meeting_completed','meeting_cancelled',
-       'consultation_reply','document_request','document_update','application_update',
+       'consultation_reply','document_request','document_update','application_update','application_unlocked',
+       'whatsapp_call_requested','whatsapp_call_cancelled','full_application_submitted','full_application_review','full_application_information',
        'opportunity_proposed','package_accepted','advisor_assigned','package_recommended','package_payment_update');
 delete from public.audit_logs where action in (
   'assessment.created','lead.reviewed','advisor.assigned','case.file_uploaded','payment.reviewed',
-  'meeting.scheduled','meeting.updated','application.declaration_accepted','document.requested',
+  'meeting.scheduled','meeting.updated','whatsapp_call.requested','whatsapp_call.cancelled',
+  'application.declaration_accepted','application.unlocked','application.form_reviewed','document.requested',
   'document.reviewed','opportunity.saved','package.saved','package.quote_accepted','scholarship_package.saved'
 );
 delete from public.consultation_cases;

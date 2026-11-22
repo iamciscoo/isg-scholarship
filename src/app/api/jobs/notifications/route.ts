@@ -1,9 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
-import { dispatchNotifications } from "@/server/services/notifications";
-import { dispatchAdminAlerts } from "@/server/services/admin-alerts";
-import { publicUrl } from "@/config/site";
-export const maxDuration = 180;
+import { dispatchDelivery } from "@/server/services/notification-delivery";
+export const maxDuration = 60;
 export async function GET(request: Request) {
   const expected = process.env.CRON_SECRET;
   const received = request.headers.get("authorization") || "";
@@ -13,11 +11,14 @@ export async function GET(request: Request) {
     !timingSafeEqual(Buffer.from(received), Buffer.from(`Bearer ${expected}`))
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  try {
-    const [email, admin] = await Promise.all([dispatchNotifications(publicUrl), dispatchAdminAlerts(publicUrl)]);
-    return NextResponse.json({ email, admin }, { status: email.configured || admin.configured ? 200 : 503 });
-  } catch (error) {
-    console.error("notification_job_failed", error instanceof Error ? error.message : "unknown");
-    return NextResponse.json({ error: "Delivery job unavailable" }, { status: 503 });
-  }
+  const [email, admin] = await dispatchDelivery();
+  const available = email.status === "fulfilled" && admin.status === "fulfilled";
+  if (!available) console.error("notification_job_failed");
+  return NextResponse.json(
+    {
+      email: email.status === "fulfilled" ? email.value : null,
+      admin: admin.status === "fulfilled" ? admin.value : null,
+    },
+    { status: available && (email.value.configured || admin.value.configured) ? 200 : 503 },
+  );
 }

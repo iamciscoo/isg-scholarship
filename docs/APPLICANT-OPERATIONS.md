@@ -39,7 +39,9 @@ The existing durable Resend and GREEN-API workers handle the new events. Applica
 
 ## Private files and Docker
 
-The `case-files` bucket is private. Browsers have no direct object upload/download policy. The authenticated server checks ownership/assignment and current account status, bounds uploads, verifies content and registers metadata. Images are decoded and re-encoded; PDF files require a successful ClamAV result and fail closed if scanning is unavailable. Downloads require metadata RLS on every request and use attachment/no-store/nosniff headers. Applicants cannot approve receipts or mutate file review/declaration/payment records directly.
+The `case-files` bucket is private. Browsers have no direct object upload or download policy. The authenticated server checks ownership and current account status, verifies content, and registers receipt, consultation support and application document metadata. The upload limit is 4 MB per file to fit Vercel's request limit. The browser sends selected files individually and retries failed files separately. Images are decoded and re-encoded. PDF downloads require metadata RLS and use attachment, no-store and nosniff headers. Applicants cannot approve receipts or directly change document reviews, declarations or payment records.
+
+With ClamAV configured, a passing scan preserves the original PDF, including any digital signature. Without ClamAV, the service renders up to 20 pages and saves a new image-only PDF for review. This keeps the visible pages and drops interactive elements, embedded files, searchable text and cryptographic signatures. Applicants should keep any digitally signed original. A malformed, unreadable or oversized PDF is rejected with instructions to retry or split the file.
 
 Run the configured preview, integrations and private scanner:
 
@@ -47,7 +49,7 @@ Run the configured preview, integrations and private scanner:
 docker compose --env-file .env.local -f compose.yaml -f compose.integrations.yaml -f compose.scanning.yaml up --build -d
 ```
 
-The pinned official scanner image runs as `clamav`, has no published host port and persists signature updates in a named volume. Allocate approximately 4 GiB for it. `CLAMAV_HOST=scanner` and port 3310 come from the overlay; no existing environment file was overwritten. The basic image-upload flow can run without that overlay, but raw PDF uploads then remain unavailable. The real scanner successfully checked the generated test PDF. These controls are not a promise that any malware scanner detects every threat.
+The pinned official scanner image runs as `clamav`, has no published host port and persists signature updates in a named volume. Allocate approximately 4 GiB for it. `CLAMAV_HOST=scanner` and port 3310 come from the overlay. When the scanner is configured, uploads require a successful scan before the PDF is stored. The PDFium renderer reads PDFs locally in WebAssembly when there is no scanner configuration.
 
 ## Verification and migration record
 

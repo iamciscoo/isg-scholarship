@@ -4,11 +4,51 @@ import { z } from "zod";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import type { ActionState } from "@/components/forms/action-form";
 import { meetingRequestNote, meetingSlots, meetingTopics, meetingZones } from "./meeting-options";
+import { wakeNotifications } from "@/server/services/notification-delivery";
 function refresh(id: string) {
+  wakeNotifications();
+  revalidatePath("/dashboard");
+  revalidatePath("/admin");
+  revalidatePath("/admin/consultations");
   revalidatePath("/dashboard/consultations");
   revalidatePath(`/admin/cases/${id}`);
   revalidatePath(`/advisor/cases/${id}`);
   revalidatePath("/dashboard/application");
+}
+export async function requestWhatsAppCall(_: ActionState, fd: FormData): Promise<ActionState> {
+  const { db } = await requireUser();
+  const input = z
+    .object({ user: z.uuid(), note: z.string().trim().max(200) })
+    .safeParse({ user: fd.get("user"), note: fd.get("note") || "" });
+  if (!input.success) return { error: "Check the consultation and note." };
+  const { data, error } = await db.rpc("request_whatsapp_call", {
+    p_user: input.data.user,
+    p_note: input.data.note,
+  });
+  if (error) return { error: "The call could not be requested. Check that the consultation is approved." };
+  refresh(input.data.user);
+  return { message: data ? "WhatsApp call requested." : "A WhatsApp call is already requested." };
+}
+
+export async function cancelWhatsAppCall(_: ActionState, fd: FormData): Promise<ActionState> {
+  const { db } = await requireUser();
+  const input = z.object({ request: z.uuid(), user: z.uuid() }).safeParse(Object.fromEntries(fd));
+  if (!input.success) return { error: "Choose a call request." };
+  const { error } = await db.rpc("close_whatsapp_call", { p_request: input.data.request });
+  if (error) return { error: "This call request could not be cancelled." };
+  refresh(input.data.user);
+  return { message: "Call request cancelled." };
+}
+
+export async function completeConsultationCall(_: ActionState, fd: FormData): Promise<ActionState> {
+  const { db } = await requireStaff();
+  const user = z.uuid().safeParse(fd.get("user"));
+  if (!user.success || fd.get("met") !== "on")
+    return { error: "Confirm you have completed the consultation." };
+  const { error } = await db.rpc("complete_consultation_call", { p_user: user.data });
+  if (error) return { error: "The application could not be unlocked. Check the consultation approval." };
+  refresh(user.data);
+  return { message: "Consultation completed and scholarship application unlocked." };
 }
 export async function requestMeeting(_: ActionState, fd: FormData): Promise<ActionState> {
   const { db, user } = await requireUser();

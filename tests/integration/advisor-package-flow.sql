@@ -77,9 +77,10 @@ select public.register_payment_file(current_setting('test.student')::uuid,curren
 select public.test_assert((select count(*)=0 from public.whatsapp_receipt(current_setting('test.package_receipt')::uuid,current_setting('test.staff_group'))),'private receipt without permission is not disclosed');
 reset role;
 set role authenticated;
+select set_config('request.jwt.claims',jsonb_build_object('sub',current_setting('test.other'),'aal','aal1')::text,false);
+do $$begin perform public.review_payment_receipt(current_setting('test.package_receipt')::uuid,true,'');raise exception 'Applicant reviewed payment';exception when raise_exception then if sqlerrm<>'Access denied' then raise;end if;end $$;
+-- Under the two-role migration the assigned advisor is also an admin and can review receipts.
 select set_config('request.jwt.claims',jsonb_build_object('sub',current_setting('test.advisor'),'aal','aal1')::text,false);
-do $$begin perform public.review_payment_receipt(current_setting('test.package_receipt')::uuid,true,'');raise exception 'Advisor reviewed payment';exception when raise_exception then if sqlerrm<>'Access denied' then raise;end if;end $$;
-select set_config('request.jwt.claims',jsonb_build_object('sub',current_setting('test.admin'),'aal','aal1')::text,false);
 select public.review_payment_receipt(current_setting('test.package_receipt')::uuid,false,'');
 reset role;
 set role service_role;

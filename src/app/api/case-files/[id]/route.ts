@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { adminClient } from "@/lib/supabase/admin";
 import { authConfigured } from "@/lib/supabase/config";
+import { caseFileLimit } from "@/lib/validation/case-file";
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!authConfigured()) return new Response(null, { status: 503 });
@@ -14,22 +15,35 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   // Metadata RLS is the authorization boundary, including current account status and advisor assignment.
   const { data: file } = await db
     .from("case_files")
-    .select("storage_path,mime,kind")
+    .select("storage_path,mime,kind,bytes")
     .eq("id", id)
     .maybeSingle();
   if (!file) return new Response(null, { status: 404 });
-  const { data, error } = await adminClient().storage.from("case-files").download(file.storage_path);
+  const storage = adminClient().storage.from("case-files");
+  const name = `ISG-${file.kind}-${id}.${file.mime === "application/pdf" ? "pdf" : "webp"}`;
+  const privateHeaders = {
+    "Cache-Control": "private, no-store",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+  };
+  // Previously accepted files can exceed Vercel's response limit. Authorize these
+  // through RLS before redirecting to a short-lived, private attachment URL.
+  if (file.bytes > caseFileLimit) {
+    const { data, error } = await storage.createSignedUrl(file.storage_path, 60, { download: name });
+    if (error || !data) return new Response(null, { status: 404 });
+    return new Response(null, { status: 307, headers: { ...privateHeaders, Location: data.signedUrl } });
+  }
+  const { data, error } = await storage.download(file.storage_path);
   if (error || !data) return new Response(null, { status: 404 });
   const inline =
     file.kind === "receipt" &&
     new URL(request.url).searchParams.get("preview") === "1" &&
-    ["application/pdf", "image/webp"].includes(file.mime);
+    file.mime === "image/webp";
   return new Response(data, {
     headers: {
       "Content-Type": file.mime,
-      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="ISG-${file.kind}-${id}.${file.mime === "application/pdf" ? "pdf" : "webp"}"`,
-      "Cache-Control": "private, no-store",
-      "X-Content-Type-Options": "nosniff",
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${name}"`,
+      ...privateHeaders,
       "Content-Security-Policy": inline
         ? "default-src 'none'; frame-ancestors 'self'"
         : "sandbox; default-src 'none'",

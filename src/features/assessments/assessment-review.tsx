@@ -14,7 +14,6 @@ export function AssessmentReview({ values }: { values: AssessmentInput }) {
     ["Destinations", values.destinations || "No preference specified"],
     ["Intake", values.intake],
     ["Funding", values.funding],
-    ["General considerations", values.constraints || "None provided"],
   ];
   return (
     <dl className="review-grid">

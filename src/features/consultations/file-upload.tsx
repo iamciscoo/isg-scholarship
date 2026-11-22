@@ -1,116 +1,162 @@
 "use client";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { prepareImage } from "@/lib/images";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
+import { caseFileLimit, caseFileSizeError, type CaseUploadKind } from "@/lib/validation/case-file";
 
-// Large phone photos exceed gateway body limits, so shrink them in the browser before upload.
 async function shrink(file: File) {
   if (!file.type.startsWith("image/") || file.size < 1_500_000) return file;
   try {
     const bitmap = await createImageBitmap(file);
-    const scale = Math.min(1, 1800 / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
-    if (!blob || blob.size >= file.size) return file;
-    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+    try {
+      const scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      const context = canvas.getContext("2d");
+      if (!context) return file;
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.86));
+      if (!blob || blob.size >= file.size) return file;
+      return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+    } finally {
+      bitmap.close();
+    }
   } catch {
     return file;
   }
 }
+
+const labels: Record<CaseUploadKind, string> = {
+  receipt: "Private payment receipt",
+  support: "Supporting files (optional)",
+  document: "Document",
+};
+
+type UploadTarget = { kind: CaseUploadKind; category: string; application?: string };
+
+async function upload(file: File, target: UploadTarget) {
+  const prepared = await shrink(await prepareImage(file));
+  if (prepared.size > caseFileLimit) throw Error(caseFileSizeError);
+  const data = new FormData();
+  data.set("file", prepared);
+  data.set("originalName", file.name);
+  data.set("kind", target.kind);
+  data.set("category", target.category);
+  if (target.application) data.set("application", target.application);
+  const response = await fetch("/api/case-files", { method: "POST", body: data });
+  const result = (await response.json().catch(() => null)) as { id?: string; error?: string } | null;
+  if (response.ok && result?.id) return;
+  throw Error(
+    result?.error || (response.status === 413 ? caseFileSizeError : "Upload failed. Please try again."),
+  );
+}
+
 export function FileUpload({
   kind,
-  category = "payment_receipt",
+  category = kind === "support" ? "consultation_support" : "payment_receipt",
   application,
+  multiple = false,
+  label = labels[kind],
 }: {
-  kind: "receipt" | "document";
+  kind: CaseUploadKind;
   category?: string;
   application?: string;
+  multiple?: boolean;
+  label?: string;
 }) {
-  const [pending, setPending] = useState(false),
-    [message, setMessage] = useState("");
+  const router = useRouter();
+  const [pending, setPending] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [success, setSuccess] = useState("");
+  const [retry, setRetry] = useState<File[]>([]);
   const ref = useRef<HTMLInputElement>(null);
+  const canSelectMultiple = kind !== "receipt" && multiple;
+
   return (
     <form
-      className="form-stack"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        const file = ref.current?.files?.[0];
-        if (!file) return;
-        if (file.size > 8 * 1024 * 1024) {
-          setMessage("Choose a file under 8 MB.");
-          return;
-        }
+      className="form-stack min-w-0"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        const selected = retry.length ? retry : Array.from(ref.current?.files || []);
+        if (pending || !selected.length) return;
         setPending(true);
-        setMessage("");
-        try {
-          const data = new FormData();
-          data.set("file", await shrink(await prepareImage(file)));
-          data.set("kind", kind);
-          data.set("category", category);
-          if (application) data.set("application", application);
-          const r = await fetch("/api/case-files", { method: "POST", body: data });
-          // Gateway errors (413 and friends) are not JSON, so read text and parse defensively.
-          const text = await r.text();
-          let result: { error?: string } = {};
+        setErrors([]);
+        setSuccess("");
+        const failed: File[] = [];
+        const messages: string[] = [];
+        for (const file of selected) {
           try {
-            result = JSON.parse(text);
-          } catch {
-            /* keep the generic message below */
+            await upload(file, { kind, category, application });
+          } catch (error) {
+            const reason = error instanceof Error ? error.message : "Upload failed. Please try again.";
+            const message =
+              reason === "decode" || reason === "encode"
+                ? "This photo could not be read. Try JPEG or PNG."
+                : reason;
+            failed.push(file);
+            messages.push(canSelectMultiple ? `${file.name}: ${message}` : message);
           }
-          if (!r.ok)
-            throw Error(
-              result.error ||
-                (r.status === 413
-                  ? "That file is too large. Choose a smaller photo."
-                  : "Upload failed. Please try again."),
-            );
-          window.location.reload();
-        } catch (err) {
-          const reason = err instanceof Error ? err.message : "";
-          setMessage(
-            reason === "decode" || reason === "encode"
-              ? "This photo could not be read. Try a JPEG or PNG."
-              : reason || "Upload failed. Please try again.",
-          );
-        } finally {
-          setPending(false);
+        }
+        setPending(false);
+        setRetry(failed);
+        setErrors(messages);
+        if (!failed.length && ref.current) ref.current.value = "";
+        const uploaded = selected.length - failed.length;
+        if (uploaded) {
+          setSuccess(uploaded === 1 ? "1 file uploaded." : `${uploaded} files uploaded.`);
+          router.refresh();
         }
       }}
     >
-      <label>
-        {kind === "receipt" ? "Private payment receipt" : "Requested document"}
+      <label className="min-w-0 grid-cols-1">
+        {label}
         <input
+          className="w-full min-w-0 max-w-full overflow-hidden"
           ref={ref}
           name="file"
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf,.heic,.heif"
+          accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf,.heic,.heif,.pdf"
+          multiple={canSelectMultiple}
           required
           disabled={pending}
+          onChange={() => {
+            setRetry([]);
+            setErrors([]);
+            setSuccess("");
+          }}
         />
       </label>
-      <p>JPEG, PNG, WebP, iPhone HEIC or PDF, up to 8 MB.</p>
+      <p className="field-help">
+        Images or PDFs up to 4 MB each. PDFs may be saved as page images. Keep any digitally signed original.
+      </p>
       {kind === "receipt" && (
         <p className="field-help">
-          Your receipt is sent automatically to ISG’s private staff WhatsApp group for verification.
+          ISG may share the receipt with its private staff WhatsApp group. Cover unrelated account details.
         </p>
       )}
-      {message && (
-        <p role="alert" className="notice notice-error">
-          {message}
-        </p>
+      {errors.length > 0 && (
+        <div role="alert" className="notice notice-error break-words">
+          {errors.map((message, i) => (
+            <div key={i}>{message}</div>
+          ))}
+        </div>
       )}
+      {success && <p role="status">{success}</p>}
       <Button disabled={pending}>
         {pending ? (
           <>
-            Checking and uploading
+            Uploading
             <LoadingDots />
           </>
+        ) : retry.length ? (
+          "Retry upload"
         ) : kind === "receipt" ? (
           "Upload receipt"
+        ) : canSelectMultiple ? (
+          "Upload files"
         ) : (
           "Upload document"
         )}

@@ -1,11 +1,12 @@
 "use client";
 import { useLocale } from "@/lib/i18n/provider";
+import { site } from "@/config/site";
 export function WhatsApp() {
   const { m } = useLocale();
   return (
     <a
       className="whatsapp-floater"
-      href="https://wa.me/79282120121"
+      href={site.whatsapp}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={m.ui.whatsapp}

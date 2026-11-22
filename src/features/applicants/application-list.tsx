@@ -5,7 +5,7 @@ import { PreviousPackageQuote } from "./package-panel";
 import { packageStatus } from "./package-status";
 import { applicationStatuses, proposalSchema } from "@/lib/validation/opportunities";
 import { usdLabel } from "@/lib/format";
-export type ApplicationQuery = { page?: string; status?: string };
+export type ApplicationQuery = { page?: string; status?: string; view?: string };
 export async function ApplicationList({
   query,
   staff = false,
@@ -41,20 +41,24 @@ export async function ApplicationList({
     staff && ids.length
       ? ((await db.from("profiles").select("id,first_name,last_name").in("id", ids)).data ?? [])
       : [];
-  const names = new Map(
-    people.map((p) => [p.id, `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim()]),
-  );
+  const names = new Map(people.map((p) => [p.id, `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim()]));
   const base = staff ? (admin ? "/admin/applications" : "/advisor/applications") : "/dashboard/applications";
-  const pageLink = (n: number) => `${base}?page=${n}&status=${encodeURIComponent(query.status || "")}`;
+  const pageLink = (n: number) =>
+    `${base}?${new URLSearchParams({
+      page: String(n),
+      status: query.status || "",
+      ...(staff ? { view: "packages" } : {}),
+    })}`;
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
-      <h1>{own ? "Your applications." : "Application tracking."}</h1>
-      <p>
-        {own
-          ? "Track your interests, packages, receipts and applications in one place."
-          : "Track applicant interests, payments and application progress."}
-      </p>
+      <div className="workspace-page-heading">
+        <h1>{own ? "Applications" : "Package tracking"}</h1>
+        <Link className="text-link" href={own ? "/dashboard/application" : base}>
+          {own ? "Scholarship application →" : "Scholarship applications →"}
+        </Link>
+      </div>
       <form className="filter-bar">
+        {staff && <input type="hidden" name="view" value="packages" />}
         <label className="field">
           Status
           <select name="status" defaultValue={query.status || ""}>

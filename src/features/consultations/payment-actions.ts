@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { wakeNotifications } from "@/server/services/notification-delivery";
 import { requireStaff } from "@/lib/auth/session";
 import type { ActionState } from "@/components/forms/action-form";
 export async function savePaymentInstructions(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -37,6 +38,10 @@ export async function reviewPayment(_: ActionState, fd: FormData): Promise<Actio
     console.error("receipt_review_failed", { code: error.code });
     return { error: "The review could not be saved. Please try again." };
   }
+  wakeNotifications();
+  revalidatePath("/admin");
+  revalidatePath("/admin/consultations");
+  revalidatePath("/dashboard");
   revalidatePath("/admin/payments");
   revalidatePath("/admin/cases/[id]", "page");
   revalidatePath("/dashboard/consultations");
@@ -55,8 +60,9 @@ export async function assignConsultationAdvisor(_: ActionState, form: FormData):
   const { user, advisor } = input.data;
   const { error } = await db.rpc("assign_consultation_advisor", { p_user: user, p_advisor: advisor });
   if (error) return { error: "Verify the consultation payment and choose an active advisor." };
+  wakeNotifications();
   revalidatePath(`/admin/cases/${user}`);
   revalidatePath("/admin/consultations");
   revalidatePath("/dashboard/consultations");
-  return { message: "Advisor assigned. The applicant can now request meetings and send messages." };
+  return { message: "Advisor assigned. The applicant can now request an online meeting." };
 }

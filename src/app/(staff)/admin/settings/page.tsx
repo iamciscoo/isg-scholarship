@@ -58,13 +58,10 @@ export default async function Settings() {
       <section className="workspace-panel">
         <h2>Email recipients</h2>
         <EmailSettings emails={settings.data.emails} />
-        <p>
-          The Resend test sender delivers only to the Resend account owner. Other email recipients need a
-          verified sender domain. WhatsApp group: API Testing🇷🇺.
-        </p>
+        <p>{settings.data.whatsapp_group ? "Staff WhatsApp group configured." : "Staff WhatsApp group not configured."}</p>
         <h3>Alert delivery</h3>
         {!settings.data.delivery.length ? (
-          <p>No event alerts have been queued yet.</p>
+          <p>No email or WhatsApp deliveries yet.</p>
         ) : (
           <ul>
             {settings.data.delivery.map((d: { channel: string; state: string; count: number }) => (

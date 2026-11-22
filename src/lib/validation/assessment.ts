@@ -12,7 +12,7 @@ export const qualifications = [
 export const assessmentFields = [
   ["firstName", "lastName", "email", "phone", "nationality", "residence"],
   ["qualification", "educationStatus", "fieldOfStudy"],
-  ["studyLevel", "preferredFields", "destinations", "intake", "funding", "constraints"],
+  ["studyLevel", "preferredFields", "destinations", "intake", "funding"],
   ["processingConsent", "adultConfirmation"],
 ] as const;
 export const assessmentSchema = z

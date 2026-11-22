@@ -5,6 +5,7 @@ import { intakeConfigured, challengeRequired } from "@/lib/supabase/config";
 import { adminClient } from "@/lib/supabase/admin";
 import { guardIntake, payloadHash } from "@/server/services/intake";
 import { createClient } from "@/lib/supabase/server";
+import { wakeNotifications } from "@/server/services/notification-delivery";
 export async function POST(request: Request) {
   if (!sameOrigin(request.headers.get("origin"), request.headers))
     return NextResponse.json({ error: "Request origin is not allowed." }, { status: 403 });
@@ -45,7 +46,7 @@ export async function POST(request: Request) {
     p_data: data,
     p_key: idempotencyKey,
     p_hash: payloadHash(data),
-    p_team_email: process.env.ISG_TEAM_EMAIL || "",
+    p_team_email: "", // Staff recipients are managed by the integration outbox.
     p_user: user.id,
   });
   if (result.error) {
@@ -61,5 +62,6 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+  wakeNotifications();
   return NextResponse.json({ reference: result.data }, { status: 201 });
 }

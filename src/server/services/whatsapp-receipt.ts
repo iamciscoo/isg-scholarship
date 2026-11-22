@@ -1,14 +1,17 @@
 import "server-only";
 import sharp from "sharp";
 import type { adminClient } from "@/lib/supabase/admin";
+import { greenApiConfig } from "./delivery-provider";
 
 export async function sendReceiptAttachment(
   db: ReturnType<typeof adminClient>,
   id: string,
   group: string,
   caption: string,
-  signal = AbortSignal.timeout(12000),
+  signal = AbortSignal.timeout(9000),
+  provider = greenApiConfig(),
 ) {
+  if (!provider) return null;
   const receipt = await db.rpc("whatsapp_receipt", { p_file: id, p_group: group }).maybeSingle<{
     storage_path: string;
     mime: string;
@@ -32,31 +35,22 @@ export async function sendReceiptAttachment(
   body.set("file", contents, name);
   body.set("fileName", name);
   body.set("caption", caption);
-  // Direct upload is preferred, but the media host drops connections from some networks.
-  try {
-    const uploaded = await fetch(
-      `https://media.green-api.com/waInstance${process.env.GREEN_API_INSTANCE_ID}/sendFileByUpload/${process.env.GREEN_API_TOKEN}`,
-      { method: "POST", body, redirect: "error", signal },
-    );
-    if (uploaded.ok) return uploaded;
-  } catch {
-    /* fall through to the signed-link send */
-  }
-  // Fallback: a five-minute signed link keeps the private object reachable for the provider only.
+  const uploaded = await fetch(provider("sendFileByUpload"), {
+    method: "POST",
+    body,
+    redirect: "error",
+    signal,
+  });
+  if (![400, 413, 415, 422].includes(uploaded.status)) return uploaded;
+  // Retry as a signed link only when Green API definitively rejected the upload.
   const signed = await db.storage.from("case-files").createSignedUrl(receipt.data.storage_path, 300);
   if (signed.error || !signed.data?.signedUrl) return null;
-  try {
-    const sent = await fetch(
-      `https://7107.api.greenapi.com/waInstance${process.env.GREEN_API_INSTANCE_ID}/sendFileByUrl/${process.env.GREEN_API_TOKEN}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chatId: group, urlFile: signed.data.signedUrl, fileName: name, caption }),
-        signal: AbortSignal.timeout(20000),
-      },
-    );
-    return sent.ok ? sent : null;
-  } catch {
-    return null;
-  }
+  const sent = await fetch(provider("sendFileByUrl"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chatId: group, urlFile: signed.data.signedUrl, fileName: name, caption }),
+    signal,
+    redirect: "error",
+  });
+  return [400, 413, 415, 422].includes(sent.status) ? null : sent;
 }

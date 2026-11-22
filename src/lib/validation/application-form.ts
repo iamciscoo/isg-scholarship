@@ -75,7 +75,7 @@ export const applicationFields: {
       { key: "middleName", label: "Middle name", optional: true },
       { key: "lastName", label: "Last name" },
       { key: "email", label: "Account email", type: "email" },
-      { key: "phone", label: "Phone / WhatsApp" },
+      { key: "phone", label: "Phone / WhatsApp with country code", type: "tel" },
       { key: "studyInterest", label: "What you want to study" },
       { key: "programme", label: "Preferred programme" },
     ],
@@ -98,7 +98,7 @@ export const applicationFields: {
     title: "Education history",
     fields: [
       { key: "highestEducation", label: "Highest education level" },
-      { key: "institutionName", label: "Education institution" },
+      { key: "institutionName", label: "School or university" },
       { key: "institutionCountry", label: "Institution country" },
       { key: "institutionCity", label: "Institution city", optional: true },
       { key: "institutionStreet", label: "Institution street", optional: true },
@@ -116,7 +116,7 @@ export const applicationFields: {
       { key: "guardianEmail", label: "Guardian email", type: "email", optional: true },
       {
         key: "guardianDob",
-        label: "Guardian date of birth (only if requested by your advisor)",
+        label: "Guardian date of birth",
         type: "date",
         optional: true,
       },

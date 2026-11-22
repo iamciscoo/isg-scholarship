@@ -7,7 +7,7 @@ Reviewed `https://www.isgscholarship.com/index.html` on 17 November 2026 using t
 - The page contains numerical outcome/inventory claims and named student testimonials. Independent evidence and publication consent were not supplied. These were not copied into the new build.
 - The existing footer describes some scholarship material as illustrative. No illustrative scholarship dataset was imported or represented as operational research.
 - Useful principles are preserved: ISG is independent, does not award scholarships itself, and cannot guarantee provider decisions. Advisory fees are distinguished from provider costs; no service prices were invented.
-- The published `hello@isgscholarship.com` address is retained. Other phone, office, legal entity and fee information needs owner confirmation before publication.
+- The replacement site uses `support@isgscholarship.org` as its public contact address. Other phone, office, legal entity and fee information needs owner confirmation before publication.
 - The user-supplied current Flight Ribbon SVGs, Manrope font and navy/gold/cream palette replace the prior branding.
 - Legacy HTML entry points have permanent redirects to the corresponding new service, pathway, assessment, account or policy pages. The complete mapping is in `next.config.ts`.
 

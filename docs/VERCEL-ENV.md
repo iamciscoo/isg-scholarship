@@ -20,7 +20,7 @@ Never commit real values. Copy them from the local `.env*.local` files or the ha
 | --- | --- | --- | --- |
 | `TRUST_PROXY` | Server | `true` | Vercel terminates TLS at its edge. Left `false`, rate limiting hashes `"direct"` for every visitor (one shared bucket) and auth cookies fall back to a non-secure hint. Also enables `x-forwarded-proto` detection in `src/proxy.ts`. |
 | `RATE_LIMIT_SECRET` | Server | 64-char hex, generated fresh | HMAC key for `clientIdentity()`. Reusing the dev value is harmless but unnecessary — generate a new one per environment. |
-| `CRON_SECRET` | Server | 64-char hex, generated fresh | Bearer token for `GET /api/jobs/notifications` (`src/app/api/jobs/notifications/route.ts`). Without it that route always returns 401, so queued email/WhatsApp alerts never leave the database. |
+| `CRON_SECRET` | Server | 64-char hex, generated fresh | Authorizes the scheduled delivery worker. App requests normally wake the worker after sending their response. The scheduled worker also processes due retries and any remaining backlog. |
 
 ## 3. Feature flags
 
@@ -34,19 +34,19 @@ Never commit real values. Copy them from the local `.env*.local` files or the ha
 | Variable | Value | Effect |
 | --- | --- | --- |
 | `RESEND_API_KEY` | `re_…` from Resend | `src/server/services/notifications.ts` returns `{configured:false}` without it: applicants get **no** confirmation email, submissions still land in Supabase. |
-| `RESEND_FROM_EMAIL` | `ISG <hello@isgscholarship.com>` | Required together with the key. Verified against the API on 2026-11-20: Resend reports domain `isgscholarship.com` as **`not_started`**, so sends from this address are rejected until the DNS records are added in Resend → Domains. Until then only `onboarding@resend.dev` reaches the account owner. |
-| `ADMIN_EMAIL_ENABLED` | `false` until the domain verifies | Gates the admin *email* channel only (`src/server/services/admin-alerts.ts`). Needs both Resend vars plus a verified sender. WhatsApp alerts do not depend on it. |
-| `ISG_TEAM_EMAIL` | team inbox address | Passed to the assessment RPC as `p_team_email` for new-lead routing. Empty string stores an empty value — leads are not routed. |
+| `RESEND_FROM_EMAIL` | `ISG <support@isgscholarship.org>` | Required together with the key. Resend verified the production sender domain and its four Vercel DNS records on 22 November 2026. Zoho still handles inbound mail for the root domain. |
+| `ADMIN_EMAIL_ENABLED` | `true` after the sender verifies | Enables admin delivery to the recipients in **Admin → Settings**. The initial recipient is `support@isgscholarship.org`. |
 
 WhatsApp alerts are independent of email and work fine on serverless (plain outbound HTTPS):
 
 | Variable | Value |
 | --- | --- |
-| `GREEN_API_URL` | `https://7107.api.green-api.com` (instance host from Green API) |
+| `GREEN_API_URL` | Instance API host from Green API. The existing instance uses `https://7107.api.greenapi.com`. |
+| `GREEN_API_MEDIA_URL` | Optional instance media host from Green API. Defaults to `https://media.greenapi.com`. |
 | `GREEN_API_INSTANCE_ID` | Green API instance id |
 | `GREEN_API_TOKEN` | Green API token |
 
-Admin alerting is skipped only when email **and** WhatsApp are both unconfigured. The WhatsApp group id is stored in the database (admin settings), not in env.
+The WhatsApp group ID is stored in the database. Verify the authorized instance can access the intended staff group before enabling delivery. Green API returns an acceptance ID. Admin settings show provider acceptance, queued retries, and ambiguous delivery outcomes.
 
 ## 5. Cloudflare Turnstile (captcha)
 
@@ -65,11 +65,11 @@ Set **both or neither**. `challengeRequired()` is true when either is present an
 | `PORT`, `HOSTNAME`, `NODE_ENV` | Injected by the platform/Next.js. |
 | `NEXT_DIST_DIR` | Only used by preview/scanning compose overlays. |
 | `NOTIFICATION_JOB_URL` | Default for `scripts/notification-worker.mjs`, the Docker scheduler. On Vercel the job is called by URL instead. |
-| `CLAMAV_HOST` / `CLAMAV_PORT` | Needs a reachable `clamd` daemon; Vercel has no container to run it. Left unset, `validateCaseFile()` rejects **PDF** uploads with "PDF scanning is not configured" — images still work. Only set these if you point at an external scanner. |
+| `CLAMAV_HOST` / `CLAMAV_PORT` | Optional external scanner. With a configured scanner, a successful scan preserves the original PDF. Without one, the app renders and rebuilds uploaded PDFs as image-only review copies. |
 | `PREVIEW_SITE_URL`, `ISG_PAYMENT_QA*` | Preview/QA compose overlays and tests only. |
 
 ## 7. Outside Vercel
 
 - **Supabase → Authentication → URL Configuration**: Site URL `https://www.isgscholarship.org`; redirect allow list must include `https://www.isgscholarship.org/auth/callback` (and `/auth/callback?next=/consultation`), or recovery and magic links point at localhost.
-- **Scheduling**: there is no `vercel.json`, so nothing calls `/api/jobs/notifications`. Add a Vercel Cron (or external scheduler) hitting it with `Authorization: Bearer $CRON_SECRET`. Minute-level crons need a paid plan; Hobby is daily.
+- **Scheduling**: `vercel.json` runs the retry worker daily at 06:00 UTC. Vercel adds `Authorization: Bearer $CRON_SECRET`. For shorter retry intervals, a Pro project can schedule the same route every minute.
 - **Apex vs www**: `isgscholarship.org` 308-redirects to `www`, so `NEXT_PUBLIC_SITE_URL` must be the `www` host or origin checks reject posts coming through the redirect.

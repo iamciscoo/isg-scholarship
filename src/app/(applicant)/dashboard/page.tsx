@@ -1,95 +1,70 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ClipboardList } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { Button } from "@/components/ui/button";
+import { consultationProgress } from "@/features/consultations/progress";
+import type { Inbox } from "@/features/notifications/types";
+
 export default async function Dashboard() {
   const { db, user, profile, role } = await requireUser();
   if (role !== "applicant") redirect(role === "admin" ? "/admin" : "/advisor");
-  const { data: assessments, error } = await db
-    .from("eligibility_assessments")
-    .select("id,reference,study_level,preferred_fields,created_at")
-    .eq("applicant_id", user.id)
-    .order("created_at", { ascending: false });
-  const complete = [
-    profile.first_name,
-    profile.last_name,
-    profile.phone,
-    profile.nationality,
-    profile.residence,
-  ].filter(Boolean).length;
+  const [consultation, draft, calls, meetings, updates] = await Promise.all([
+    db.from("consultation_cases")
+      .select("payment_status,completed_at,current_declaration_id,application_status")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    db.from("consultation_drafts").select("step").eq("user_id", user.id).maybeSingle(),
+    db.from("meeting_requests").select("id").eq("user_id", user.id)
+      .eq("channel", "whatsapp").eq("status", "requested").limit(1),
+    db.from("consultation_meetings").select("id").eq("user_id", user.id)
+      .eq("status", "scheduled").gte("ends_at", new Date().toISOString()).limit(1),
+    db.rpc("account_notification_inbox"),
+  ]);
+  const unavailable = consultation.error || draft.error || calls.error || meetings.error;
+  const progress = consultationProgress(consultation.data, {
+    hasDraft: !!draft.data,
+    hasCall: !!calls.data?.length,
+    hasMeeting: !!meetings.data?.length,
+  });
+  const latest = (updates.data as Inbox | null)?.items?.slice(0, 5) || [];
   return (
     <Workspace role={role} email={user.email || ""}>
-      <h1>Welcome{profile.first_name ? `, ${profile.first_name}` : " to ISG"}.</h1>
-      <p>Your starting point for a more informed education journey.</p>
-      <div className="stat-grid">
-        <div className="stat-box">
-          <span>Contact profile</span>
-          <strong>{complete}/5</strong>
-          <Link href="/dashboard/profile" className="text-link">
-            Update my profile
-          </Link>
-        </div>
-        <div className="stat-box">
-          <span>Assessments received</span>
-          <strong>{error ? "Unavailable" : assessments?.length || 0}</strong>
-        </div>
-      </div>
-      {error && (
-        <p role="alert" className="notice notice-error">
-          We couldn’t load your assessment information. Please refresh or contact ISG.
-        </p>
+      <h1>{profile.first_name ? `Welcome, ${profile.first_name}` : "Your ISG dashboard"}</h1>
+      {unavailable ? (
+        <p role="alert" className="notice notice-error">Your progress could not be loaded. Please refresh.</p>
+      ) : (
+        <>
+          <section className="workspace-panel">
+            <span className="status-pill">Current stage</span>
+            <h2>{progress.stage}</h2>
+            <p>{progress.action}</p>
+            <Button asChild><Link href={progress.href}>{progress.label}</Link></Button>
+          </section>
+          <dl className="stat-grid">
+            <div className="stat-box"><dt>Consultation</dt><dd>{progress.consultation}</dd></div>
+            <div className="stat-box"><dt>Receipt</dt><dd>{progress.receipt}</dd></div>
+            <div className="stat-box"><dt>Scholarship application</dt><dd>{progress.application}</dd></div>
+          </dl>
+        </>
       )}
       <section className="workspace-panel">
-        <h2>Your initial assessments</h2>
-        {!assessments?.length ? (
-          <div className="empty-state">
-            <ClipboardList size={32} />
-            <h3>Tell us where you want to go.</h3>
-            <p>
-              Submit an initial assessment using your account. Your assessment will appear here after you
-              submit it.
-            </p>
-            <Button asChild>
-              <Link href="/consultation">Start consultation</Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Reference</th>
-                  <th>Study goal</th>
-                  <th>Field</th>
-                  <th>Received</th>
-                </tr>
-              </thead>
-              <tbody>
-                {assessments.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.reference}</td>
-                    <td>{row.study_level}</td>
-                    <td>{row.preferred_fields}</td>
-                    <td>
-                      {new Date(row.created_at).toLocaleDateString("en-GB", {
-                        timeZone: "Africa/Dar_es_Salaam",
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-      <section className="workspace-panel">
-        <h2>What happens next?</h2>
-        <p>An advisor reviews your assessment and contacts you about next steps.</p>
-        <Link className="text-link mt-5" href="/contact">
-          Contact ISG
-        </Link>
+        <h2>Latest updates</h2>
+        {updates.error ? (
+          <p role="alert">Updates could not be loaded.</p>
+        ) : latest.length ? (
+          <ol className="notification-history">
+            {latest.map((item) => (
+              <li key={item.id}>
+                {item.link ? <Link className="text-link" href={item.link}>{item.title}</Link> : <strong>{item.title}</strong>}
+                <p className="preserve-lines">{item.body}</p>
+                <time dateTime={item.created_at}>
+                  {new Date(item.created_at).toLocaleDateString("en-GB", { timeZone: "Africa/Dar_es_Salaam" })}
+                </time>
+              </li>
+            ))}
+          </ol>
+        ) : <p>No updates yet.</p>}
       </section>
     </Workspace>
   );

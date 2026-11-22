@@ -60,7 +60,11 @@ try {
       .map((f) => `supabase/migrations/${f}`),
     "tests/integration/scholarship-packages.sql",
     ...migrations.slice(advisorFlow).map((f) => `supabase/migrations/${f}`),
+    "tests/integration/notification-delivery.sql",
     "tests/integration/advisor-package-flow.sql",
+    "tests/integration/case-uploads.sql",
+    "tests/integration/application-review.sql",
+    "tests/integration/consultation-workflow.sql",
     "scripts/reset-consultations-and-packages.sql",
     "tests/integration/consultation-reset.sql",
   ];

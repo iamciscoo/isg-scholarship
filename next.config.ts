@@ -26,6 +26,10 @@ const config: NextConfig = {
   allowedDevOrigins: ["*.ngrok-free.dev", "*.ngrok-free.app", "*.ngrok.app", "*.ngrok.io"],
   distDir: process.env.NEXT_DIST_DIR || ".next",
   output: "standalone",
+  serverExternalPackages: ["@hyzyla/pdfium"],
+  outputFileTracingIncludes: {
+    "/api/case-files": ["./node_modules/@hyzyla/pdfium/dist/pdfium.wasm"],
+  },
   poweredByHeader: false,
   experimental: {
     serverActions: {

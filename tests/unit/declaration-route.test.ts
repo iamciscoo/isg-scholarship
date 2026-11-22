@@ -2,11 +2,14 @@ import * as React from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import Declaration from "@/app/(staff)/admin/declarations/[id]/page";
 
-const { requireStaff, from, select, eq, maybeSingle } = vi.hoisted(() => ({
+const { requireStaff, from, select, eq, order, limit, single, maybeSingle } = vi.hoisted(() => ({
   requireStaff: vi.fn(),
   from: vi.fn(),
   select: vi.fn(),
   eq: vi.fn(),
+  order: vi.fn(),
+  limit: vi.fn(),
+  single: vi.fn(),
   maybeSingle: vi.fn(),
 }));
 vi.mock("@/lib/auth/session", () => ({ requireStaff }));
@@ -22,10 +25,16 @@ const declarationId = "80000000-0000-4000-8000-000000000001";
 const userId = "00000000-0000-4000-8000-000000000201";
 beforeEach(() => {
   vi.stubGlobal("React", React);
-  const query = { select, eq, maybeSingle };
+  const query = { select, eq, order, limit, single, maybeSingle };
   from.mockReturnValue(query);
   select.mockReturnValue(query);
   eq.mockReturnValue(query);
+  order.mockReturnValue(query);
+  limit.mockResolvedValue({ data: [], error: null });
+  single.mockResolvedValue({
+    data: { current_declaration_id: declarationId, application_status: "submitted" },
+    error: null,
+  });
   requireStaff.mockResolvedValue({ db: { from }, user: { email: "admin@example.invalid" }, role: "admin" });
 });
 afterEach(() => {
@@ -38,7 +47,7 @@ it("opens the exact accepted PDF and its applicant case after administrator auth
     data: {
       id: declarationId,
       user_id: userId,
-      version: "2026-11-18-application-v1",
+      data: { firstName: "Test", lastName: "Applicant" },
       accepted_at: "2026-11-18T10:00:00Z",
     },
     error: null,
@@ -55,7 +64,11 @@ it("opens the exact accepted PDF and its applicant case after administrator auth
   expect(requireStaff).toHaveBeenCalledWith(true);
   expect(from).toHaveBeenCalledWith("application_declarations");
   expect(eq).toHaveBeenCalledWith("id", declarationId);
-  expect(links).toEqual([`/api/application-pdf/${declarationId}`, `/admin/cases/${userId}`]);
+  expect(links).toEqual([
+    "/admin/applications",
+    `/api/application-pdf/${declarationId}`,
+    `/admin/cases/${userId}`,
+  ]);
 });
 it("does not query declarations when administrator authorization fails", async () => {
   requireStaff.mockRejectedValue(new Error("Unauthorized"));

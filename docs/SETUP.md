@@ -8,7 +8,7 @@ Email confirmation is disabled in the connected Supabase project at the owner's 
 
 # Setup and launch
 
-Updated 18 November 2026. The owner requested password-only staff access. The main administrator is hello@isgscholarship.com; the supplied password is held by Supabase Auth and is never committed. Authenticated identity, active status and database roles protect staff data. Administrators manage roles at /admin/settings, with audited changes and last-administrator protection.
+The main administrator signs in using their existing Supabase Auth email and password. Authenticated identity, active status and database roles protect staff data. Administrators manage roles at /admin/settings, with audited changes and last-administrator protection. The official support and notification inbox is `support@isgscholarship.org`.
 
 Start consultation requires a registered account. /eligibility redirects to /consultation. The API checks the authenticated session and matching account email.
 
@@ -22,9 +22,9 @@ docker compose --env-file .env.local -f compose.yaml -f compose.integrations.yam
 
 The overlay reads .env.integrations.local, .env.green-api.local and .env.sender-testing.local. Recreate these through a secret manager for another environment: RESEND_API_KEY, RESEND_FROM_EMAIL, ADMIN_EMAIL_ENABLED, GREEN_API_URL, GREEN_API_INSTANCE_ID, GREEN_API_TOKEN and CRON_SECRET. Never commit credentials. The basic compose.yaml app can run without the optional files.
 
-Resend currently uses onboarding@resend.dev and delivers only to the account-owner address approved in this session. The setup email was accepted by Resend; inbox delivery is not implied. The domain isgscholarship.com was added but DNS verification was deferred by the owner. Other recipients require a verified sender domain and an updated RESEND_FROM_EMAIL.
+For production email, verify `isgscholarship.org` in Resend, set `RESEND_FROM_EMAIL="ISG <support@isgscholarship.org>"`, and enable `ADMIN_EMAIL_ENABLED`. Use the Resend dashboard to verify delivery to each test inbox after the provider accepts the message.
 
-Green API instance 710722779815 was authorized at https://7107.api.greenapi.com on its DEVELOPER plan. The requested API Testing group (with Russian flag) was resolved exactly to the privately configured group ID. No unsolicited group test message was sent. Plan restrictions still apply.
+The existing Green API instance and configured WhatsApp group were verified with the provider's state and group lookup APIs. Use the authorized instance credential and API host from the Green API console. Keep the group ID in the database integration settings.
 
 /admin/settings manages future admin email recipients and account roles. Alerts cover account creation, consultation receipt and lead changes. Messages contain an event notice and workspace link, without names, emails, phone numbers or academic records. The local scheduler calls /api/jobs/notifications every minute with CRON_SECRET. Hosted deployments need their own equivalent scheduler. Resend uses idempotency keys. Ambiguous or interrupted Green API requests become uncertain for manual review rather than risking duplicate messages.
 

@@ -1,10 +1,9 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Check, CheckCircle2, CircleCheck } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { assessmentFields, assessmentSchema, type AssessmentInput } from "@/lib/validation/assessment";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
@@ -27,7 +26,6 @@ export function AssessmentForm({
   initial?: Partial<AssessmentInput>;
   initialStep?: number;
 }) {
-  const router = useRouter();
   const [step, setStep] = useState(initialStep);
   const [key] = useState(requestId);
   const [token, setToken] = useState("");
@@ -35,12 +33,12 @@ export function AssessmentForm({
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [resetKey, setResetKey] = useState(0);
-  const [reference, setReference] = useState("");
   const heading = useRef<HTMLHeadingElement>(null);
-  const done = useRef<HTMLElement>(null);
-  useEffect(() => {
-    if (reference) done.current?.scrollIntoView({ block: "center" });
-  }, [reference]);
+  const navigating = useRef(false);
+  function openConsultation() {
+    navigating.current = true;
+    window.location.replace("/dashboard/consultations#consultation-payment");
+  }
   const form = useForm<AssessmentInput>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
@@ -56,11 +54,11 @@ export function AssessmentForm({
       englishStatus: "",
       preferredFields: "",
       destinations: "",
-      constraints: "",
       processingConsent: false,
       marketingConsent: false,
       adultConfirmation: false,
       ...initial,
+      constraints: "",
     },
     mode: "onBlur",
   });
@@ -80,6 +78,10 @@ export function AssessmentForm({
         Object.fromEntries(names.map((name) => [name, values[name]])),
         step + 1,
       );
+      if (result.existing) {
+        openConsultation();
+        return;
+      }
       if (result.error) {
         setError(result.error);
         return;
@@ -88,7 +90,7 @@ export function AssessmentForm({
     } catch {
       setError("Your progress could not be saved. Please try again.");
     } finally {
-      setPending(false);
+      if (!navigating.current) setPending(false);
     }
   }
   async function submit(data: AssessmentInput) {
@@ -104,44 +106,25 @@ export function AssessmentForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ data, idempotencyKey: key, turnstileToken: token, website }),
       });
-      const result = await response.json();
-      // A second submission means the first one already landed; send the applicant to their consultation.
-      if (response.status === 409) {
-        router.push("/dashboard/consultations");
+      if (response.ok || response.status === 409) {
+        openConsultation();
         return;
       }
-      if (!response.ok)
-        throw new Error(result.error || "We couldn’t submit your assessment. Please try again.");
-      setReference(result.reference);
-      form.reset();
+      const result = await response.json();
+      throw new Error(result.error || "We couldn’t submit your consultation. Please try again.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Please try again.");
       setToken("");
       setResetKey((v) => v + 1);
     } finally {
-      setPending(false);
+      if (!navigating.current) setPending(false);
     }
   }
-  if (reference)
-    return (
-      <section className="success-panel" role="status" ref={done}>
-        <CheckCircle2 size={44} />
-        <h1>Consultation submitted</h1>
-        <div className="reference">{reference}</div>
-        <p>Open your workspace for the TZS 50,000 payment instructions, then upload your receipt.</p>
-        <Button asChild>
-          <Link href="/dashboard/consultations">
-            View payment instructions <ArrowRight size={17} />
-          </Link>
-        </Button>
-      </section>
-    );
   const values = form.getValues();
   return (
     <div className="container assessment-shell">
       <aside className="assessment-sidebar">
-        <span className="eyebrow">Your journey starts here</span>
-        <h1>Let’s get to know your ambition.</h1>
+        <h1>Start your consultation</h1>
         <ol className="assessment-stepper" aria-label="Assessment progress">
           {titles.map((title, i) => (
             <li key={title} aria-current={i === step ? "step" : undefined}>
@@ -150,10 +133,6 @@ export function AssessmentForm({
             </li>
           ))}
         </ol>
-        <div className="notice">
-          <CircleCheck size={22} className="mb-3" />
-          Your assessment is private. It is reviewed by authorized ISG staff.
-        </div>
       </aside>
       <form
         className="assessment-form"
@@ -171,7 +150,10 @@ export function AssessmentForm({
         {step < 3 ? (
           <div className="form-grid">
             {steps[step].map((field) => (
-              <div className="field" key={field.name}>
+              <div
+                className={step === 0 && !["firstName", "lastName"].includes(field.name) ? "field assessment-contact-field" : "field"}
+                key={field.name}
+              >
                 <label htmlFor={field.name}>{field.label}</label>
                 {field.options ? (
                   <select
@@ -205,9 +187,7 @@ export function AssessmentForm({
                     aria-invalid={!!form.formState.errors[field.name]}
                     aria-describedby={`${field.name}-error`}
                     maxLength={
-                      field.name === "constraints"
-                        ? 400
-                        : field.name === "preferredFields"
+                      field.name === "preferredFields" || field.name === "destinations"
                           ? 200
                           : field.name === "email"
                             ? 254
@@ -297,9 +277,6 @@ export function AssessmentForm({
             for help.
           </p>
         )}
-        <p className="field-help mt-4">
-          An initial assessment does not guarantee funding, admission or a visa.
-        </p>
       </form>
     </div>
   );

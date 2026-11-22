@@ -44,10 +44,6 @@ export function MeetingScheduler({
         Meeting link
         <input name="url" type="url" required placeholder="https://meet.google.com/abc-defg-hij" />
       </label>
-      <p>
-        Create the meeting in Google Meet, Zoom, Teams or any other service, then paste its https link. ISG does
-        not create the meeting automatically.
-      </p>
       <label>
         Related request
         <select name="request">

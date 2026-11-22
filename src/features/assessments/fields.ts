@@ -34,12 +34,20 @@ export const steps: AssessmentField[][] = [
       label: "Current education status",
       options: ["Currently studying", "Graduated", "Working", "Other"],
     },
-    { name: "fieldOfStudy", label: "Current / most recent field of study" },
+    {
+      name: "fieldOfStudy",
+      label: "Current / most recent field of study",
+      help: "e.g. Medicine, Business, Engineering, Telecom",
+    },
   ],
   [
     { name: "studyLevel", label: "Desired study level", options: studyLevels },
-    { name: "preferredFields", label: "Preferred academic fields" },
-    { name: "destinations", label: "Preferred destinations (optional)" },
+    { name: "preferredFields", label: "Preferred academic fields", help: "e.g. Medicine, Telecom, Business" },
+    {
+      name: "destinations",
+      label: "Preferred destinations (optional)",
+      help: "e.g. Russia, England, Canada",
+    },
     {
       name: "intake",
       label: "Intended intake",
@@ -49,11 +57,6 @@ export const steps: AssessmentField[][] = [
       name: "funding",
       label: "Funding preference",
       options: ["Full funding needed", "Partial funding considered", "Open to advice"],
-    },
-    {
-      name: "constraints",
-      label: "Questions for your advisor (optional)",
-      help: "You can mention language preferences, timing or travel readiness. Do not include passport numbers, financial account details or sensitive information.",
     },
   ],
 ];

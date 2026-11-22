@@ -5,7 +5,10 @@ import { z } from "zod";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { applicationStatuses, providerDecisions } from "@/lib/validation/opportunities";
 import type { ActionState } from "@/components/forms/action-form";
+import { wakeNotifications } from "@/server/services/notification-delivery";
 function refresh(id?: string) {
+  wakeNotifications();
+  revalidatePath("/dashboard");
   for (const p of ["/dashboard/applications", "/admin/applications", "/advisor/applications"])
     revalidatePath(p);
   if (id)

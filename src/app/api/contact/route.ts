@@ -4,6 +4,7 @@ import { sameOrigin, readJson } from "@/lib/security/request";
 import { contactConfigured, contactChallengeRequired } from "@/lib/supabase/config";
 import { adminClient } from "@/lib/supabase/admin";
 import { guardIntake, payloadHash } from "@/server/services/intake";
+import { wakeNotifications } from "@/server/services/notification-delivery";
 export async function POST(request: Request) {
   if (!sameOrigin(request.headers.get("origin"), request.headers))
     return NextResponse.json({ error: "Request origin is not allowed." }, { status: 403 });
@@ -39,5 +40,6 @@ export async function POST(request: Request) {
     console.error("enquiry_store_failed", { code: result.error.code });
     return NextResponse.json({ error: "We couldn’t save your enquiry. Please try again." }, { status: 500 });
   }
+  wakeNotifications();
   return NextResponse.json({ received: true }, { status: 201 });
 }

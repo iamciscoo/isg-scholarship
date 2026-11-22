@@ -10,6 +10,7 @@ export async function saveConsultationDraft(values: unknown, step: number) {
     return { error: "Please check the details in this step." };
   const data = { ...parsed.data, email: user.email || "" };
   const { error } = await db.rpc("save_my_consultation_draft", { p_data: data, p_step: step });
+  if (error?.code === "23505") return { existing: true };
   if (error) return { error: "Your progress and profile details could not be saved. Please try again." };
   revalidatePath("/dashboard");
   return { message: "Progress saved to your account." };

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+vi.mock("@/server/services/notification-delivery", () => ({ wakeNotifications: vi.fn() }));
 const mock = vi.hoisted(() => ({ rpc: vi.fn(), guard: vi.fn() }));
 vi.mock("@/lib/supabase/admin", () => ({ adminClient: () => ({ rpc: mock.rpc }) }));
 vi.mock("@/server/services/intake", () => ({ guardIntake: mock.guard, payloadHash: () => "test-hash" }));
