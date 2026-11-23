@@ -29,6 +29,11 @@ const config: NextConfig = {
   serverExternalPackages: ["@hyzyla/pdfium"],
   outputFileTracingIncludes: {
     "/api/case-files": ["./node_modules/@hyzyla/pdfium/dist/pdfium.wasm"],
+    "/api/application-pdf/*": [
+      "./public/brand/logo.svg",
+      "./public/fonts/Manrope-Regular.ttf",
+      "./public/fonts/Manrope-Bold.ttf",
+    ],
   },
   poweredByHeader: false,
   experimental: {
