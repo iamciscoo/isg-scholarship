@@ -30,6 +30,8 @@ describe("dashboard translations", () => {
           "Payment needed",
           "Application status",
           "Upload receipt",
+          "Reference",
+          "Study goal",
         ] as const)
           expect(dictionaries[locale].workspace[key], `${locale}: ${key}`).not.toBe(key);
     }

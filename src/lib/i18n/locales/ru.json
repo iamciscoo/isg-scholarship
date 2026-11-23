@@ -896,6 +896,8 @@
     "Test completed": "Тест пройден",
     "Test planned": "Тест запланирован",
     "Studied in English": "Обучение на английском",
-    "Not yet assessed": "Ещё не оценено"
+    "Not yet assessed": "Ещё не оценено",
+    "Reference": "Номер заявки",
+    "Study goal": "Учебная цель"
   }
 }

@@ -867,6 +867,8 @@
     "Test completed": "تم إكمال الاختبار",
     "Test planned": "الاختبار مخطط له",
     "Studied in English": "درست باللغة الإنجليزية",
-    "Not yet assessed": "لم يُقيّم بعد"
+    "Not yet assessed": "لم يُقيّم بعد",
+    "Reference": "الرقم المرجعي",
+    "Study goal": "الهدف الدراسي"
   }
 }
