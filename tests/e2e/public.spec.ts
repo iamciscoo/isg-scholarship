@@ -23,10 +23,33 @@ test("public pages and legacy redirects work", async ({ page, request }) => {
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
     await expect(page.locator("h1")).toHaveCount(1);
+    if (path === "/services") {
+      await expect(page.getByText(/^Service scope and any charges/)).toHaveCount(0);
+      await expect(page.getByRole("link", { name: "Read about service fees" })).toBeVisible();
+    }
   }
   const legacy = await request.get("/index.html", { maxRedirects: 0 });
   expect(legacy.status()).toBe(308);
   expect(legacy.headers().location).toBe("/");
+});
+test("logo and utility links zoom without a pointer border and retain keyboard focus", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const logo = page.locator(".brand");
+  for (const link of [logo, page.locator(".utility-links a").first()]) {
+    await expect(link).toBeVisible();
+    const box = (await link.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await expect(link).toHaveCSS("box-shadow", "none");
+    await expect(link).toHaveCSS("outline-style", "none");
+    await expect(link).toHaveCSS("scale", "1.04");
+    await page.mouse.move(0, 0);
+    await page.mouse.up();
+  }
+  await page.keyboard.press("Tab");
+  await logo.focus();
+  await expect(logo).toHaveCSS("outline-style", "solid");
 });
 test("unauthenticated private routes stay protected", async ({ page, request, baseURL }) => {
   for (const path of [

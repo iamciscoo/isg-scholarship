@@ -39,10 +39,6 @@ export default function Services() {
         description="From understanding your options to preparing your application, choose guidance that fits where you are in your journey."
       />
       <div className="container page-body">
-        <div className="notice">
-          Service scope and any charges are agreed in writing. An initial enquiry does not commit you to a
-          paid service.
-        </div>
         <div className="content-grid">
           {services.map(([title, text]) => (
             <section className="content-panel" key={title}>

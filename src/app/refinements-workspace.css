@@ -178,15 +178,6 @@
     font-size: 13px;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .brand,
-  .auth-brand,
-  .workspace-home {
-    transition: none;
-    transform: none !important;
-  }
-}
-
 .image-picker-trigger {
   display: flex;
   align-items: center;

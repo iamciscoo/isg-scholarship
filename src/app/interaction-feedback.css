@@ -24,14 +24,11 @@
   }
 }
 :where(
+    a[href],
+    [role="link"],
     .site-header .menu-toggle,
     .site-header .account-menu-trigger,
-    .site-header nav a,
-    .workspace-home,
-    .workspace-sidebar nav a,
-    .workspace-profile-trigger,
-    .account-menu a,
-    .catalogue-tabs a
+    .workspace-profile-trigger
   ) {
   --tap-highlight: transparent;
   --tap-shadow: none;

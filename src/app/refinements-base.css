@@ -6,19 +6,6 @@ html {
   top: 0;
   z-index: 40;
 }
-.brand,
-.auth-brand,
-.workspace-home {
-  transition:
-    transform 120ms ease-out,
-    opacity 120ms ease-out;
-  transform-origin: center;
-}
-.brand:active:not(:focus-visible),
-.auth-brand:active:not(:focus-visible),
-.workspace-home:active:not(:focus-visible) {
-  transform: scale(0.97);
-}
 .hero-copy > p {
   font-size: 14px;
   line-height: 1.75;
