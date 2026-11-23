@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { z } from "zod";
@@ -20,6 +23,7 @@ export async function ApplicationDetail({
   admin?: boolean;
 }) {
   const { db, user, role } = staff ? await requireStaff(admin) : await requireUser();
+  const translate = await getWorkspaceText();
   if (!z.uuid().safeParse(id).success) notFound();
   const { data: application, error } = await db
     .from("study_applications")
@@ -40,7 +44,7 @@ export async function ApplicationDetail({
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
       <Link className="text-link" href={`${area}/applications`}>
-        ← Applications
+        <Text>{"← Applications"}</Text>
       </Link>
       <h1>{proposal.name}</h1>
       <p>
@@ -57,14 +61,14 @@ export async function ApplicationDetail({
         {staff ? (
           <div className="workspace-action-row">
             <Link className="text-link" href={`${area}/cases/${application.user_id}`}>
-              View consultation
+              <Text>{"View consultation"}</Text>
             </Link>
             {paid && (
               <Link
                 className="button button-outline"
                 href={`${area}/cases/${application.user_id}/application`}
               >
-                Enter application details
+                <Text>{"Enter application details"}</Text>
               </Link>
             )}
             {record.current_declaration_id && (
@@ -72,14 +76,16 @@ export async function ApplicationDetail({
                 className="button button-primary"
                 href={`${area}/declarations/${record.current_declaration_id}`}
               >
-                Review application
+                <Text>{"Review application"}</Text>
               </Link>
             )}
           </div>
         ) : (
           paid && (
             <Link className="button button-primary" href="/dashboard/application">
-              {record.current_declaration_id ? "View application" : "Fill application form"}
+              {record.current_declaration_id
+                ? translate("View application")
+                : translate("Fill application form")}
             </Link>
           )
         )}

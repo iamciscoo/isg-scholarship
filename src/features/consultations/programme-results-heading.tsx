@@ -1,4 +1,6 @@
 "use client";
+import { Text } from "@/lib/i18n/workspace-text";
+
 import { useEffect, useRef } from "react";
 
 export function ProgrammeResultsHeading() {
@@ -11,7 +13,7 @@ export function ProgrammeResultsHeading() {
   }, []);
   return (
     <h2 id="programme-results" ref={heading} tabIndex={-1} className="programme-results-heading">
-      Programme options
+      <Text>{"Programme options"}</Text>
     </h2>
   );
 }

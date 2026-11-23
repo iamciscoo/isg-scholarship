@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
@@ -12,6 +15,7 @@ import { ApplicationUpdates, applicationDate } from "./application-updates";
 
 export async function ApplicationReview({ id, admin = false }: { id: string; admin?: boolean }) {
   const { db, user, role } = await requireStaff(admin);
+  const translate = await getWorkspaceText();
   if (!z.uuid().safeParse(id).success) notFound();
   const { data: declaration, error } = await db
     .from("application_declarations")
@@ -43,40 +47,52 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
       <Link className="text-link" href={`${area}/applications`}>
-        ← Scholarship applications
+        <Text>{"← Scholarship applications"}</Text>
       </Link>
       <div className="workspace-page-heading">
         <div>
           <h1>{name}</h1>
-          <p>Submitted {applicationDate(declaration.accepted_at)}</p>
-          {declaration.submission_method === "staff" && <p>Recorded by ISG staff</p>}
+          <p>
+            <Text>{"Submitted"}</Text> {applicationDate(declaration.accepted_at)}
+          </p>
+          {declaration.submission_method === "staff" && (
+            <p>
+              <Text>{"Recorded by ISG staff"}</Text>
+            </p>
+          )}
         </div>
         <span className="status-pill">
-          {current ? fullApplicationStatusLabel(status) : "Earlier submission"}
+          {current ? fullApplicationStatusLabel(status) : translate("Earlier submission")}
         </span>
       </div>
       <div className="workspace-action-row case-actions">
         <Link className="text-link" href={`/api/application-pdf/${id}`}>
-          Download application
+          <Text>{"Download application"}</Text>
         </Link>
-        {current && <Link href={`${area}/cases/${declaration.user_id}/application`}>Edit application</Link>}
+        {current && (
+          <Link href={`${area}/cases/${declaration.user_id}/application`}>
+            <Text>{"Edit application"}</Text>
+          </Link>
+        )}
         <Link className="text-link" href={`${area}/cases/${declaration.user_id}`}>
-          View consultation
+          <Text>{"View consultation"}</Text>
         </Link>
         {!current && caseRecord.data.current_declaration_id && (
           <Link className="text-link" href={`${area}/declarations/${caseRecord.data.current_declaration_id}`}>
-            Open latest submission
+            <Text>{"Open latest submission"}</Text>
           </Link>
         )}
       </div>
       {current && admin && (
         <section className="workspace-panel">
-          <h2>Application status</h2>
+          <h2>
+            <Text>{"Application status"}</Text>
+          </h2>
           <ActionForm action={reviewFullApplication} label="Save status">
             <input name="declaration" type="hidden" value={id} />
             <input name="previous" type="hidden" value={status} />
             <label>
-              Application status
+              <Text>{"Application status"}</Text>
               <select name="status" defaultValue={status}>
                 {fullApplicationStatuses
                   .filter(
@@ -90,26 +106,28 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
               </select>
             </label>
             <label>
-              Note for the applicant (optional)
+              <Text>{"Note for the applicant (optional)"}</Text>
               <textarea
                 name="note"
                 maxLength={2000}
-                placeholder="Add instructions if the applicant needs to do something."
+                placeholder={translate("Add instructions if the applicant needs to do something.")}
               />
             </label>
           </ActionForm>
         </section>
       )}
       <section className="workspace-panel">
-        <h2>Submitted information</h2>
+        <h2>
+          <Text>{"Submitted information"}</Text>
+        </h2>
         <div className="operation-grid">
           {applicationFields.map((section) => (
             <article key={section.title} className="operation-card">
-              <h3>{section.title}</h3>
+              <h3>{<Text>{section.title}</Text>}</h3>
               <dl className="package-fees">
                 {section.fields.map((field) => (
                   <div key={field.key} className="break-words">
-                    <dt>{field.label}</dt>
+                    <dt>{<Text>{field.label}</Text>}</dt>
                     <dd className="min-w-0">{String(declaration.data[field.key] || "—")}</dd>
                   </div>
                 ))}
@@ -118,7 +136,8 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
           ))}
         </div>
         <p>
-          Guardian contact permission: {declaration.data.guardianPermission ? "Confirmed" : "Not recorded"}
+          <Text>{"Guardian contact permission:"}</Text>{" "}
+          {declaration.data.guardianPermission ? translate("Confirmed") : translate("Not recorded")}
         </p>
       </section>
       {current && <DocumentPanel user={declaration.user_id} staff />}

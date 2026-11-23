@@ -1,4 +1,9 @@
 "use client";
+import { useWorkspaceText } from "@/lib/i18n/workspace-text";
+
+import { UnsavedChangesProvider } from "@/components/forms/unsaved-changes";
+import { Text } from "@/lib/i18n/workspace-text";
+
 import { createContext, useContext, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -40,6 +45,7 @@ export function WorkspaceLayout(props: WorkspaceProps) {
   );
 }
 function WorkspaceFrame({ children, role, email, active = "overview", account }: WorkspaceProps) {
+  const translate = useWorkspaceText();
   const pathname = usePathname();
   const content = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -116,52 +122,58 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
     ),
   }));
   return (
-    <div className="workspace">
-      <aside className="workspace-sidebar">
-        <Link href="/" className="workspace-home" aria-label="ISG home" prefetch>
-          <Image src="/brand/logo.svg" width={200} height={52} alt="ISG home" />
-        </Link>
-        <div className="workspace-label">{staff ? "Staff workspace" : "My ISG"}</div>
-        <nav aria-label="Workspace navigation">
-          {navigation.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              prefetch={true}
-              aria-current={item.current ? "page" : undefined}
-            >
-              <item.icon size={18} />
-              {item.label}
+    <UnsavedChangesProvider>
+      <div className="workspace">
+        <aside className="workspace-sidebar">
+          <Link href="/" className="workspace-home" aria-label={translate("ISG home")} prefetch>
+            <Image src="/brand/logo.svg" width={200} height={52} alt={translate("ISG home")} />
+          </Link>
+          <div className="workspace-label">{staff ? translate("Staff workspace") : translate("My ISG")}</div>
+          <nav aria-label={translate("Workspace navigation")}>
+            {navigation.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                prefetch={true}
+                aria-current={item.current ? "page" : undefined}
+              >
+                <item.icon size={18} />
+                {item.label}
+              </Link>
+            ))}
+            <Link href="/">
+              <Text>{"Back to website"}</Text>
             </Link>
-          ))}
-          <Link href="/">Back to website</Link>
-        </nav>
-      </aside>
-      <div className="workspace-main">
-        <header className="workspace-top">
-          <span>{staff ? "Private staff workspace" : "Your applicant account"}</span>
-          <div className="workspace-action-row">
-            <div className="workspace-utilities">
-              <NotificationBell signedIn />
-              <LanguageSelector />
+          </nav>
+        </aside>
+        <div className="workspace-main">
+          <header className="workspace-top">
+            <span>{staff ? translate("Private staff workspace") : translate("Your applicant account")}</span>
+            <div className="workspace-action-row">
+              <div className="workspace-utilities">
+                <NotificationBell signedIn />
+                <LanguageSelector />
+              </div>
+              <span>{email}</span>
+              <WorkspaceProfileMenu
+                links={navigation}
+                account={account || { name: email || "ISG account", avatar: null }}
+              />
+              <form action={signOut} className="workspace-desktop-logout">
+                <Button size="sm" variant="outline" aria-label={translate("Sign out")}>
+                  <LogOut size={16} />
+                  <span className="workspace-signout-label">
+                    <Text>{"Sign out"}</Text>
+                  </span>
+                </Button>
+              </form>
             </div>
-            <span>{email}</span>
-            <WorkspaceProfileMenu
-              links={navigation}
-              account={account || { name: email || "ISG account", avatar: null }}
-            />
-            <form action={signOut} className="workspace-desktop-logout">
-              <Button size="sm" variant="outline" aria-label="Sign out">
-                <LogOut size={16} />
-                <span className="workspace-signout-label">Sign out</span>
-              </Button>
-            </form>
-          </div>
-        </header>
-        <main id="main" className="workspace-content" ref={content}>
-          {children}
-        </main>
+          </header>
+          <main id="main" className="workspace-content" ref={content}>
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </UnsavedChangesProvider>
   );
 }

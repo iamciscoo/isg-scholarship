@@ -11,17 +11,20 @@ export function useInbox(signedIn: boolean) {
   const request = useRef<AbortController | null>(null);
   const loadedAt = useRef(0);
   const reading = useRef(0);
+  const refreshAfterRead = useRef(false);
   const path = usePathname();
   const previousPath = useRef(path);
   const refresh = useCallback(
     async (force = false) => {
+      if (force && reading.current) refreshAfterRead.current = true;
       if (
         !signedIn ||
-        request.current ||
+        (!force && request.current) ||
         reading.current ||
         (!force && Date.now() - loadedAt.current < 15_000)
       )
         return;
+      if (force) request.current?.abort();
       const controller = new AbortController();
       request.current = controller;
       try {
@@ -94,6 +97,9 @@ export function useInbox(signedIn: boolean) {
     if (!ok) {
       setError(true);
       loadedAt.current = 0;
+      await refresh(true);
+    } else if (!reading.current && refreshAfterRead.current) {
+      refreshAfterRead.current = false;
       await refresh(true);
     }
     return ok;

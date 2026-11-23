@@ -4,6 +4,7 @@ import sharp from "sharp";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth/session";
 import { adminClient } from "@/lib/supabase/admin";
+import { storageBody } from "@/server/services/storage-body";
 type State = { error?: string; message?: string };
 export async function uploadAvatar(_previous: State, fd: FormData): Promise<State> {
   const { db, user, profile } = await requireUser();
@@ -32,7 +33,7 @@ export async function uploadAvatar(_previous: State, fd: FormData): Promise<Stat
   const path = `${user.id}/${randomUUID()}.webp`;
   const { error } = await db.storage
     .from("profile-avatars")
-    .upload(path, image, { contentType: "image/webp", upsert: false });
+    .upload(path, storageBody(image), { contentType: "image/webp", upsert: false });
   if (error) return { error: "Your photo could not be uploaded. Please try again." };
   const saved = await db.rpc("set_profile_avatar", { p_path: path });
   if (saved.error) {

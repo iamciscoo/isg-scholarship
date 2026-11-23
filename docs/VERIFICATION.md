@@ -6,6 +6,16 @@ November 19 UI checkpoint: all 20 migrations and adversarial SQL suites passed o
 
 # Current update
 
+23 November 2026 — dashboard languages, mobile flow and notification resolution:
+
+- 113 unit tests across 25 files passed, including six-language dictionary coverage, canonical form options, authored notification preservation and shared-memory upload bodies.
+- All database suites passed through migration 055. Tests cover notification backfill, old-event replay, unrelated/manual messages, receipt rejection/replacement/approval and independent document requests.
+- The real production build passed the full isolated consultation/payment/application workflow and the dashboard polish browser check. Verified admin and applicant screens in all six languages, 320/390/768/1440 widths, three mobile summary cards, expandable filters, mobile user lists, search, status-first details, Cancel, native validation, failed-save value recovery and persisted status saves. Browser fixtures ran only on disposable local Supabase with provider delivery disabled.
+- ESLint has no errors and one existing React Hook Form compiler warning. Production dependency audit: zero vulnerabilities.
+- Production testing exposed native processed image data that fetch rejected as shared memory. All four image/storage upload paths now copy into an ordinary ArrayBuffer; the real production receipt/image/document workflow and a targeted regression test passed.
+- Application records are retained for this rollout. Migration 055 marks only identifiable automated notices resolved/read and keeps notification history and authored messages.
+
+
 23 November 2026 — admin receipt uploads and private applicant files:
 
 - Production build and TypeScript passed; ESLint has no errors and two existing warnings (country-select dependency and React Hook Form compiler compatibility). Production dependency audit: zero vulnerabilities.

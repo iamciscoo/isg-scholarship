@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
@@ -11,6 +14,7 @@ export default async function Promotions({
   searchParams: Promise<{ page?: string; edit?: string }>;
 }) {
   const { db, user, role } = await requireStaff(true);
+  const translate = await getWorkspaceText();
   const q = await searchParams;
   const page = Math.max(1, Math.min(100000, Number.parseInt(q.page || "1", 10) || 1));
   const list = await db
@@ -27,25 +31,34 @@ export default async function Promotions({
   if (edit?.error) throw Error("Promotion unavailable");
   return (
     <Workspace role={role} email={user.email || ""} active="promotions">
-      <h1>Public study promotions.</h1>
+      <h1>
+        <Text>{"Public study promotions."}</Text>
+      </h1>
       <p>
-        Show broad destinations, fields, study levels and funding types. The private opportunity catalogue is
-        never used as a public listing.
+        <Text>
+          {
+            "Show broad destinations, fields, study levels and funding types. The private opportunity catalogue is never used as a public listing."
+          }
+        </Text>
       </p>
       <div className="operation-grid">
         <section className="workspace-panel">
-          <h2>{edit?.data ? "Edit promotion" : "Add promotion"}</h2>
+          <h2>{edit?.data ? translate("Edit promotion") : translate("Add promotion")}</h2>
           {edit?.data && (
             <Link href="/admin/promotions" className="text-link">
-              Add another →
+              <Text>{"Add another →"}</Text>
             </Link>
           )}
           <PromotionEditor value={edit?.data as Promotion | undefined} />
         </section>
         <section className="workspace-panel">
-          <h2>Promotion history</h2>
+          <h2>
+            <Text>{"Promotion history"}</Text>
+          </h2>
           {!list.data?.length ? (
-            <p>No promotions have been authored yet.</p>
+            <p>
+              <Text>{"No promotions have been authored yet."}</Text>
+            </p>
           ) : (
             <ul className="notification-history">
               {(list.data as Promotion[]).map((p) => (
@@ -56,7 +69,7 @@ export default async function Promotions({
                   </p>
                   <div className="row-actions">
                     <Link className="text-link" href={`/admin/promotions?edit=${p.id}&page=${page}`}>
-                      Edit promotion →
+                      <Text>{"Edit promotion →"}</Text>
                     </Link>
                     <DeleteForm
                       action={deletePromotion}
@@ -70,8 +83,16 @@ export default async function Promotions({
             </ul>
           )}
           <div className="pagination">
-            {page > 1 && <Link href={`/admin/promotions?page=${page - 1}`}>← Previous</Link>}
-            {page * 20 < (list.count || 0) && <Link href={`/admin/promotions?page=${page + 1}`}>Next →</Link>}
+            {page > 1 && (
+              <Link href={`/admin/promotions?page=${page - 1}`}>
+                <Text>{"← Previous"}</Text>
+              </Link>
+            )}
+            {page * 20 < (list.count || 0) && (
+              <Link href={`/admin/promotions?page=${page + 1}`}>
+                <Text>{"Next →"}</Text>
+              </Link>
+            )}
           </div>
         </section>
       </div>

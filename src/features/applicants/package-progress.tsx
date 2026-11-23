@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { FileUpload } from "@/features/consultations/file-upload";
@@ -22,6 +25,7 @@ export async function PackageProgress({
   testPackage: boolean;
   applicant?: string;
 }) {
+  const translate = await getWorkspaceText();
   const db = await createClient();
   const canUpload = status === "Starting" && ["awaiting_receipt", "receipt_rejected"].includes(state);
   const [instructions, receipt] = await Promise.all([
@@ -41,29 +45,40 @@ export async function PackageProgress({
   if (instructions.error || receipt.error) throw Error("Package receipt unavailable");
   return (
     <section className="workspace-panel payment-panel">
-      <h2>Package payment</h2>
+      <h2>
+        <Text>{"Package payment"}</Text>
+      </h2>
       {status === "Cancelled" ? (
-        <p>This application is closed.</p>
+        <p>
+          <Text>{"This application is closed."}</Text>
+        </p>
       ) : (
         <>
           {canUpload && (
             <>
               <p>
-                Full ISG service fee · <strong>TZS {fee?.toLocaleString("en")}</strong>
+                <Text>{"Full ISG service fee ·"}</Text>{" "}
+                <strong>
+                  <Text>{"TZS"}</Text> {fee?.toLocaleString("en")}
+                </strong>
               </p>
               {staff && !admin ? (
-                <p>Waiting for the applicant to upload a receipt.</p>
+                <p>
+                  <Text>{"Waiting for the applicant to upload a receipt."}</Text>
+                </p>
               ) : (
                 <>
                   {testPackage ? (
-                    <p className="notice">Preview test only. Upload a sample receipt. Do not send money.</p>
+                    <p className="notice">
+                      <Text>{"Preview test only. Upload a sample receipt. Do not send money."}</Text>
+                    </p>
                   ) : instructions.data ? (
                     <p className="preserve-lines">{instructions.data}</p>
                   ) : (
                     <p>
                       {admin
-                        ? "Upload the receipt, then open it to verify payment."
-                        : "Ask your advisor for payment instructions before sending money."}
+                        ? translate("Upload the receipt, then open it to verify payment.")
+                        : translate("Ask your advisor for payment instructions before sending money.")}
                     </p>
                   )}
                   {state === "receipt_rejected" && receipt.data?.review_note && (
@@ -75,10 +90,16 @@ export async function PackageProgress({
             </>
           )}
           {state === "pending_verification" && (
-            <p>ISG is checking your receipt. Your application form opens after verification.</p>
+            <p>
+              <Text>{"ISG is checking your receipt. Your application form opens after verification."}</Text>
+            </p>
           )}
           {state === "paid" && (
-            <p>{fee === 0 ? "No package fee is due." : "The full package fee has been verified."}</p>
+            <p>
+              {fee === 0
+                ? translate("No package fee is due.")
+                : translate("The full package fee has been verified.")}
+            </p>
           )}
         </>
       )}
@@ -87,12 +108,14 @@ export async function PackageProgress({
           className="text-link"
           href={admin ? `/admin/receipts/${receipt.data.id}` : `/api/case-files/${receipt.data.id}`}
         >
-          {admin ? "Open payment receipt →" : "Download your receipt"}
+          {admin ? translate("Open payment receipt →") : translate("Download your receipt")}
         </Link>
       )}
       {receipt.data && (!staff || admin) && (
         <details className="package-gallery">
-          <summary>Preview receipt</summary>
+          <summary>
+            <Text>{"Preview receipt"}</Text>
+          </summary>
           <ReceiptPreview id={receipt.data.id} mime={receipt.data.mime} />
         </details>
       )}

@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { stageLabel } from "@/lib/validation/leads";
@@ -13,12 +14,20 @@ export default async function Audit() {
   ]);
   return (
     <Workspace role={role} email={user.email || ""} active="audit">
-      <h1>Activity you can account for.</h1>
-      <p>Recent security and review activity, alongside the email delivery queue.</p>
+      <h1>
+        <Text>{"Activity you can account for."}</Text>
+      </h1>
+      <p>
+        <Text>{"Recent security and review activity, alongside the email delivery queue."}</Text>
+      </p>
       <section className="workspace-panel">
-        <h2>Email delivery</h2>
+        <h2>
+          <Text>{"Email delivery"}</Text>
+        </h2>
         {summary.error ? (
-          <p className="notice notice-error">Delivery status is unavailable.</p>
+          <p className="notice notice-error">
+            <Text>{"Delivery status is unavailable."}</Text>
+          </p>
         ) : (
           <div className="stat-grid">
             {["pending", "processing", "sent", "failed"].map((state) => (
@@ -34,25 +43,42 @@ export default async function Audit() {
           </div>
         )}
         <p className="field-help">
-          A queued email is not a delivered email. Failed messages require review. Provider availability does
-          not affect saved assessments.
+          <Text>
+            {
+              "A queued email is not a delivered email. Failed messages require review. Provider availability does not affect saved assessments."
+            }
+          </Text>
         </p>
       </section>
       <section className="workspace-panel">
-        <h2>Most recent 100 audit events</h2>
+        <h2>
+          <Text>{"Most recent 100 audit events"}</Text>
+        </h2>
         {audit.error ? (
-          <p className="notice notice-error">Audit events could not be loaded.</p>
+          <p className="notice notice-error">
+            <Text>{"Audit events could not be loaded."}</Text>
+          </p>
         ) : !audit.data?.length ? (
-          <p>No activity has been recorded.</p>
+          <p>
+            <Text>{"No activity has been recorded."}</Text>
+          </p>
         ) : (
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Event</th>
-                  <th>Record</th>
-                  <th>Actor</th>
-                  <th>Time (UTC)</th>
+                  <th>
+                    <Text>{"Event"}</Text>
+                  </th>
+                  <th>
+                    <Text>{"Record"}</Text>
+                  </th>
+                  <th>
+                    <Text>{"Actor"}</Text>
+                  </th>
+                  <th>
+                    <Text>{"Time (UTC)"}</Text>
+                  </th>
                 </tr>
               </thead>
               <tbody>

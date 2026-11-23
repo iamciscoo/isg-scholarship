@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus } from "lucide-react";
@@ -16,6 +19,7 @@ export default async function ScholarshipPackages({
   searchParams: Promise<{ page?: string; edit?: string; created?: string }>;
 }) {
   const { db, user, role } = await requireStaff(true);
+  const translate = await getWorkspaceText();
   const query = await searchParams;
   const page = Math.max(1, Math.min(100000, Number.parseInt(query.page || "1", 10) || 1));
   const [list, edit] = await Promise.all([
@@ -28,32 +32,38 @@ export default async function ScholarshipPackages({
   const selected = edit.data as ScholarshipPackage | null;
   return (
     <Workspace role={role} email={user.email || ""} active="packages">
-      <h1>Scholarship packages</h1>
+      <h1>
+        <Text>{"Scholarship packages"}</Text>
+      </h1>
       <div className="operation-grid scholarship-admin-grid">
         <section className="workspace-panel">
-          <h2>{selected ? "Edit package" : "Create a package"}</h2>
+          <h2>{selected ? translate("Edit package") : translate("Create a package")}</h2>
           {selected && query.created === "1" && (
             <p role="status" className="form-message">
-              Scholarship package created.
+              <Text>{"Scholarship package created."}</Text>
             </p>
           )}
           {selected && (
             <Link className="text-link" href="/admin/packages">
-              Create a different package →
+              <Text>{"Create a different package →"}</Text>
             </Link>
           )}
           <ScholarshipPackageEditor value={selected || undefined} />
         </section>
         <section className="workspace-panel">
           <div className="panel-head">
-            <h2>Saved packages</h2>
+            <h2>
+              <Text>{"Saved packages"}</Text>
+            </h2>
             <Link className="button button-outline" href="/admin/packages">
               <Plus size={16} />
-              New package
+              <Text>{"New package"}</Text>
             </Link>
           </div>
           {!list.data?.length ? (
-            <p>Add your first package to start sharing scholarships with applicants.</p>
+            <p>
+              <Text>{"Add your first package to start sharing scholarships with applicants."}</Text>
+            </p>
           ) : (
             <ul className="notification-history">
               {(list.data as ScholarshipPackage[]).map((item) => (
@@ -83,7 +93,7 @@ export default async function ScholarshipPackages({
                   </div>
                   <div className="row-actions">
                     <Link className="text-link" href={`/admin/packages?edit=${item.id}&page=${page}`}>
-                      Edit package →
+                      <Text>{"Edit package →"}</Text>
                     </Link>
                     <DeleteForm
                       action={deleteScholarshipPackage}
@@ -96,9 +106,17 @@ export default async function ScholarshipPackages({
               ))}
             </ul>
           )}
-          <nav className="pagination" aria-label="Package pages">
-            {page > 1 && <Link href={`/admin/packages?page=${page - 1}`}>← Previous</Link>}
-            {page * 20 < (list.count || 0) && <Link href={`/admin/packages?page=${page + 1}`}>Next →</Link>}
+          <nav className="pagination" aria-label={translate("Package pages")}>
+            {page > 1 && (
+              <Link href={`/admin/packages?page=${page - 1}`}>
+                <Text>{"← Previous"}</Text>
+              </Link>
+            )}
+            {page * 20 < (list.count || 0) && (
+              <Link href={`/admin/packages?page=${page + 1}`}>
+                <Text>{"Next →"}</Text>
+              </Link>
+            )}
           </nav>
         </section>
       </div>

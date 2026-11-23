@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
@@ -11,6 +14,7 @@ import { respondToApplicationReview } from "@/features/applicants/application-ac
 
 export default async function ApplicationDetails() {
   const { db, user, role, profile } = await requireUser();
+  const translate = await getWorkspaceText();
   const { data: record, error } = await db
     .from("consultation_cases")
     .select("completed_at,payment_status,current_declaration_id,application_status")
@@ -20,11 +24,15 @@ export default async function ApplicationDetails() {
   if (!record?.completed_at || record.payment_status !== "verified")
     return (
       <Workspace role={role} email={user.email || ""} active="applications">
-        <h1>Scholarship application</h1>
+        <h1>
+          <Text>{"Scholarship application"}</Text>
+        </h1>
         <section className="workspace-panel">
-          <p>Your application form opens after ISG verifies your package payment.</p>
+          <p>
+            <Text>{"Your application form opens after ISG verifies your package payment."}</Text>
+          </p>
           <Link href="/dashboard/consultations" className="text-link">
-            View consultation →
+            <Text>{"View consultation →"}</Text>
           </Link>
         </section>
       </Workspace>
@@ -40,10 +48,14 @@ export default async function ApplicationDetails() {
   if (!paidPackage.data?.length)
     return (
       <Workspace role={role} email={user.email || ""} active="applications">
-        <h1>Scholarship application</h1>
-        <p>Your application form opens after ISG verifies your package payment.</p>
+        <h1>
+          <Text>{"Scholarship application"}</Text>
+        </h1>
+        <p>
+          <Text>{"Your application form opens after ISG verifies your package payment."}</Text>
+        </p>
         <Link href="/dashboard/applications" className="text-link">
-          View package payment
+          <Text>{"View package payment"}</Text>
         </Link>
       </Workspace>
     );
@@ -93,21 +105,27 @@ export default async function ApplicationDetails() {
   const needsInformation = status === "needs_information";
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
-      <h1>Scholarship application</h1>
+      <h1>
+        <Text>{"Scholarship application"}</Text>
+      </h1>
       {declaration.data && (
         <section className="workspace-panel">
           <div className="panel-head">
-            <span className="status-pill">{fullApplicationStatusLabel(status)}</span>
+            <span className="status-pill">{translate(fullApplicationStatusLabel(status))}</span>
             <Link className="text-link" href={`/api/application-pdf/${declaration.data.id}`}>
-              Download submitted application
+              <Text>{"Download submitted application"}</Text>
             </Link>
           </div>
           <p>
-            {declaration.data.submission_method === "staff" ? "Recorded by ISG" : "Submitted"}{" "}
+            {declaration.data.submission_method === "staff"
+              ? translate("Recorded by ISG")
+              : translate("Submitted")}{" "}
             {applicationDate(declaration.data.accepted_at)}
           </p>
           {needsInformation && (
-            <p>Review the request below and send your corrections or additional documents.</p>
+            <p>
+              <Text>{"Review the request below and send your corrections or additional documents."}</Text>
+            </p>
           )}
         </section>
       )}
@@ -115,24 +133,32 @@ export default async function ApplicationDetails() {
       {editable &&
         (declaration.data ? (
           <details className="workspace-panel package-gallery">
-            <summary>Edit and resubmit application details</summary>
+            <summary>
+              <Text>{"Edit and resubmit application details"}</Text>
+            </summary>
             <FullApplicationForm initial={initial} />
           </details>
         ) : (
           <section className="workspace-panel">
-            <h2>Application details</h2>
+            <h2>
+              <Text>{"Application details"}</Text>
+            </h2>
             <FullApplicationForm initial={initial} />
           </section>
         ))}
       <DocumentPanel user={user.id} />
       {declaration.data && needsInformation && (
         <section className="workspace-panel">
-          <h2>Send requested updates</h2>
-          <p>Use this after adding the requested files or to reply to your reviewer.</p>
+          <h2>
+            <Text>{"Send requested updates"}</Text>
+          </h2>
+          <p>
+            <Text>{"Use this after adding the requested files or to reply to your reviewer."}</Text>
+          </p>
           <ActionForm action={respondToApplicationReview} label="Send for review">
             <input name="declaration" type="hidden" value={declaration.data.id} />
             <label>
-              Note for ISG (optional)
+              <Text>{"Note for ISG (optional)"}</Text>
               <textarea name="note" maxLength={2000} />
             </label>
           </ActionForm>

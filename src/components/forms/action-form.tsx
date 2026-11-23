@@ -1,7 +1,9 @@
 "use client";
-import { useEffect, useRef, useActionState } from "react";
+import { useEffect, useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
+import { useDirtyForm } from "./unsaved-changes";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 export type ActionState = { error?: string; message?: string };
 export function ActionForm({
   action,
@@ -21,29 +23,29 @@ export function ActionForm({
   };
 }) {
   const [state, submit, pending] = useActionState(action, {});
-  const formRef = useRef<HTMLFormElement>(null);
+  const t = useWorkspaceText();
+  const { formRef, dirty, revision } = useDirtyForm({
+    state,
+    pending,
+    label,
+    enabled: !decisions && !/^(Delete|Remove|Reject|Approve|Verify)/.test(label),
+  });
   useEffect(() => {
     if (state.message || state.error) formRef.current?.scrollIntoView({ block: "center" });
-  }, [state]);
+  }, [state, formRef]);
   return (
-    <form
-      ref={formRef}
-      action={submit}
-      className={className}
-      aria-busy={pending}
-      onReset={(event) => event.preventDefault()}
-    >
-      <fieldset disabled={pending} className="action-fields">
+    <form ref={formRef} action={submit} className={className} aria-busy={pending}>
+      <fieldset disabled={pending} className="action-fields" key={revision}>
         {children}
       </fieldset>
       {state.error && (
         <p role="alert" className="notice notice-error">
-          {state.error}
+          {t(state.error)}
         </p>
       )}
       {state.message && (
         <p role="status" className="form-message">
-          {state.message}
+          {t(state.message)}
         </p>
       )}
       {decisions ? (
@@ -51,11 +53,11 @@ export function ActionForm({
           <Button type="submit" disabled={pending} name={decisions.name} value={decisions.primary.value}>
             {pending ? (
               <>
-                Saving
+                <Text>Saving</Text>
                 <LoadingDots />
               </>
             ) : (
-              decisions.primary.label
+              t(decisions.primary.label)
             )}
           </Button>
           <Button
@@ -65,18 +67,18 @@ export function ActionForm({
             name={decisions.name}
             value={decisions.secondary.value}
           >
-            {decisions.secondary.label}
+            {t(decisions.secondary.label)}
           </Button>
         </div>
       ) : (
-        <Button disabled={pending}>
+        <Button disabled={pending} className={dirty ? "save-inline-hidden" : undefined}>
           {pending ? (
             <>
-              Saving
+              <Text>Saving</Text>
               <LoadingDots />
             </>
           ) : (
-            label
+            t(label)
           )}
         </Button>
       )}

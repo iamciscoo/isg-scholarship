@@ -1,5 +1,8 @@
+"use client";
+import { useWorkspaceText } from "@/lib/i18n/workspace-text";
 import type { AssessmentInput } from "@/lib/validation/assessment";
 export function AssessmentReview({ values }: { values: AssessmentInput }) {
+  const translate = useWorkspaceText();
   const details = [
     ["Name", `${values.firstName} ${values.lastName}`],
     ["Email", values.email],
@@ -19,8 +22,15 @@ export function AssessmentReview({ values }: { values: AssessmentInput }) {
     <dl className="review-grid">
       {details.map(([label, value]) => (
         <div key={label}>
-          <dt>{label}</dt>
-          <dd>{value}</dd>
+          <dt>{translate(label)}</dt>
+          <dd>
+            {["Qualification", "Current status", "Desired study level", "Intake", "Funding"].includes(
+              label,
+            ) ||
+            (label === "Destinations" && !values.destinations)
+              ? translate(value)
+              : value}
+          </dd>
         </div>
       ))}
     </dl>

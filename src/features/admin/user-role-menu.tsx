@@ -1,4 +1,6 @@
 "use client";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
+
 import * as Menu from "@radix-ui/react-dropdown-menu";
 import { Check, MoreVertical } from "lucide-react";
 import { useTransition } from "react";
@@ -10,15 +12,22 @@ const roles = [
 ] as const;
 
 export function UserRoleMenu({ id, role }: { id: string; role: string }) {
+  const translate = useWorkspaceText();
   const [pending, start] = useTransition();
   return (
     <Menu.Root>
-      <Menu.Trigger className="row-menu-trigger" aria-label="Change account role" disabled={pending}>
+      <Menu.Trigger
+        className="row-menu-trigger"
+        aria-label={translate("Change account role")}
+        disabled={pending}
+      >
         <MoreVertical size={18} />
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Content className="row-menu" sideOffset={6} collisionPadding={12}>
-          <Menu.Label className="row-menu-label">Change role</Menu.Label>
+          <Menu.Label className="row-menu-label">
+            <Text>{"Change role"}</Text>
+          </Menu.Label>
           {roles.map(([value, label]) => (
             <Menu.Item
               key={value}
@@ -34,7 +43,7 @@ export function UserRoleMenu({ id, role }: { id: string; role: string }) {
               }
             >
               {role === value && <Check size={15} />}
-              Make {label}
+              <Text>{"Make"}</Text> {<Text>{label}</Text>}
             </Menu.Item>
           ))}
         </Menu.Content>

@@ -13,6 +13,7 @@ const { requireStaff, from, select, eq, order, limit, single, maybeSingle } = vi
   maybeSingle: vi.fn(),
 }));
 vi.mock("@/lib/auth/session", () => ({ requireStaff }));
+vi.mock("@/lib/i18n/server", () => ({ getWorkspaceText: async () => (source: string) => source }));
 vi.mock("next/navigation", () => ({
   notFound: () => {
     throw new Error("Not found");

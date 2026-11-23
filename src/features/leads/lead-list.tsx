@@ -2,15 +2,16 @@ import Link from "next/link";
 import { ClipboardList } from "lucide-react";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
-import { Button } from "@/components/ui/button";
 import { listLeads, getAdvisors } from "@/server/repositories/leads";
-import { leadStages, stageLabel } from "@/lib/validation/leads";
-import { studyLevels } from "@/lib/validation/assessment";
+import { stageLabel } from "@/lib/validation/leads";
 import { consultationProgress } from "@/features/consultations/progress";
-import { NavigableRow } from "@/components/layout/navigable-row";
-type Query = { stage?: string; level?: string; page?: string; advisor?: string; from?: string; to?: string };
-export async function LeadList({ admin, query }: { admin: boolean; query: Query }) {
+import { Text } from "@/lib/i18n/workspace-text";
+import { getLocale } from "@/lib/i18n/server";
+import { LeadFilters, type LeadQuery } from "./lead-filters";
+import { ConsultationRows } from "./consultation-rows";
+export async function LeadList({ admin, query }: { admin: boolean; query: LeadQuery }) {
   const { db, user, role } = await requireStaff(admin);
+  const locale = await getLocale();
   const { leads, count, error, page } = await listLeads(db, query);
   const advisors = admin ? await getAdvisors(db) : [];
   const base = admin ? "/admin" : "/advisor";
@@ -43,8 +44,10 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
   };
   return (
     <Workspace role={role} email={user.email || ""} active="consultations">
-      <h1>Consultations</h1>
-      <div className="stat-grid">
+      <h1>
+        <Text>Consultations</Text>
+      </h1>
+      <div className="stat-grid consultation-summary">
         {[
           { label: "Consultations", result: all },
           ...(admin
@@ -60,137 +63,75 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
         ].map(({ label, result, ...item }) => (
           <div className="stat-box" key={label}>
             {"href" in item && typeof item.href === "string" ? (
-              <Link href={item.href}>{label}</Link>
+              <Link href={item.href}>
+                <Text>{label}</Text>
+              </Link>
             ) : (
-              <span>{label}</span>
+              <span>
+                <Text>{label}</Text>
+              </span>
             )}
-            <strong>{result.error ? "Unavailable" : result.count || 0}</strong>
+            <strong>{result.error ? <Text>Unavailable</Text> : result.count || 0}</strong>
           </div>
         ))}
       </div>
-      <section className="workspace-panel">
-        <form className="filter-bar" action={filterPath}>
-          <div className="field">
-            <label htmlFor="filter-stage">Stage</label>
-            <select name="stage" id="filter-stage" defaultValue={query.stage || ""}>
-              <option value="">All stages</option>
-              {leadStages.map((stage) => (
-                <option key={stage} value={stage}>
-                  {stageLabel(stage)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="field">
-            <label htmlFor="filter-level">Study level</label>
-            <select name="level" id="filter-level" defaultValue={query.level || ""}>
-              <option value="">All levels</option>
-              {studyLevels.map((level) => (
-                <option key={level}>{level}</option>
-              ))}
-            </select>
-          </div>
-          {admin && (
-            <div className="field">
-              <label htmlFor="filter-advisor">Advisor</label>
-              <select name="advisor" id="filter-advisor" defaultValue={query.advisor || ""}>
-                <option value="">All advisors</option>
-                {advisors.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {`${a.first_name} ${a.last_name}`.trim() || a.email}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          <div className="field">
-            <label htmlFor="from">Received from (UTC)</label>
-            <input type="date" name="from" id="from" defaultValue={query.from} />
-          </div>
-          <div className="field">
-            <label htmlFor="to">To (UTC)</label>
-            <input type="date" name="to" id="to" defaultValue={query.to} />
-          </div>
-          <Button size="sm">Apply filters</Button>
-          <Link className="text-link" href={filterPath}>
-            Reset
-          </Link>
-        </form>
+      <LeadFilters query={query} path={filterPath} advisors={advisors} admin={admin} />
+      <section className="workspace-panel case-results">
         {error || cases.error ? (
           <p role="alert" className="notice notice-error">
-            We couldn’t load the lead inbox. Please try again.
+            <Text>We couldn’t load the lead inbox. Please try again.</Text>
           </p>
         ) : !leads.length ? (
           <div className="empty-state">
             <ClipboardList size={32} />
-            <p>No consultations match these filters.</p>
+            <p>
+              <Text>No consultations match these filters.</Text>
+            </p>
           </div>
         ) : (
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th>Applicant</th>
-                  <th>Reference</th>
-                  <th>Study goal</th>
-                  <th>Consultation</th>
-                  <th>Receipt</th>
-                  <th>Application</th>
-                  <th>Received</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leads.map((lead, index) => {
-                  const record = byLead.get(lead.id);
-                  const status = consultationProgress(record || null);
-                  const applicantId = lead.eligibility_assessments.applicant_id;
-                  return (
-                    <NavigableRow
-                      key={lead.id}
-                      href={
-                        record && applicantId ? `${base}/cases/${applicantId}` : `${base}/leads/${lead.id}`
-                      }
-                    >
-                      <td>{(page - 1) * 20 + index + 1}</td>
-                      <td>
-                        <Link
-                          href={
-                            record && applicantId
-                              ? `${base}/cases/${applicantId}`
-                              : `${base}/leads/${lead.id}`
-                          }
-                        >
-                          {lead.eligibility_assessments.first_name} {lead.eligibility_assessments.last_name}
-                        </Link>
-                        <small>{lead.eligibility_assessments.email}</small>
-                      </td>
-                      <td>{lead.eligibility_assessments.reference}</td>
-                      <td>{lead.eligibility_assessments.study_level}</td>
-                      <td>
-                        <span className="badge">{record ? status.consultation : stageLabel(lead.stage)}</span>
-                      </td>
-                      <td>{record ? status.receipt : "—"}</td>
-                      <td>{record ? status.application : "—"}</td>
-                      <td>
-                        {new Date(lead.created_at).toLocaleDateString("en-GB", {
-                          timeZone: "Africa/Dar_es_Salaam",
-                        })}
-                      </td>
-                    </NavigableRow>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <ConsultationRows
+            rows={leads.map((lead, index) => {
+              const record = byLead.get(lead.id);
+              const progress = consultationProgress(record || null);
+              const assessment = lead.eligibility_assessments;
+              return {
+                id: lead.id,
+                href:
+                  record && assessment.applicant_id
+                    ? `${base}/cases/${assessment.applicant_id}`
+                    : `${base}/leads/${lead.id}`,
+                number: (page - 1) * 20 + index + 1,
+                name: `${assessment.first_name} ${assessment.last_name}`,
+                email: assessment.email,
+                reference: assessment.reference,
+                level: assessment.study_level,
+                consultation: record ? progress.consultation : stageLabel(lead.stage),
+                receipt: record ? progress.receipt : "—",
+                application: record ? progress.application : "—",
+                received: new Intl.DateTimeFormat(locale, {
+                  dateStyle: "medium",
+                  timeZone: "Africa/Dar_es_Salaam",
+                }).format(new Date(lead.created_at)),
+              };
+            })}
+          />
         )}
         <div className="pagination">
           <span>
-            {count} results • Page {page} of {Math.max(1, Math.ceil(count / 20))}
+            {count} <Text>results</Text> · <Text>Page</Text> {page} <Text>of</Text>{" "}
+            {Math.max(1, Math.ceil(count / 20))}
           </span>
           <div className="flex gap-5">
-            {page > 1 && <Link href={link(page - 1)}>Previous</Link>}
-            {page * 20 < count && <Link href={link(page + 1)}>Next</Link>}
+            {page > 1 && (
+              <Link href={link(page - 1)}>
+                <Text>Previous</Text>
+              </Link>
+            )}
+            {page * 20 < count && (
+              <Link href={link(page + 1)}>
+                <Text>Next</Text>
+              </Link>
+            )}
           </div>
         </div>
       </section>

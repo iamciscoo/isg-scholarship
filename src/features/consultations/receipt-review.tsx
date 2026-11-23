@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import { ActionForm } from "@/components/forms/action-form";
 import { reviewPayment } from "./payment-actions";
 
@@ -15,7 +16,7 @@ export function ReceiptReview({ id, status, note }: { id: string; status: string
         >
           <input type="hidden" name="id" value={id} />
           <label>
-            Feedback to the applicant (optional)
+            <Text>{"Feedback to the applicant (optional)"}</Text>
             <textarea name="note" maxLength={1000} />
           </label>
         </ActionForm>

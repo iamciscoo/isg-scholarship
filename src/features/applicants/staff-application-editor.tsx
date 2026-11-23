@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
@@ -57,28 +58,36 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
       <Link className="text-link" href={`/${area}/cases/${id}`}>
-        ← Consultation
+        <Text>{"← Consultation"}</Text>
       </Link>
       <h1>
-        Application for {initial.firstName} {initial.lastName}
+        <Text>{"Application for"}</Text> {initial.firstName} {initial.lastName}
       </h1>
       {!paid.data?.length ? (
-        <p>Verify the package payment before entering application details.</p>
+        <p>
+          <Text>{"Verify the package payment before entering application details."}</Text>
+        </p>
       ) : (
         <>
           {record.current_declaration_id && (
             <div className="workspace-action-row case-actions">
               <Link href={`/${area}/declarations/${record.current_declaration_id}`}>
-                Review recorded application
+                <Text>{"Review recorded application"}</Text>
               </Link>
             </div>
           )}
           {closed ? (
-            <p>This application is closed. Reopen its status before editing details.</p>
+            <p>
+              <Text>{"This application is closed. Reopen its status before editing details."}</Text>
+            </p>
           ) : (
             <section className="workspace-panel">
-              <h2>Application details</h2>
-              <p>Enter the information provided by the applicant. Files can be added below.</p>
+              <h2>
+                <Text>{"Application details"}</Text>
+              </h2>
+              <p>
+                <Text>{"Enter the information provided by the applicant. Files can be added below."}</Text>
+              </p>
               <FullApplicationForm initial={initial} applicant={id} />
             </section>
           )}

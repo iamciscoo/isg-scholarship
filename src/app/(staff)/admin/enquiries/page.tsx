@@ -1,3 +1,4 @@
+import { Text, DateText } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
@@ -13,31 +14,50 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
     .range((page - 1) * 20, page * 20 - 1);
   return (
     <Workspace role={role} email={user.email || ""} active="enquiries">
-      <h1>Every question matters.</h1>
+      <h1>
+        <Text>{"Every question matters."}</Text>
+      </h1>
       <p>
-        Contact enquiries are restricted to administrators. Respond through ISG’s approved communication
-        channels.
+        <Text>
+          {
+            "Contact enquiries are restricted to administrators. Respond through ISG’s approved communication channels."
+          }
+        </Text>
       </p>
       <section className="workspace-panel">
-        <h2>Contact inbox</h2>
+        <h2>
+          <Text>{"Contact inbox"}</Text>
+        </h2>
         {error ? (
           <p className="notice notice-error" role="alert">
-            The contact inbox could not be loaded.
+            <Text>{"The contact inbox could not be loaded."}</Text>
           </p>
         ) : !data?.length ? (
           <div className="empty-state">
-            <h3>No enquiries yet.</h3>
-            <p>Messages submitted through the website will appear here.</p>
+            <h3>
+              <Text>{"No enquiries yet."}</Text>
+            </h3>
+            <p>
+              <Text>{"Messages submitted through the website will appear here."}</Text>
+            </p>
           </div>
         ) : (
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>From</th>
-                  <th>Topic</th>
-                  <th>Message</th>
-                  <th>Received</th>
+                  <th>
+                    <Text>{"From"}</Text>
+                  </th>
+                  <th>
+                    <Text>{"Topic"}</Text>
+                  </th>
+                  <th>
+                    <Text>{"Message"}</Text>
+                  </th>
+                  <th>
+                    <Text>{"Received"}</Text>
+                  </th>
                   <th />
                 </tr>
               </thead>
@@ -47,15 +67,15 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
                     <td>
                       {row.name}
                       <small>{row.email}</small>
-                      {row.whatsapp && <small>WhatsApp {row.whatsapp}</small>}
+                      {row.whatsapp && (
+                        <small>
+                          <Text>{"WhatsApp"}</Text> {row.whatsapp}
+                        </small>
+                      )}
                     </td>
                     <td>{row.topic}</td>
                     <td className="min-w-64 whitespace-pre-wrap">{row.message}</td>
-                    <td>
-                      {new Date(row.created_at).toLocaleDateString("en-GB", {
-                        timeZone: "Africa/Dar_es_Salaam",
-                      })}
-                    </td>
+                    <td>{<DateText value={row.created_at} />}</td>
                     <td>
                       <DeleteForm
                         action={deleteContactEnquiry}
@@ -72,11 +92,19 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
         )}
         <div className="pagination">
           <span>
-            {count || 0} enquiries • Page {page}
+            {count || 0} <Text>{"enquiries • Page"}</Text> {page}
           </span>
           <div className="flex gap-5">
-            {page > 1 && <Link href={`/admin/enquiries?page=${page - 1}`}>Previous</Link>}
-            {page * 20 < (count || 0) && <Link href={`/admin/enquiries?page=${page + 1}`}>Next</Link>}
+            {page > 1 && (
+              <Link href={`/admin/enquiries?page=${page - 1}`}>
+                <Text>{"Previous"}</Text>
+              </Link>
+            )}
+            {page * 20 < (count || 0) && (
+              <Link href={`/admin/enquiries?page=${page + 1}`}>
+                <Text>{"Next"}</Text>
+              </Link>
+            )}
           </div>
         </div>
       </section>

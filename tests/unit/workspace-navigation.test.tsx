@@ -7,6 +7,8 @@ vi.mock("@/features/auth/actions", () => ({ signOut: vi.fn() }));
 vi.mock("@/components/layout/language-selector", () => ({ LanguageSelector: () => null }));
 vi.mock("@/features/notifications/bell", () => ({ NotificationBell: () => null }));
 vi.mock("@/components/layout/workspace-profile-menu", () => ({ WorkspaceProfileMenu: mock.menu }));
+import { LocaleProvider } from "@/lib/i18n/provider";
+import en from "@/lib/i18n/locales/en.json";
 import { Workspace, WorkspaceLayout } from "@/components/layout/workspace";
 beforeEach(() => {
   vi.stubGlobal("React", React);
@@ -16,9 +18,11 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 function render(role: "applicant" | "admin" | "advisor") {
   renderToStaticMarkup(
-    <Workspace role={role} email="fixture@example.invalid">
-      Test content
-    </Workspace>,
+    <LocaleProvider locale="en" messages={en}>
+      <Workspace role={role} email="fixture@example.invalid">
+        Test content
+      </Workspace>
+    </LocaleProvider>,
   );
   return mock.menu.mock.calls[0][0];
 }
@@ -58,11 +62,13 @@ it("excludes administrator menus for advisors", () => {
 it("renders a single persistent menu with the current profile photo", () => {
   const account = { name: "Fixture student", avatar: "/api/profile/avatar?v=fixture" };
   renderToStaticMarkup(
-    <WorkspaceLayout role="applicant" email="fixture@example.invalid" account={account}>
-      <Workspace role="applicant" email="fixture@example.invalid">
-        Content
-      </Workspace>
-    </WorkspaceLayout>,
+    <LocaleProvider locale="en" messages={en}>
+      <WorkspaceLayout role="applicant" email="fixture@example.invalid" account={account}>
+        <Workspace role="applicant" email="fixture@example.invalid">
+          Content
+        </Workspace>
+      </WorkspaceLayout>
+    </LocaleProvider>,
   );
   expect(mock.menu).toHaveBeenCalledTimes(1);
   expect(mock.menu.mock.calls[0][0].account).toEqual(account);

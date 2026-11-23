@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
@@ -8,6 +11,7 @@ import { ReceiptPreview } from "@/features/consultations/receipt-preview";
 import { proposalSchema } from "@/lib/validation/opportunities";
 export default async function Receipt({ params }: { params: Promise<{ id: string }> }) {
   const { db, user, role } = await requireStaff(true);
+  const translate = await getWorkspaceText();
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
   const { data: f, error } = await db
@@ -23,25 +27,31 @@ export default async function Receipt({ params }: { params: Promise<{ id: string
   const amount = f.application_id ? pkg?.packageFee : 50000;
   return (
     <Workspace role={role} email={user.email || ""} active="payments">
-      <h1>{f.application_id ? "Package payment receipt" : "Consultation payment receipt"}</h1>
+      <h1>
+        {f.application_id ? translate("Package payment receipt") : translate("Consultation payment receipt")}
+      </h1>
       <div className="page-links">
         <Link className="text-link" href="/admin/payments">
-          ← All payments
+          <Text>{"← All payments"}</Text>
         </Link>
         <Link
           className="text-link"
           href={f.application_id ? `/admin/applications/${f.application_id}` : `/admin/cases/${f.user_id}`}
         >
-          {f.application_id ? "Open application →" : "Open consultation and assign advisor →"}
+          {f.application_id
+            ? translate("Open application →")
+            : translate("Open consultation and assign advisor →")}
         </Link>
       </div>
       <section className="workspace-panel">
         <h2>
-          {amount === undefined ? "Check the package fee" : `TZS ${amount.toLocaleString("en")}`} ·{" "}
-          {f.review_status === "pending" ? "Pending verification" : f.review_status}
+          {amount === undefined ? translate("Check the package fee") : `TZS ${amount.toLocaleString("en")}`} ·{" "}
+          {f.review_status === "pending" ? translate("Pending verification") : f.review_status}
         </h2>
         {pkg && <p>{pkg.name}</p>}
-        <p>Match the receipt against the payment received before verifying it.</p>
+        <p>
+          <Text>{"Match the receipt against the payment received before verifying it."}</Text>
+        </p>
         <ReceiptPreview id={f.id} mime={f.mime} />
         <ReceiptReview id={f.id} status={f.review_status} note={f.review_note} />
       </section>

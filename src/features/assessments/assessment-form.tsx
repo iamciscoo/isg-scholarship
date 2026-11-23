@@ -1,4 +1,5 @@
 "use client";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,6 +27,7 @@ export function AssessmentForm({
   initial?: Partial<AssessmentInput>;
   initialStep?: number;
 }) {
+  const translate = useWorkspaceText();
   const [step, setStep] = useState(initialStep);
   const [key] = useState(requestId);
   const [token, setToken] = useState("");
@@ -124,12 +126,14 @@ export function AssessmentForm({
   return (
     <div className="container assessment-shell">
       <aside className="assessment-sidebar">
-        <h1>Start your consultation</h1>
-        <ol className="assessment-stepper" aria-label="Assessment progress">
+        <h1>
+          <Text>{"Start your consultation"}</Text>
+        </h1>
+        <ol className="assessment-stepper" aria-label={translate("Assessment progress")}>
           {titles.map((title, i) => (
             <li key={title} aria-current={i === step ? "step" : undefined}>
               <span className="step-number">{i < step ? <Check size={14} /> : i + 1}</span>
-              <span className="step-label">{title}</span>
+              <span className="step-label">{translate(title)}</span>
             </li>
           ))}
         </ol>
@@ -145,16 +149,20 @@ export function AssessmentForm({
         }}
       >
         <h2 ref={heading} tabIndex={-1}>
-          {titles[step]}
+          {translate(titles[step])}
         </h2>
         {step < 3 ? (
           <div className="form-grid">
             {steps[step].map((field) => (
               <div
-                className={step === 0 && !["firstName", "lastName"].includes(field.name) ? "field assessment-contact-field" : "field"}
+                className={
+                  step === 0 && !["firstName", "lastName"].includes(field.name)
+                    ? "field assessment-contact-field"
+                    : "field"
+                }
                 key={field.name}
               >
-                <label htmlFor={field.name}>{field.label}</label>
+                <label htmlFor={field.name}>{translate(field.label)}</label>
                 {field.options ? (
                   <select
                     id={field.name}
@@ -170,10 +178,12 @@ export function AssessmentForm({
                     aria-invalid={!!form.formState.errors[field.name]}
                     aria-describedby={`${field.name}-error`}
                   >
-                    <option value="">Select an option</option>
+                    <option value="">
+                      <Text>{"Select an option"}</Text>
+                    </option>
                     {field.options.map((option) => (
                       <option key={option} value={option}>
-                        {option}
+                        {translate(option)}
                       </option>
                     ))}
                   </select>
@@ -188,16 +198,16 @@ export function AssessmentForm({
                     aria-describedby={`${field.name}-error`}
                     maxLength={
                       field.name === "preferredFields" || field.name === "destinations"
-                          ? 200
-                          : field.name === "email"
-                            ? 254
-                            : 150
+                        ? 200
+                        : field.name === "email"
+                          ? 254
+                          : 150
                     }
                   />
                 )}
-                {field.help && <span className="field-help">{field.help}</span>}
+                {field.help && <span className="field-help">{translate(field.help || "")}</span>}
                 <span id={`${field.name}-error`} className="field-error">
-                  {form.formState.errors[field.name]?.message}
+                  {translate(form.formState.errors[field.name]?.message || "")}
                 </span>
               </div>
             ))}
@@ -206,10 +216,13 @@ export function AssessmentForm({
           <div className="form-stack">
             <AssessmentReview values={values} />
             <p className="field-help">
-              We use your information to review your assessment and contact you about next steps. Please read
-              our{" "}
+              <Text>
+                {
+                  "We use your information to review your assessment and contact you about next steps. Please read our"
+                }
+              </Text>{" "}
               <Link href="/privacy" className="underline">
-                privacy information
+                <Text>{"privacy information"}</Text>
               </Link>
               .
             </p>
@@ -217,9 +230,11 @@ export function AssessmentForm({
               <div key={item.name}>
                 <label className="checkbox-field">
                   <input type="checkbox" {...form.register(item.name)} />
-                  {item.text}
+                  {translate(item.text)}
                 </label>
-                <span className="field-error">{form.formState.errors[item.name]?.message}</span>
+                <span className="field-error">
+                  {translate(form.formState.errors[item.name]?.message || "")}
+                </span>
               </div>
             ))}
             {challengeRequired && (
@@ -228,7 +243,9 @@ export function AssessmentForm({
           </div>
         )}
         <div className="honeypot" aria-hidden="true">
-          <label htmlFor="website">Website</label>
+          <label htmlFor="website">
+            <Text>{"Website"}</Text>
+          </label>
           <input
             id="website"
             tabIndex={-1}
@@ -239,7 +256,7 @@ export function AssessmentForm({
         </div>
         {error && (
           <p role="alert" className="notice notice-error mt-6">
-            {error}
+            {translate(error)}
           </p>
         )}
         <div className="form-actions">
@@ -249,7 +266,7 @@ export function AssessmentForm({
             onClick={() => move(step - 1)}
             disabled={step === 0 || pending}
           >
-            Back
+            <Text>{"Back"}</Text>
           </Button>
           <Button
             type="submit"
@@ -257,24 +274,24 @@ export function AssessmentForm({
           >
             {pending ? (
               <>
-                {step === 3 ? "Submitting" : "Saving"}
+                {translate(step === 3 ? "Submitting" : "Saving")}
                 <LoadingDots />
               </>
             ) : step === 3 ? (
-              "Submit consultation"
+              translate("Submit consultation")
             ) : (
-              "Continue"
+              translate("Continue")
             )}
             <ArrowRight size={17} />
           </Button>
         </div>
         {step === 3 && !enabled && (
           <p className="field-help mt-4">
-            Online submission is currently unavailable.{" "}
+            <Text>{"Online submission is currently unavailable."}</Text>{" "}
             <Link href="/contact" className="underline">
-              Contact ISG
+              <Text>{"Contact ISG"}</Text>
             </Link>{" "}
-            for help.
+            <Text>{"for help."}</Text>
           </p>
         )}
       </form>

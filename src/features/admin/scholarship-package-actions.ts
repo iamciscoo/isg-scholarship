@@ -1,4 +1,5 @@
 "use server";
+import { storageBody } from "@/server/services/storage-body";
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -73,7 +74,7 @@ export async function saveScholarshipPackage(_: ActionState, form: FormData): Pr
     imageId = randomUUID();
     const { error } = await admin.storage
       .from("scholarship-images")
-      .upload(`${imageId}.webp`, content.data, { contentType: "image/webp", upsert: false });
+      .upload(`${imageId}.webp`, storageBody(content.data), { contentType: "image/webp", upsert: false });
     if (error) return { error: "The image could not be uploaded. Please try again." };
   }
   const { data: savedId, error } = await db.rpc("save_scholarship_package", {

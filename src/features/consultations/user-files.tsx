@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import { createClient } from "@/lib/supabase/server";
 import { applicationDocumentCategories } from "@/lib/validation/application-review";
 import { FileLinks } from "./file-links";
@@ -14,18 +15,22 @@ export async function UserFiles({ user }: { user: string }) {
   if (!files?.length) return null;
   return (
     <section className="workspace-panel">
-      <h2>Applicant files</h2>
+      <h2>
+        <Text>{"Applicant files"}</Text>
+      </h2>
       <ul className="case-file-list">
         {files.map((file) => (
           <li key={file.id}>
             <span className="status-pill">
-              {file.kind === "receipt"
-                ? file.application_id
-                  ? "Package receipt"
-                  : "Consultation receipt"
-                : applicationDocumentCategories[
-                    file.category as keyof typeof applicationDocumentCategories
-                  ] || "Document"}
+              <Text>
+                {file.kind === "receipt"
+                  ? file.application_id
+                    ? "Package receipt"
+                    : "Consultation receipt"
+                  : applicationDocumentCategories[
+                      file.category as keyof typeof applicationDocumentCategories
+                    ] || "Document"}
+              </Text>
             </span>
             <FileLinks
               id={file.id}

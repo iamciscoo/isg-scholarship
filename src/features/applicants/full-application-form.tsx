@@ -1,10 +1,12 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { applicationFields, declarationText, type FullApplication } from "@/lib/validation/application-form";
 import { saveFullApplication } from "./application-actions";
 import { saveStaffApplication } from "./staff-application-actions";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
+import { useDirtyForm } from "@/components/forms/unsaved-changes";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 export function FullApplicationForm({
   initial,
   applicant,
@@ -18,21 +20,32 @@ export function FullApplicationForm({
   );
   const [answers, setAnswers] = useState(initial);
   const [declaration, setDeclaration] = useState(false);
+  const saved = useRef(initial);
+  const draftButton = useRef<HTMLButtonElement>(null);
+  const t = useWorkspaceText();
+  const { formRef, dirty } = useDirtyForm({
+    state,
+    pending,
+    label: "Save draft",
+    submitter: draftButton,
+    onCancel: () => {
+      setAnswers(saved.current);
+      setDeclaration(false);
+    },
+    onSaved: () => {
+      saved.current = answers;
+    },
+  });
   return (
-    <form
-      action={action}
-      onReset={(event) => event.preventDefault()}
-      className="form-stack"
-      aria-busy={pending}
-    >
+    <form action={action} ref={formRef} className="form-stack" aria-busy={pending}>
       {applicationFields.map((section) => (
         <fieldset key={section.title} className="application-section" disabled={pending}>
-          <legend>{section.title}</legend>
+          <legend>{t(section.title)}</legend>
           <div className="form-grid">
             {section.fields.map((f) => (
               <label className="field" key={f.key}>
-                {f.label}
-                {f.optional ? " (optional)" : ""}
+                {t(f.label)}
+                {f.optional ? ` (${t("optional")})` : ""}
                 {f.options ? (
                   <select
                     name={f.key}
@@ -41,9 +54,11 @@ export function FullApplicationForm({
                       setAnswers((current) => ({ ...current, [f.key]: event.target.value }))
                     }
                   >
-                    <option value="">Not provided</option>
+                    <option value="">{t("Not provided")}</option>
                     {f.options.map((x) => (
-                      <option key={x}>{x}</option>
+                      <option key={x} value={x}>
+                        {t(x)}
+                      </option>
                     ))}
                   </select>
                 ) : (
@@ -75,13 +90,15 @@ export function FullApplicationForm({
           }
           disabled={pending}
         />
-        {applicant
-          ? "The applicant confirmed permission to share this contact’s details."
-          : "My nominated contact has given me permission to share their details with ISG."}
+        {t(
+          applicant
+            ? "The applicant confirmed permission to share this contact’s details."
+            : "My nominated contact has given me permission to share their details with ISG.",
+        )}
       </label>
       <section className="notice">
-        <h3>{applicant ? "Staff confirmation" : "Declaration"}</h3>
-        {!applicant && <p>{declarationText}</p>}
+        <h3>{t(applicant ? "Staff confirmation" : "Declaration")}</h3>
+        {!applicant && <p>{t(declarationText)}</p>}
         <label className="checkbox-field">
           <input
             type="checkbox"
@@ -90,35 +107,44 @@ export function FullApplicationForm({
             onChange={(event) => setDeclaration(event.target.checked)}
             disabled={pending}
           />
-          {applicant
-            ? "I have checked these details against the information provided by the applicant."
-            : "I sign this declaration electronically."}
+          {t(
+            applicant
+              ? "I have checked these details against the information provided by the applicant."
+              : "I sign this declaration electronically.",
+          )}
         </label>
       </section>
       {state.error && (
         <p className="notice notice-error" role="alert">
-          {state.error}
+          {t(state.error)}
         </p>
       )}
       {state.message && (
         <p className="form-message" role="status">
-          {state.message}
+          {t(state.message)}
         </p>
       )}
       <div className="workspace-action-row">
-        <Button name="intent" value="draft" variant="outline" disabled={pending}>
-          Save draft
+        <Button
+          ref={draftButton}
+          className={dirty ? "save-inline-hidden" : undefined}
+          name="intent"
+          value="draft"
+          variant="outline"
+          disabled={pending}
+        >
+          <Text>Save draft</Text>
         </Button>
         <Button name="intent" value="declare" disabled={pending}>
           {pending ? (
             <>
-              Saving
+              <Text>Saving</Text>
               <LoadingDots />
             </>
           ) : applicant ? (
-            "Save application for applicant"
+            t("Save application for applicant")
           ) : (
-            "Submit application"
+            t("Submit application")
           )}
         </Button>
       </div>

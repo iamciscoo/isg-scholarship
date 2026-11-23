@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth/session";
@@ -23,20 +24,31 @@ export default async function Notifications({ searchParams }: { searchParams: Pr
     }));
   return (
     <Workspace role={role} email={user.email || ""} active="notifications">
-      <h1>Keep your students informed.</h1>
+      <h1>
+        <Text>{"Keep your students informed."}</Text>
+      </h1>
       <p>
-        Publish account updates to one person or to all active accounts. Every publication is recorded in the
-        activity log.
+        <Text>
+          {
+            "Publish account updates to one person or to all active accounts. Every publication is recorded in the activity log."
+          }
+        </Text>
       </p>
       <div className="notification-admin-grid">
         <section className="workspace-panel">
-          <h2>New notification</h2>
+          <h2>
+            <Text>{"New notification"}</Text>
+          </h2>
           <NotificationComposer recipients={recipients} key={composerKey} requestId={randomUUID()} />
         </section>
         <section className="workspace-panel">
-          <h2>Recently published</h2>
+          <h2>
+            <Text>{"Recently published"}</Text>
+          </h2>
           {!messages.data.length ? (
-            <p>No account notifications have been published.</p>
+            <p>
+              <Text>{"No account notifications have been published."}</Text>
+            </p>
           ) : (
             <ul className="notification-history">
               {messages.data.map((n) => (
@@ -55,7 +67,7 @@ export default async function Notifications({ searchParams }: { searchParams: Pr
             </ul>
           )}
           <Link href={"/admin/notifications?new=" + randomUUID()} className="text-link">
-            Start a new message
+            <Text>{"Start a new message"}</Text>
           </Link>
         </section>
       </div>

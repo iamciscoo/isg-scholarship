@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
@@ -7,6 +10,7 @@ import { PaymentPanel } from "@/features/consultations/payment-panel";
 
 export default async function Consultations() {
   const { db, user, role } = await requireUser();
+  const translate = await getWorkspaceText();
   if (role !== "applicant") redirect(role === "admin" ? "/admin/consultations" : "/advisor");
   const [consultation, draft, requests] = await Promise.all([
     db.from("consultation_cases").select("*").eq("user_id", user.id).maybeSingle(),
@@ -19,9 +23,13 @@ export default async function Consultations() {
   if (!record) {
     return (
       <Workspace role={role} email={user.email || ""} active="consultations">
-        <h1>Your consultation</h1>
+        <h1>
+          <Text>{"Your consultation"}</Text>
+        </h1>
         <Button asChild>
-          <Link href="/consultation">{draft.data ? "Continue consultation" : "Start consultation"}</Link>
+          <Link href="/consultation">
+            {draft.data ? translate("Continue consultation") : translate("Start consultation")}
+          </Link>
         </Button>
       </Workspace>
     );
@@ -45,7 +53,9 @@ export default async function Consultations() {
     <Workspace role={role} email={user.email || ""} active="consultations">
       <div className="workspace-page-heading">
         <div>
-          <h1>Your consultation</h1>
+          <h1>
+            <Text>{"Your consultation"}</Text>
+          </h1>
           {current && (
             <p>
               {current.reference} · {current.study_level} · {current.preferred_fields}
@@ -54,7 +64,11 @@ export default async function Consultations() {
         </div>
       </div>
       {!paid && payment}
-      {paid && <p>ISG will contact you on WhatsApp to discuss your study plans.</p>}
+      {paid && (
+        <p>
+          <Text>{"ISG will contact you on WhatsApp to discuss your study plans."}</Text>
+        </p>
+      )}
       {paid && payment}
     </Workspace>
   );

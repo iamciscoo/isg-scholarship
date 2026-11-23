@@ -8,6 +8,7 @@ import { z } from "zod";
 import { isPreviewPackage } from "@/lib/validation/opportunities";
 import { caseFileLimit, caseFileSizeError, caseUploadKinds } from "@/lib/validation/case-file";
 import { wakeNotifications } from "@/server/services/notification-delivery";
+import { storageBody } from "@/server/services/storage-body";
 
 const uploadBodyLimit = caseFileLimit + 64 * 1024;
 
@@ -125,8 +126,14 @@ export async function POST(request: Request) {
       path = `${owner}/${id}.${validated.extension}`;
     const upload = await admin.storage
       .from("case-files")
-      .upload(path, validated.data, { contentType: validated.mime, upsert: false });
-    if (upload.error) throw Error("Private storage is unavailable. Please try again.");
+      .upload(path, storageBody(validated.data), { contentType: validated.mime, upsert: false });
+    if (upload.error) {
+      console.error("case_file_storage_failed", {
+        name: upload.error.name,
+        status: "statusCode" in upload.error ? upload.error.statusCode : null,
+      });
+      throw Error("Private storage is unavailable. Please try again.");
+    }
     const suppliedName = fd.get("originalName");
     const originalName = (typeof suppliedName === "string" ? suppliedName : file.name)
       .replace(/[\p{Cc}\p{Cf}\/\\]/gu, "")

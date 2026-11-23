@@ -15,6 +15,9 @@ export async function submitConsultation(page: Page) {
     page.waitForResponse((response) => response.url().endsWith("/api/notifications")),
     page.goto("/consultation"),
   ]);
+  // The form hydrates separately from the shared notification bell. Wait for its
+  // account prefill before editing uncontrolled React Hook Form fields.
+  await expect(page.locator("#email")).toHaveValue("isg-qa-student@example.com");
   for (const [name, value] of Object.entries({
     firstName: "QA",
     lastName: "Scholar",

@@ -1,4 +1,6 @@
 "use client";
+import { useWorkspaceText } from "@/lib/i18n/workspace-text";
+
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -11,6 +13,7 @@ import { NotificationBell } from "@/features/notifications/bell";
 import { useLocale } from "@/lib/i18n/provider";
 import type { AccountSummary } from "@/lib/auth/account-summary";
 export function HeaderClient({ account }: { account: AccountSummary }) {
+  const translate = useWorkspaceText();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const {
@@ -65,10 +68,10 @@ export function HeaderClient({ account }: { account: AccountSummary }) {
               width={280}
               height={72}
               priority
-              alt="International Scholarship Gateway"
+              alt={translate("International Scholarship Gateway")}
             />
           </Link>
-          <nav aria-label="Main navigation" className="desktop-nav">
+          <nav aria-label={translate("Main navigation")} className="desktop-nav">
             {navigation.map((item) => (
               <Link
                 key={item.href}
@@ -99,7 +102,7 @@ export function HeaderClient({ account }: { account: AccountSummary }) {
           </div>
         </div>
         {open && (
-          <nav id="mobile-menu" className="mobile-nav" aria-label="Mobile navigation">
+          <nav id="mobile-menu" className="mobile-nav" aria-label={translate("Mobile navigation")}>
             {[
               ...navigation,
               { href: "/pricing", label: t.fees },

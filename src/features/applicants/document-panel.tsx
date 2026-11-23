@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import { FileLinks } from "@/features/consultations/file-links";
 import { createClient } from "@/lib/supabase/server";
 import { FileUpload } from "@/features/consultations/file-upload";
@@ -40,11 +41,16 @@ export async function DocumentPanel({
 
   return (
     <section className="workspace-panel" id="application-documents">
-      <h2>Application documents</h2>
+      <h2>
+        <Text>{"Application documents"}</Text>
+      </h2>
       {!staff && (
         <p>
-          Upload clear copies now or add them later. Education, transcript and achievement categories can
-          contain multiple files.
+          <Text>
+            {
+              "Upload clear copies now or add them later. Education, transcript and achievement categories can contain multiple files."
+            }
+          </Text>
         </p>
       )}
       <div className="operation-grid">
@@ -54,8 +60,8 @@ export async function DocumentPanel({
           const multiple = !["passport", "photo"].includes(request.category);
           return (
             <article key={request.category} className="operation-card">
-              <span className="status-pill">{request.required ? "Required" : "Optional"}</span>
-              <h3>{request.label}</h3>
+              <span className="status-pill">{<Text>{request.required ? "Required" : "Optional"}</Text>}</span>
+              <h3>{<Text>{request.label}</Text>}</h3>
               {request.note && <p className="preserve-lines">{request.note}</p>}
               {(!staff || editable) && hasRequest && (
                 <FileUpload
@@ -82,7 +88,9 @@ export async function DocumentPanel({
                   ))}
                 </ul>
               ) : (
-                <p className="field-help">Will send later.</p>
+                <p className="field-help">
+                  <Text>{"Will send later."}</Text>
+                </p>
               )}
             </article>
           );

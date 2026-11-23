@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
@@ -31,6 +34,7 @@ export default async function Payments({
   searchParams: Promise<{ page?: string; status?: string }>;
 }) {
   const { db, user, role } = await requireStaff(true);
+  const translate = await getWorkspaceText();
   const query = await searchParams;
   const savedStatus = query.status === "pending" ? "pending_verification" : query.status;
   const status: Status = savedStatus && Object.hasOwn(filters, savedStatus) ? (savedStatus as Status) : "all";
@@ -47,11 +51,17 @@ export default async function Payments({
   const pageLink = (number: number) => `/admin/payments?status=${status}&page=${number}`;
   return (
     <Workspace role={role} email={user.email || ""} active="payments">
-      <h1>Payments</h1>
-      <p>Track consultation and scholarship package fees from receipt upload through verification.</p>
+      <h1>
+        <Text>{"Payments"}</Text>
+      </h1>
+      <p>
+        <Text>
+          {"Track consultation and scholarship package fees from receipt upload through verification."}
+        </Text>
+      </p>
       <form className="filter-bar" action="/admin/payments" method="get">
         <label className="field">
-          Payment status
+          <Text>{"Payment status"}</Text>
           <select name="status" defaultValue={status} key={status}>
             {Object.entries(filters).map(([key, value]) => (
               <option key={key} value={key}>
@@ -60,14 +70,16 @@ export default async function Payments({
             ))}
           </select>
         </label>
-        <Button size="sm">Apply filter</Button>
+        <Button size="sm">
+          <Text>{"Apply filter"}</Text>
+        </Button>
       </form>
       {!items.length && (
         <section className="workspace-panel">
-          <h2>{status === "all" ? "No payments yet" : "No payments at this stage"}</h2>
+          <h2>{status === "all" ? translate("No payments yet") : translate("No payments at this stage")}</h2>
           {status !== "all" && (
             <Link href="/admin/payments" className="text-link">
-              View all payments →
+              <Text>{"View all payments →"}</Text>
             </Link>
           )}
         </section>
@@ -79,7 +91,7 @@ export default async function Payments({
               {p.amount === 0 && p.state === "verified" ? "No fee due" : filters[p.state]}
             </span>
             <h2>
-              {p.applicant} · TZS {p.amount.toLocaleString("en")}
+              {p.applicant} <Text>{"· TZS"}</Text> {p.amount.toLocaleString("en")}
             </h2>
             <p>{p.title}</p>
             <div className="workspace-action-row">
@@ -98,13 +110,21 @@ export default async function Payments({
           </article>
         ))}
       </div>
-      <nav className="pagination" aria-label="Payment pages">
+      <nav className="pagination" aria-label={translate("Payment pages")}>
         <span>
-          {count} payments · Page {page} of {totalPages}
+          {count} <Text>{"payments · Page"}</Text> {page} <Text>{"of"}</Text> {totalPages}
         </span>
         <div className="flex gap-5">
-          {page > 1 && <Link href={pageLink(page - 1)}>Previous</Link>}
-          {page < totalPages && <Link href={pageLink(page + 1)}>Next</Link>}
+          {page > 1 && (
+            <Link href={pageLink(page - 1)}>
+              <Text>{"Previous"}</Text>
+            </Link>
+          )}
+          {page < totalPages && (
+            <Link href={pageLink(page + 1)}>
+              <Text>{"Next"}</Text>
+            </Link>
+          )}
         </div>
       </nav>
     </Workspace>

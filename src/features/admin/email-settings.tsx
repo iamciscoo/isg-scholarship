@@ -1,14 +1,34 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useWorkspaceText } from "@/lib/i18n/workspace-text";
+
+import { Text } from "@/lib/i18n/workspace-text";
+
+import { useActionState, useRef, useState } from "react";
+import { useDirtyForm } from "@/components/forms/unsaved-changes";
 import { Mail, Plus, X } from "lucide-react";
 import { saveEmails } from "./settings-actions";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
 export function EmailSettings({ emails }: { emails: string[] }) {
+  const translate = useWorkspaceText();
   const [state, action, pending] = useActionState(saveEmails, {});
   const [recipients, setRecipients] = useState(emails);
   const [entry, setEntry] = useState("");
   const [error, setError] = useState("");
+  const saved = useRef(emails);
+  const { formRef, dirty } = useDirtyForm({
+    state,
+    pending,
+    label: "Save recipients",
+    onCancel: () => {
+      setRecipients(saved.current);
+      setEntry("");
+      setError("");
+    },
+    onSaved: () => {
+      saved.current = recipients;
+    },
+  });
   function add() {
     const value = entry.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
@@ -24,10 +44,14 @@ export function EmailSettings({ emails }: { emails: string[] }) {
     setError("");
   }
   return (
-    <form action={action} className="form-stack recipient-editor">
+    <form ref={formRef} action={action} className="form-stack recipient-editor">
       <input type="hidden" name="emails" value={recipients.join("\n")} />
-      <p>Add the team members who should receive new account, consultation and application updates.</p>
-      <ul className="recipient-list" aria-label="Notification recipients">
+      <p>
+        <Text>
+          {"Add the team members who should receive new account, consultation and application updates."}
+        </Text>
+      </p>
+      <ul className="recipient-list" aria-label={translate("Notification recipients")}>
         {recipients.map((email) => (
           <li key={email}>
             <Mail size={16} />
@@ -43,16 +67,22 @@ export function EmailSettings({ emails }: { emails: string[] }) {
           </li>
         ))}
       </ul>
-      {!recipients.length && <p>No email recipients added.</p>}
+      {!recipients.length && (
+        <p>
+          <Text>{"No email recipients added."}</Text>
+        </p>
+      )}
       <div className="recipient-add">
         <div className="field">
-          <label htmlFor="recipient-email">Email address</label>
+          <label htmlFor="recipient-email">
+            <Text>{"Email address"}</Text>
+          </label>
           <input
             id="recipient-email"
             type="email"
             value={entry}
             maxLength={254}
-            placeholder="colleague@example.com"
+            placeholder={translate("colleague@example.com")}
             onChange={(e) => setEntry(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
@@ -64,27 +94,27 @@ export function EmailSettings({ emails }: { emails: string[] }) {
         </div>
         <Button type="button" variant="outline" onClick={add} disabled={pending || !entry}>
           <Plus size={17} />
-          Add recipient
+          <Text>{"Add recipient"}</Text>
         </Button>
       </div>
       {(error || state.error) && (
         <p className="notice notice-error" role="alert">
-          {error || state.error}
+          {translate(error || state.error || "")}
         </p>
       )}
       {state.message && (
         <p className="form-message" role="status">
-          {state.message}
+          {translate(state.message)}
         </p>
       )}
-      <Button disabled={pending}>
+      <Button disabled={pending} className={dirty ? "save-inline-hidden" : undefined}>
         {pending ? (
           <>
-            Saving
+            <Text>{"Saving"}</Text>
             <LoadingDots />
           </>
         ) : (
-          "Save recipients"
+          translate("Save recipients")
         )}
       </Button>
     </form>

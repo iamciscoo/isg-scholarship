@@ -1,4 +1,6 @@
 "use client";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
+
 import * as Menu from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,6 +9,7 @@ import { signOut } from "@/features/auth/actions";
 import { useLocale } from "@/lib/i18n/provider";
 import type { AccountSummary } from "@/lib/auth/account-summary";
 export function AccountMenu({ account }: { account: AccountSummary }) {
+  const translate = useWorkspaceText();
   const {
     m: { ui: t },
   } = useLocale();
@@ -19,7 +22,7 @@ export function AccountMenu({ account }: { account: AccountSummary }) {
     );
   return (
     <Menu.Root>
-      <Menu.Trigger className="account-menu-trigger" aria-label="Account menu">
+      <Menu.Trigger className="account-menu-trigger" aria-label={translate("Account menu")}>
         <span className="account-avatar">
           {account.avatar ? (
             <Image src={account.avatar} width={36} height={36} unoptimized alt="" />
@@ -47,7 +50,7 @@ export function AccountMenu({ account }: { account: AccountSummary }) {
             <Menu.Item asChild onSelect={(event) => event.preventDefault()}>
               <button className="language-option account-logout" type="submit">
                 <LogOut size={17} />
-                Log out
+                <Text>{"Log out"}</Text>
               </button>
             </Menu.Item>
           </form>

@@ -1,4 +1,8 @@
 "use client";
+import { useWorkspaceText } from "@/lib/i18n/workspace-text";
+
+import { Text } from "@/lib/i18n/workspace-text";
+
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { prepareImage } from "@/lib/images";
@@ -69,6 +73,7 @@ export function FileUpload({
   multiple?: boolean;
   label?: string;
 }) {
+  const translate = useWorkspaceText();
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
@@ -108,13 +113,18 @@ export function FileUpload({
         if (!failed.length && ref.current) ref.current.value = "";
         const uploaded = selected.length - failed.length;
         if (uploaded) {
-          setSuccess(uploaded === 1 ? "1 file uploaded." : `${uploaded} files uploaded.`);
+          setSuccess(
+            translate(uploaded === 1 ? "{count} file uploaded." : "{count} files uploaded.", {
+              count: uploaded,
+            }),
+          );
+          window.dispatchEvent(new Event("isg:notifications-read"));
           router.refresh();
         }
       }}
     >
       <label className="min-w-0 grid-cols-1">
-        {label}
+        {<Text>{label}</Text>}
         <input
           className="w-full min-w-0 max-w-full overflow-hidden"
           ref={ref}
@@ -131,9 +141,13 @@ export function FileUpload({
           }}
         />
       </label>
-      <p className="field-help">Images or PDFs · 4 MB each. Keep the original PDF.</p>
+      <p className="field-help">
+        <Text>{"Images or PDFs · 4 MB each. Keep the original PDF."}</Text>
+      </p>
       {kind === "receipt" && (
-        <p className="field-help">Shared privately with ISG staff. Hide unrelated bank details.</p>
+        <p className="field-help">
+          <Text>{"Shared privately with ISG staff. Hide unrelated bank details."}</Text>
+        </p>
       )}
       {errors.length > 0 && (
         <div role="alert" className="notice notice-error break-words">
@@ -146,17 +160,17 @@ export function FileUpload({
       <Button disabled={pending}>
         {pending ? (
           <>
-            Uploading
+            <Text>{"Uploading"}</Text>
             <LoadingDots />
           </>
         ) : retry.length ? (
-          "Retry upload"
+          translate("Retry upload")
         ) : kind === "receipt" ? (
-          "Upload receipt"
+          translate("Upload receipt")
         ) : canSelectMultiple ? (
-          "Upload files"
+          translate("Upload files")
         ) : (
-          "Upload document"
+          translate("Upload document")
         )}
       </Button>
     </form>

@@ -1,4 +1,9 @@
 "use client";
+import { useWorkspaceText } from "@/lib/i18n/workspace-text";
+
+import { notificationCopy } from "@/features/notifications/notification-copy";
+import { Text } from "@/lib/i18n/workspace-text";
+
 import * as Popover from "@radix-ui/react-popover";
 import { Bell, CheckCheck } from "lucide-react";
 import Link from "next/link";
@@ -6,6 +11,7 @@ import { useState } from "react";
 import { useLocale } from "@/lib/i18n/provider";
 import { useInbox } from "./use-inbox";
 export function NotificationBell({ signedIn }: { signedIn: boolean }) {
+  const translate = useWorkspaceText();
   const {
     locale,
     m: { ui: t },
@@ -48,21 +54,21 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
           <div className="notification-scroll">
             {error && inbox && (
               <p role="status" className="notification-empty">
-                Updates are delayed.{" "}
+                <Text>{"Updates are delayed."}</Text>{" "}
                 <button className="text-link" onClick={() => void refresh(true)}>
-                  Retry
+                  <Text>{"Retry"}</Text>
                 </button>
               </p>
             )}
             {!!receiptTasks.length && (
-              <ul className="notification-list" aria-label="Receipts to upload">
+              <ul className="notification-list" aria-label={translate("Receipts to upload")}>
                 {receiptTasks.map((task) => (
                   <li key={task.link} className="is-unread">
                     <h3>{task.replacement ? "Upload a replacement receipt" : "Upload your receipt"}</h3>
                     <p>{task.title}</p>
                     <div>
                       <Link href={task.link} onClick={() => setOpen(false)}>
-                        Open payment →
+                        <Text>{"Open payment →"}</Text>
                       </Link>
                     </div>
                   </li>
@@ -93,8 +99,8 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
               <ul className="notification-list">
                 {inbox.items.map((n) => (
                   <li key={n.id} className={n.is_read ? "" : "is-unread"}>
-                    <h3>{n.title}</h3>
-                    <p>{n.body}</p>
+                    <h3>{notificationCopy(n, translate).title}</h3>
+                    <p>{notificationCopy(n, translate).body}</p>
                     <time dateTime={n.created_at}>
                       {new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(
                         new Date(n.created_at),

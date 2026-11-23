@@ -4,7 +4,9 @@ import { useLocale } from "@/lib/i18n/provider";
 export function LanguageNotice() {
   const pathname = usePathname();
   const { locale, m } = useLocale();
-  return locale !== "en" && !["/", "/faqs"].includes(pathname) ? (
+  return locale !== "en" &&
+    !["/", "/faqs"].includes(pathname) &&
+    !/^\/(admin|advisor|dashboard)(\/|$)/.test(pathname) ? (
     <p className="container language-notice" role="status">
       {m.ui.detailsEnglish}
     </p>

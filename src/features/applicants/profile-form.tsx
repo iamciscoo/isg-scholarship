@@ -1,8 +1,7 @@
 "use client";
-import { useActionState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { LoadingDots } from "@/components/ui/loading-dots";
+import { ActionForm } from "@/components/forms/action-form";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 import { saveProfile } from "./actions";
 import { CountrySelect } from "./country-select";
 type Profile = {
@@ -13,9 +12,9 @@ type Profile = {
   residence: string;
 };
 export function ProfileForm({ profile }: { profile: Profile }) {
-  const [state, action, pending] = useActionState(saveProfile, {});
+  const t = useWorkspaceText();
   return (
-    <form action={action} className="form-stack">
+    <ActionForm action={saveProfile} label="Save profile">
       <div className="form-grid">
         {(
           [
@@ -27,7 +26,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           ] as const
         ).map((field) => (
           <div className="field" key={field.name}>
-            <label htmlFor={field.name}>{field.label}</label>
+            <label htmlFor={field.name}>{t(field.label)}</label>
             {field.name === "residence" || field.name === "nationality" ? (
               <CountrySelect
                 id={field.name}
@@ -51,32 +50,17 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       <label className="checkbox-field">
         <input type="checkbox" name="terms" required />
         <span>
-          I accept the <Link href="/terms">service terms</Link> and acknowledge the{" "}
-          <Link href="/privacy">privacy information</Link> for my account.
+          <Text>I accept the</Text>{" "}
+          <Link href="/terms">
+            <Text>service terms</Text>
+          </Link>{" "}
+          <Text>and acknowledge the</Text>{" "}
+          <Link href="/privacy">
+            <Text>privacy information</Text>
+          </Link>{" "}
+          <Text>for my account.</Text>
         </span>
       </label>
-      {state.error && (
-        <p role="alert" className="notice notice-error">
-          {state.error}
-        </p>
-      )}
-      {state.message && (
-        <p role="status" className="form-message">
-          {state.message}
-        </p>
-      )}
-      <div>
-        <Button disabled={pending}>
-          {pending ? (
-            <>
-              Saving
-              <LoadingDots />
-            </>
-          ) : (
-            "Save profile"
-          )}
-        </Button>
-      </div>
-    </form>
+    </ActionForm>
   );
 }

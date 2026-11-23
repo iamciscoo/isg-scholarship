@@ -1,5 +1,11 @@
 # Implementation plan
 
+## November 23 dashboard improvements
+
+Use the existing locale cookie/provider and dictionaries for explicit dashboard UI translations; preserve submitted enum values and user-authored content. Automatically resolve only identifiable automated notifications in the same workflow context, retaining history and manual announcements. Keep the ISG palette and typography, use three compact mobile summary cards, primary filters with expandable advanced fields, and applicant cards on narrow screens. Move consultation status before details. Register dirty forms with one bottom save banner that cancels or submits the selected form without bypassing native validation.
+
+Verification: translation completeness and status tests, adversarial notification-context database checks, dirty/cancel/save/error browser behavior, responsive lists at 320/390/768/1440 and Arabic RTL, full build/lint/unit checks. Apply only the additive tested notification migration to production; retain current live applicant data.
+
 1. Foundation and public site: install compatible dependencies, copy current brand assets, implement responsive public pages and legacy redirects. Verify types, build and desktop/mobile layout.
 2. Assessment intake: implement four-step validated form, atomic lead/assessment/consent/outbox migration, Turnstile and shared rate limits. Verify invalid data, idempotency and denied direct anonymous reads.
 3. Identity and accounts: verified registration, login, recovery, global sign-out, applicant profile and safe email linking. Verify no role escalation and cross-applicant denial.

@@ -1,4 +1,5 @@
 "use server";
+import { storageBody } from "@/server/services/storage-body";
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -37,7 +38,7 @@ export async function uploadMarketingImage(
       path = `${id}.webp`;
     const upload = await admin.storage
       .from("marketing-images")
-      .upload(path, content.data, { contentType: "image/webp", upsert: false });
+      .upload(path, storageBody(content.data), { contentType: "image/webp", upsert: false });
     if (upload.error) return { error: "The image could not be uploaded." };
     const record = await admin.rpc("register_marketing_image", {
       p_id: id,

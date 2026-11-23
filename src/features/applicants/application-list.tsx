@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
@@ -54,18 +55,26 @@ export async function ApplicationList({
     })}`;
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
-      <h1>Applications</h1>
+      <h1>
+        <Text>{"Applications"}</Text>
+      </h1>
       {!applications?.length ? (
         <section className="workspace-panel">
-          <h2>No applications in this view.</h2>
+          <h2>
+            <Text>{"No applications in this view."}</Text>
+          </h2>
           <p>
-            {own
-              ? "ISG will assign your package after the consultation."
-              : "Open an applicant’s consultation to assign a scholarship package."}
+            {
+              <Text>
+                {own
+                  ? "ISG will assign your package after the consultation."
+                  : "Open an applicant’s consultation to assign a scholarship package."}
+              </Text>
+            }
           </p>
           {own && (
             <Link href="/dashboard/consultations" className="text-link">
-              View consultation →
+              <Text>{"View consultation →"}</Text>
             </Link>
           )}
         </section>
@@ -75,11 +84,21 @@ export async function ApplicationList({
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Applicant</th>
-                <th scope="col">Package</th>
-                <th scope="col">Destination</th>
-                <th scope="col">Payment</th>
-                <th scope="col">Application</th>
+                <th scope="col">
+                  <Text>{"Applicant"}</Text>
+                </th>
+                <th scope="col">
+                  <Text>{"Package"}</Text>
+                </th>
+                <th scope="col">
+                  <Text>{"Destination"}</Text>
+                </th>
+                <th scope="col">
+                  <Text>{"Payment"}</Text>
+                </th>
+                <th scope="col">
+                  <Text>{"Application"}</Text>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -94,16 +113,22 @@ export async function ApplicationList({
                         {names.get(a.user_id) || `Applicant ${a.user_id.slice(0, 8)}`}
                       </Link>
                       <small>
-                        <Link href={`${base}/${a.id}`}>View application →</Link>
+                        <Link href={`${base}/${a.id}`}>
+                          <Text>{"View application →"}</Text>
+                        </Link>
                       </small>
                     </td>
                     <td>{proposal.name}</td>
                     <td>{proposal.destination}</td>
-                    <td>{packageStatus(a.package_state, a.status)}</td>
+                    <td>{<Text>{packageStatus(a.package_state, a.status)}</Text>}</td>
                     <td>
-                      {record?.application_status
-                        ? fullApplicationStatusLabel(record.application_status)
-                        : "Not submitted"}
+                      {
+                        <Text>
+                          {record?.application_status
+                            ? fullApplicationStatusLabel(record.application_status)
+                            : "Not submitted"}
+                        </Text>
+                      }
                     </td>
                   </NavigableRow>
                 );
@@ -120,9 +145,13 @@ export async function ApplicationList({
             return (
               <article className="workspace-panel" key={a.id}>
                 <span className="status-pill">
-                  {record?.application_status
-                    ? fullApplicationStatusLabel(record.application_status)
-                    : packageStatus(a.package_state, a.status)}
+                  {
+                    <Text>
+                      {record?.application_status
+                        ? fullApplicationStatusLabel(record.application_status)
+                        : packageStatus(a.package_state, a.status)}
+                    </Text>
+                  }
                 </span>
                 <h2>{p.data.name}</h2>
                 <p>
@@ -130,12 +159,15 @@ export async function ApplicationList({
                 </p>
                 {p.data.packageFee !== undefined && (
                   <p>
-                    ISG package fee · <strong>TZS {p.data.packageFee.toLocaleString("en")}</strong>
+                    <Text>{"ISG package fee ·"}</Text>{" "}
+                    <strong>
+                      <Text>{"TZS"}</Text> {p.data.packageFee.toLocaleString("en")}
+                    </strong>
                     <small>{usdLabel(p.data.packageFee)}</small>
                   </p>
                 )}
                 <Link className="text-link" href={`${base}/${a.id}`}>
-                  View application →
+                  <Text>{"View application →"}</Text>
                 </Link>
               </article>
             );
@@ -144,11 +176,20 @@ export async function ApplicationList({
       )}
       <div className="pagination">
         <span>
-          {count || 0} applications · Page {page}
+          {count || 0} <Text>{"applications · Page"}</Text> {page}
         </span>
         <div>
-          {page > 1 && <Link href={pageLink(page - 1)}>← Previous </Link>}
-          {page * 20 < (count || 0) && <Link href={pageLink(page + 1)}> Next →</Link>}
+          {page > 1 && (
+            <Link href={pageLink(page - 1)}>
+              <Text>{"← Previous"}</Text>{" "}
+            </Link>
+          )}
+          {page * 20 < (count || 0) && (
+            <Link href={pageLink(page + 1)}>
+              {" "}
+              <Text>{"Next →"}</Text>
+            </Link>
+          )}
         </div>
       </div>
     </Workspace>

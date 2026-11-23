@@ -1,13 +1,16 @@
 "use client";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
+
 import { useState } from "react";
 import { usdLabel } from "@/lib/format";
 
 export function PackagePriceField({ defaultValue }: { defaultValue?: number }) {
+  const translate = useWorkspaceText();
   const [value, setValue] = useState(defaultValue ? String(defaultValue) : "");
   const amount = Number(value);
   return (
     <label>
-      ISG package fee (TZS)
+      <Text>{"ISG package fee (TZS)"}</Text>
       <input
         name="packageFee"
         type="number"
@@ -21,7 +24,7 @@ export function PackagePriceField({ defaultValue }: { defaultValue?: number }) {
       <small>
         {amount > 0
           ? usdLabel(amount)
-          : "Enter the full fee for this package. The consultation is charged separately."}
+          : translate("Enter the full fee for this package. The consultation is charged separately.")}
       </small>
     </label>
   );

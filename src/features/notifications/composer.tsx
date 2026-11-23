@@ -1,4 +1,6 @@
 "use client";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
+
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
@@ -10,35 +12,45 @@ export function NotificationComposer({
   recipients: { id: string; name: string }[];
   requestId: string;
 }) {
+  const translate = useWorkspaceText();
   const [state, action, pending] = useActionState(publishNotification, {});
   const [audience, setAudience] = useState("single");
   return (
     <form action={action} className="form-stack">
       <input type="hidden" name="request" value={requestId} />
       <label>
-        Audience
+        <Text>{"Audience"}</Text>
         <select
           value={audience}
           onChange={(e) => setAudience(e.target.value)}
           disabled={Boolean(state.message)}
         >
-          <option value="single">One account</option>
-          <option value="all">All active accounts</option>
+          <option value="single">
+            <Text>{"One account"}</Text>
+          </option>
+          <option value="all">
+            <Text>{"All active accounts"}</Text>
+          </option>
         </select>
       </label>
       {audience === "all" ? (
         <>
           <input type="hidden" name="recipient" value="" />
           <p className="notice">
-            This message will appear in every active account, including accounts created later. It does not
-            send email or WhatsApp messages.
+            <Text>
+              {
+                "This message will appear in every active account, including accounts created later. It does not send email or WhatsApp messages."
+              }
+            </Text>
           </p>
         </>
       ) : (
         <label>
-          Recipient
+          <Text>{"Recipient"}</Text>
           <select name="recipient" required defaultValue="" disabled={Boolean(state.message)}>
-            <option value="">Select an account</option>
+            <option value="">
+              <Text>{"Select an account"}</Text>
+            </option>
             {recipients.map((p) => (
               <option value={p.id} key={p.id}>
                 {p.name}
@@ -48,11 +60,11 @@ export function NotificationComposer({
         </label>
       )}
       <label>
-        Title
+        <Text>{"Title"}</Text>
         <input name="title" required minLength={3} maxLength={120} disabled={Boolean(state.message)} />
       </label>
       <label>
-        Message
+        <Text>{"Message"}</Text>
         <textarea
           name="body"
           required
@@ -63,39 +75,53 @@ export function NotificationComposer({
         />
       </label>
       <label>
-        Optional destination
+        <Text>{"Optional destination"}</Text>
         <select name="link" disabled={Boolean(state.message)}>
-          <option value="">No link</option>
-          <option value="/dashboard">Account overview</option>
-          <option value="/dashboard/profile">Profile</option>
-          <option value="/contact">Contact ISG</option>
-          <option value="/eligibility">Eligibility assessment</option>
-          <option value="/pathways">Study pathways</option>
-          <option value="/faqs">Frequently asked questions</option>
+          <option value="">
+            <Text>{"No link"}</Text>
+          </option>
+          <option value="/dashboard">
+            <Text>{"Account overview"}</Text>
+          </option>
+          <option value="/dashboard/profile">
+            <Text>{"Profile"}</Text>
+          </option>
+          <option value="/contact">
+            <Text>{"Contact ISG"}</Text>
+          </option>
+          <option value="/eligibility">
+            <Text>{"Eligibility assessment"}</Text>
+          </option>
+          <option value="/pathways">
+            <Text>{"Study pathways"}</Text>
+          </option>
+          <option value="/faqs">
+            <Text>{"Frequently asked questions"}</Text>
+          </option>
         </select>
       </label>
       <label className="checkbox-field">
-        <input type="checkbox" required disabled={Boolean(state.message)} />I have reviewed this message and
-        its audience. Publish it to these accounts.
+        <input type="checkbox" required disabled={Boolean(state.message)} />
+        <Text>{"I have reviewed this message and its audience. Publish it to these accounts."}</Text>
       </label>
       {state.error && (
         <p role="alert" className="notice notice-error">
-          {state.error}
+          {translate(state.error)}
         </p>
       )}
       {state.message && (
         <p role="status" className="form-message">
-          {state.message}
+          {translate(state.message)}
         </p>
       )}
       <Button disabled={pending || Boolean(state.message)}>
         {pending ? (
           <>
-            Publishing
+            <Text>{"Publishing"}</Text>
             <LoadingDots />
           </>
         ) : (
-          "Publish notification"
+          translate("Publish notification")
         )}
       </Button>
     </form>

@@ -1,4 +1,6 @@
 "use client";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
+
 import * as Menu from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +16,7 @@ export function WorkspaceProfileMenu({
   links: WorkspaceLink[];
   account: WorkspaceAccount;
 }) {
+  const translate = useWorkspaceText();
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const mobile = window.matchMedia("(max-width: 900px)");
@@ -26,7 +29,10 @@ export function WorkspaceProfileMenu({
   return (
     <div className="workspace-mobile-account">
       <Menu.Root open={open} onOpenChange={setOpen}>
-        <Menu.Trigger className="account-menu-trigger workspace-profile-trigger" aria-label="Workspace menu">
+        <Menu.Trigger
+          className="account-menu-trigger workspace-profile-trigger"
+          aria-label={translate("Workspace menu")}
+        >
           <span className="account-avatar">
             {account.avatar ? (
               <Image src={account.avatar} width={36} height={36} unoptimized alt="" />
@@ -60,7 +66,7 @@ export function WorkspaceProfileMenu({
             ))}
             <Menu.Item asChild>
               <Link className="language-option" href="/">
-                Back to website
+                <Text>{"Back to website"}</Text>
               </Link>
             </Menu.Item>
             <Menu.Separator className="menu-separator" />
@@ -68,7 +74,9 @@ export function WorkspaceProfileMenu({
               <Menu.Item asChild onSelect={(event) => event.preventDefault()}>
                 <button type="submit" className="language-option account-logout">
                   <LogOut size={18} />
-                  <span>Log out</span>
+                  <span>
+                    <Text>{"Log out"}</Text>
+                  </span>
                 </button>
               </Menu.Item>
             </form>

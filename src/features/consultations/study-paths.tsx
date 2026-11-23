@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import Image from "next/image";
 import Link from "next/link";
 import { programmeAreas, programmeFields, programmesPerPage } from "@/config/programme-areas";
@@ -20,6 +23,7 @@ export async function StudyPaths({
 }: {
   query: { level?: string; field?: string; destination?: string; page?: string };
 }) {
+  const translate = await getWorkspaceText();
   const level = programmeAreas.some((p) => p.level === query.level) ? query.level || "" : "";
   const field = programmeAreas.some((p) => p.field === query.field) ? query.field || "" : "";
   const destination = (typeof query.destination === "string" ? query.destination : "").slice(0, 100);
@@ -54,8 +58,12 @@ export async function StudyPaths({
     <section className="section container" id="programmes">
       <div className="study-path-heading">
         <div>
-          <span className="eyebrow">Start with your interests</span>
-          <h2>Find a direction worth exploring.</h2>
+          <span className="eyebrow">
+            <Text>{"Start with your interests"}</Text>
+          </span>
+          <h2>
+            <Text>{"Find a direction worth exploring."}</Text>
+          </h2>
         </div>
       </div>
       <form
@@ -66,18 +74,22 @@ export async function StudyPaths({
         method="get"
       >
         <label>
-          Study level
+          <Text>{"Study level"}</Text>
           <select name="level" defaultValue={level}>
-            <option value="">All study levels</option>
+            <option value="">
+              <Text>{"All study levels"}</Text>
+            </option>
             {studyLevels.map((v) => (
               <option key={v}>{v}</option>
             ))}
           </select>
         </label>
         <label>
-          Academic field
+          <Text>{"Academic field"}</Text>
           <select name="field" defaultValue={field}>
-            <option value="">All fields</option>
+            <option value="">
+              <Text>{"All fields"}</Text>
+            </option>
             {programmeFields.map((v) => (
               <option key={v.value} value={v.value}>
                 {v.label}
@@ -86,35 +98,42 @@ export async function StudyPaths({
           </select>
         </label>
         <label>
-          Destination interest
+          <Text>{"Destination interest"}</Text>
           <input
             name="destination"
             defaultValue={destination}
             maxLength={100}
-            placeholder="Any destination"
+            placeholder={translate("Any destination")}
           />
         </label>
         <button type="submit" className="button button-primary">
-          Explore paths
+          <Text>{"Explore paths"}</Text>
         </button>
         <Link className="text-link" href="/pathways#programme-results">
-          Reset
+          <Text>{"Reset"}</Text>
         </Link>
       </form>
       <ProgrammeResultsHeading key={`${level}|${field}|${destination}|${page}`} />
       <p className="programme-result-count">
-        {guides.length} programme guides{level ? ` · ${level}` : ""}
-        {field ? ` · ${programmeFields.find((f) => f.value === field)?.label || field}` : ""}. The same guide
-        range is available for every destination.
+        {guides.length} <Text>{"programme guides"}</Text>
+        {level ? ` · ${level}` : ""}
+        {field ? ` · ${programmeFields.find((f) => f.value === field)?.label || field}` : ""}
+        <Text>{". The same guide range is available for every destination."}</Text>
       </p>
       {destination && (
         <p className="notice">
-          Exploring {destination}? These are general study interests, not confirmed offers. Your advisor will
-          check which institutions, courses and requirements match your profile.
+          <Text>{"Exploring"}</Text> {destination}
+          <Text>
+            {
+              "? These are general study interests, not confirmed offers. Your advisor will check which institutions, courses and requirements match your profile."
+            }
+          </Text>
         </p>
       )}
-      <p className="mobile-swipe-hint">Swipe to explore study paths →</p>
-      <div className="study-path-grid" tabIndex={0} aria-label="Study paths">
+      <p className="mobile-swipe-hint">
+        <Text>{"Swipe to explore study paths →"}</Text>
+      </p>
+      <div className="study-path-grid" tabIndex={0} aria-label={translate("Study paths")}>
         {visibleGuides.map((p) => (
           <article className="study-path-card" key={p.title}>
             <div className="study-path-photo">
@@ -130,28 +149,29 @@ export async function StudyPaths({
               <h3>{p.title}</h3>
               <p>{p.text}</p>
               <Link href="/consultation" className="text-link">
-                Discuss this study path →
+                <Text>{"Discuss this study path →"}</Text>
               </Link>
             </div>
           </article>
         ))}
       </div>
       {pages > 1 && (
-        <nav className="programme-pagination" aria-label="Programme pages">
+        <nav className="programme-pagination" aria-label={translate("Programme pages")}>
           {page > 1 ? (
             <Link href={pageHref(page - 1)} className="text-link">
-              ← Previous
+              <Text>{"← Previous"}</Text>
             </Link>
           ) : (
             <span />
           )}
           <span>
-            Page {page} of {pages} · {Math.min((page - 1) * programmesPerPage + 1, guides.length)}–
-            {Math.min(page * programmesPerPage, guides.length)} of {guides.length}
+            <Text>{"Page"}</Text> {page} <Text>{"of"}</Text> {pages} ·{" "}
+            {Math.min((page - 1) * programmesPerPage + 1, guides.length)}–
+            {Math.min(page * programmesPerPage, guides.length)} <Text>{"of"}</Text> {guides.length}
           </span>
           {page < pages ? (
             <Link href={pageHref(page + 1)} className="text-link">
-              Next →
+              <Text>{"Next →"}</Text>
             </Link>
           ) : (
             <span />
@@ -159,13 +179,19 @@ export async function StudyPaths({
         </nav>
       )}
       {!guides.length && (
-        <p>No programme guide matches these filters. Try another field or ask an advisor.</p>
+        <p>
+          <Text>{"No programme guide matches these filters. Try another field or ask an advisor."}</Text>
+        </p>
       )}
       {!!promotions.length && (
         <>
-          <h2 className="mt-10">Destinations and funding to explore</h2>
-          <p className="mobile-swipe-hint">Swipe to explore study paths →</p>
-          <div className="study-path-grid" tabIndex={0} aria-label="Study paths">
+          <h2 className="mt-10">
+            <Text>{"Destinations and funding to explore"}</Text>
+          </h2>
+          <p className="mobile-swipe-hint">
+            <Text>{"Swipe to explore study paths →"}</Text>
+          </p>
+          <div className="study-path-grid" tabIndex={0} aria-label={translate("Study paths")}>
             {promotions.map((p) => (
               <article className="study-path-card" key={p.id}>
                 <div className="study-path-photo">
@@ -186,7 +212,7 @@ export async function StudyPaths({
                   </p>
                   <p>{p.eligibility}</p>
                   <Link href="/consultation" className="text-link">
-                    Start a private consultation →
+                    <Text>{"Start a private consultation →"}</Text>
                   </Link>
                 </div>
               </article>

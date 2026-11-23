@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import { ActionForm } from "@/components/forms/action-form";
 import { savePromotion } from "./opportunity-actions";
 import { ApprovedImagePicker } from "./approved-image-picker";
@@ -28,7 +29,7 @@ export async function PromotionEditor({ value }: { value?: Promotion }) {
       <div className="form-grid">
         {fields.map((f) => (
           <label key={f.key}>
-            {f.label}
+            {<Text>{f.label}</Text>}
             <input
               name={f.key}
               maxLength={
@@ -47,17 +48,21 @@ export async function PromotionEditor({ value }: { value?: Promotion }) {
         ))}
       </div>
       <label>
-        Broad eligibility summary
+        <Text>{"Broad eligibility summary"}</Text>
         <textarea name="eligibility" maxLength={2000} defaultValue={value?.eligibility || ""} />
       </label>
       <ApprovedImagePicker image={value?.image} images={images} />
       <label className="checkbox-field">
         <input type="checkbox" name="published" defaultChecked={value?.published || false} />
-        Publish this broad promotion on Study Paths
+        <Text>{"Publish this broad promotion on Study Paths"}</Text>
       </label>
       <label className="checkbox-field">
-        <input type="checkbox" name="reviewed" />I reviewed this public copy. It does not reveal actual
-        scholarship names, confidential research or the internal shortlist.
+        <input type="checkbox" name="reviewed" />
+        <Text>
+          {
+            "I reviewed this public copy. It does not reveal actual scholarship names, confidential research or the internal shortlist."
+          }
+        </Text>
       </label>
     </ActionForm>
   );

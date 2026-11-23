@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 export function FileLinks({ id, name }: { id: string; name: string }) {
   return (
@@ -12,7 +13,7 @@ export function FileLinks({ id, name }: { id: string; name: string }) {
         rel="noopener noreferrer"
         aria-label={`View ${name}`}
       >
-        View
+        <Text>{"View"}</Text>
       </Link>
     </div>
   );

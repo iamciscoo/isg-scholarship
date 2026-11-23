@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text } from "@/lib/i18n/workspace-text";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { z } from "zod";
@@ -13,6 +16,7 @@ import { UserFiles } from "./user-files";
 
 export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
   const { db, user, role } = await requireStaff(admin);
+  const translate = await getWorkspaceText();
   if (!z.uuid().safeParse(id).success) notFound();
   const { data: record, error } = await db
     .from("consultation_cases")
@@ -54,31 +58,37 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
         {form.reference} · {form.preferred_fields}
       </p>
       <section className="workspace-panel">
-        <span className="status-pill">{receiptLabels[record.payment_status]}</span>
+        <span className="status-pill">{translate(receiptLabels[record.payment_status])}</span>
         <div className="workspace-action-row case-actions">
           {receipt.data && admin && (
             <Link className="text-link" href={`/admin/receipts/${receipt.data.id}`}>
-              {receipt.data.review_status === "pending" ? "Review receipt" : "View receipt"}
+              {receipt.data.review_status === "pending"
+                ? translate("Review receipt")
+                : translate("View receipt")}
             </Link>
           )}
           <Link className="text-link" href={`/${area}/leads/${record.lead_id}`}>
-            Consultation details
+            <Text>{"Consultation details"}</Text>
           </Link>
           <a className="text-link" href={`https://wa.me/${phone}`} target="_blank" rel="noopener noreferrer">
-            Contact on WhatsApp
+            <Text>{"Contact on WhatsApp"}</Text>
           </a>
         </div>
         {receipt.data?.review_note && <p>{receipt.data.review_note}</p>}
         {admin && ["awaiting_receipt", "rejected"].includes(record.payment_status) && (
           <>
-            <p>Upload the applicant’s consultation receipt, then verify the payment.</p>
+            <p>
+              <Text>{"Upload the applicant’s consultation receipt, then verify the payment."}</Text>
+            </p>
             <FileUpload kind="receipt" applicant={id} />
           </>
         )}
       </section>
       {record.payment_status === "verified" && (
         <section className="workspace-panel">
-          <h2>Assigned package</h2>
+          <h2>
+            <Text>{"Assigned package"}</Text>
+          </h2>
           {applications.data.length ? (
             applications.data.map((application) => (
               <div key={application.id}>
@@ -88,7 +98,7 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
                 <p>{packageStatus(application.package_state, application.status)}</p>
                 {application.package_state === "paid" && (
                   <Link className="button button-outline" href={`/${area}/cases/${id}/application`}>
-                    Enter application details
+                    <Text>{"Enter application details"}</Text>
                   </Link>
                 )}
               </div>
@@ -97,9 +107,11 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
             <ActionForm action={proposeApplication} label="Assign package">
               <input type="hidden" name="user" value={id} />
               <label>
-                Package
+                <Text>{"Package"}</Text>
                 <select name="opportunity" required>
-                  <option value="">Choose a package</option>
+                  <option value="">
+                    <Text>{"Choose a package"}</Text>
+                  </option>
                   {(opportunities.data || []).map((item: { id: string; name: string }) => (
                     <option key={item.id} value={item.id}>
                       {item.name}
@@ -109,7 +121,9 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
               </label>
             </ActionForm>
           ) : (
-            <p>An administrator will assign the package.</p>
+            <p>
+              <Text>{"An administrator will assign the package."}</Text>
+            </p>
           )}
         </section>
       )}

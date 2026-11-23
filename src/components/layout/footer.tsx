@@ -1,3 +1,4 @@
+import { Text } from "@/lib/i18n/workspace-text";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
@@ -19,38 +20,59 @@ export async function Footer() {
             </a>
           </div>
           <div>
-            <h2>Explore</h2>
+            <h2>
+              <Text>{"Explore"}</Text>
+            </h2>
             <Link href="/about">{t.about}</Link>
             <Link href="/services">{t.services}</Link>
             <Link href="/pathways">{t.pathways}</Link>
             <Link href="/how-it-works">{t.journey}</Link>
           </div>
           <div>
-            <h2>Your next step</h2>
+            <h2>
+              <Text>{"Your next step"}</Text>
+            </h2>
             <Link href="/consultation">{t.eligibility}</Link>
             <Link href="/contact">{t.advisor}</Link>
             <Link href="/pricing">{t.fees}</Link>
             <Link href="/faqs">{t.faq}</Link>
           </div>
           <div>
-            <h2>Your account</h2>
+            <h2>
+              <Text>{"Your account"}</Text>
+            </h2>
             <Link href="/login">{t.signIn}</Link>
             <Link href="/register">{t.createAccount}</Link>
-            <Link href="/contact?topic=privacy">Personal data requests</Link>
-            <Link href="/login?next=/admin">Staff sign in</Link>
+            <Link href="/contact?topic=privacy">
+              <Text>{"Personal data requests"}</Text>
+            </Link>
+            <Link href="/login?next=/admin">
+              <Text>{"Staff sign in"}</Text>
+            </Link>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} International Scholarship Gateway</span>
+          <span>
+            © {new Date().getFullYear()} <Text>{"International Scholarship Gateway"}</Text>
+          </span>
           <div>
-            <Link href="/privacy">Privacy</Link>
-            <Link href="/terms">Terms</Link>
-            <Link href="/cookies">Cookies</Link>
+            <Link href="/privacy">
+              <Text>{"Privacy"}</Text>
+            </Link>
+            <Link href="/terms">
+              <Text>{"Terms"}</Text>
+            </Link>
+            <Link href="/cookies">
+              <Text>{"Cookies"}</Text>
+            </Link>
           </div>
         </div>
         <p className="footer-disclaimer">
-          ISG provides independent education advisory and application support. Scholarship, admission and visa
-          decisions rest with the relevant institutions. No outcome is guaranteed.
+          <Text>
+            {
+              "ISG provides independent education advisory and application support. Scholarship, admission and visa decisions rest with the relevant institutions. No outcome is guaranteed."
+            }
+          </Text>
         </p>
       </div>
     </footer>

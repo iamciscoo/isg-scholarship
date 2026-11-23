@@ -1,3 +1,6 @@
+import { getWorkspaceText } from "@/lib/i18n/server";
+
+import { Text, DateText } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
@@ -8,6 +11,7 @@ import type { Inbox } from "@/features/notifications/types";
 
 export default async function Dashboard() {
   const { db, user, profile, role } = await requireUser();
+  const translate = await getWorkspaceText();
   if (role !== "applicant") redirect(role === "admin" ? "/admin" : "/advisor");
   const [consultation, draft, assigned, updates] = await Promise.all([
     db
@@ -34,41 +38,57 @@ export default async function Dashboard() {
   const latest = (updates.data as Inbox | null)?.items?.slice(0, 5) || [];
   return (
     <Workspace role={role} email={user.email || ""}>
-      <h1>{profile.first_name ? `Welcome, ${profile.first_name}` : "Your ISG dashboard"}</h1>
+      <h1>
+        {profile.first_name
+          ? translate("Welcome, {name}", { name: profile.first_name })
+          : translate("Your ISG dashboard")}
+      </h1>
       {unavailable ? (
         <p role="alert" className="notice notice-error">
-          Your progress could not be loaded. Please refresh.
+          <Text>{"Your progress could not be loaded. Please refresh."}</Text>
         </p>
       ) : (
         <>
           <section className="workspace-panel">
-            <span className="status-pill">Current stage</span>
-            <h2>{progress.stage}</h2>
-            <p>{progress.action}</p>
+            <span className="status-pill">
+              <Text>{"Current stage"}</Text>
+            </span>
+            <h2>{translate(progress.stage)}</h2>
+            <p>{translate(progress.action)}</p>
             <Button asChild>
-              <Link href={progress.href}>{progress.label}</Link>
+              <Link href={progress.href}>{translate(progress.label)}</Link>
             </Button>
           </section>
           <dl className="stat-grid">
             <div className="stat-box">
-              <dt>Consultation</dt>
-              <dd>{progress.consultation}</dd>
+              <dt>
+                <Text>{"Consultation"}</Text>
+              </dt>
+              <dd>{translate(progress.consultation)}</dd>
             </div>
             <div className="stat-box">
-              <dt>Receipt</dt>
-              <dd>{progress.receipt}</dd>
+              <dt>
+                <Text>{"Receipt"}</Text>
+              </dt>
+              <dd>{translate(progress.receipt)}</dd>
             </div>
             <div className="stat-box">
-              <dt>Scholarship application</dt>
-              <dd>{progress.application}</dd>
+              <dt>
+                <Text>{"Scholarship application"}</Text>
+              </dt>
+              <dd>{translate(progress.application)}</dd>
             </div>
           </dl>
         </>
       )}
       <section className="workspace-panel">
-        <h2>Latest updates</h2>
+        <h2>
+          <Text>{"Latest updates"}</Text>
+        </h2>
         {updates.error ? (
-          <p role="alert">Updates could not be loaded.</p>
+          <p role="alert">
+            <Text>{"Updates could not be loaded."}</Text>
+          </p>
         ) : latest.length ? (
           <ol className="notification-history">
             {latest.map((item) => (
@@ -81,16 +101,14 @@ export default async function Dashboard() {
                   <strong>{item.title}</strong>
                 )}
                 <p className="preserve-lines">{item.body}</p>
-                <time dateTime={item.created_at}>
-                  {new Date(item.created_at).toLocaleDateString("en-GB", {
-                    timeZone: "Africa/Dar_es_Salaam",
-                  })}
-                </time>
+                <time dateTime={item.created_at}>{<DateText value={item.created_at} />}</time>
               </li>
             ))}
           </ol>
         ) : (
-          <p>No updates yet.</p>
+          <p>
+            <Text>{"No updates yet."}</Text>
+          </p>
         )}
       </section>
     </Workspace>

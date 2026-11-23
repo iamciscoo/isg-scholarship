@@ -1,9 +1,12 @@
 "use client";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
+
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { markInboxRead } from "./inbox-client";
 import { LoadingDots } from "@/components/ui/loading-dots";
 export function NotificationReadButton({ id = null }: { id?: string | null }) {
+  const translate = useWorkspaceText();
   const [pending, start] = useTransition();
   const [error, setError] = useState(false);
   const router = useRouter();
@@ -30,16 +33,20 @@ export function NotificationReadButton({ id = null }: { id?: string | null }) {
       >
         {pending ? (
           <>
-            Updating
+            <Text>{"Updating"}</Text>
             <LoadingDots />
           </>
         ) : id ? (
-          "Mark as read"
+          translate("Mark as read")
         ) : (
-          "Mark all as read"
+          translate("Mark all as read")
         )}
       </button>
-      {error && <span role="alert">Please try again.</span>}
+      {error && (
+        <span role="alert">
+          <Text>{"Please try again."}</Text>
+        </span>
+      )}
     </>
   );
 }

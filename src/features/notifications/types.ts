@@ -5,6 +5,7 @@ export type AccountNotification = {
   link: string;
   created_at: string;
   is_read: boolean;
+  is_system?: boolean;
 };
 export type ReceiptTask = { id: string; title: string; link: string; replacement: boolean };
 export type Inbox = {
