@@ -11,6 +11,7 @@ export async function PackageProgress({
   staff,
   admin,
   testPackage,
+  applicant,
 }: {
   id: string;
   state: string;
@@ -19,6 +20,7 @@ export async function PackageProgress({
   staff: boolean;
   admin: boolean;
   testPackage: boolean;
+  applicant?: string;
 }) {
   const db = await createClient();
   const canUpload = status === "Starting" && ["awaiting_receipt", "receipt_rejected"].includes(state);
@@ -49,7 +51,7 @@ export async function PackageProgress({
               <p>
                 Full ISG service fee · <strong>TZS {fee?.toLocaleString("en")}</strong>
               </p>
-              {staff ? (
+              {staff && !admin ? (
                 <p>Waiting for the applicant to upload a receipt.</p>
               ) : (
                 <>
@@ -58,12 +60,16 @@ export async function PackageProgress({
                   ) : instructions.data ? (
                     <p className="preserve-lines">{instructions.data}</p>
                   ) : (
-                    <p>Ask your advisor for payment instructions before sending money.</p>
+                    <p>
+                      {admin
+                        ? "Upload the receipt, then open it to verify payment."
+                        : "Ask your advisor for payment instructions before sending money."}
+                    </p>
                   )}
                   {state === "receipt_rejected" && receipt.data?.review_note && (
                     <p>{receipt.data.review_note}</p>
                   )}
-                  <FileUpload kind="receipt" application={id} />
+                  <FileUpload kind="receipt" application={id} applicant={admin ? applicant : undefined} />
                 </>
               )}
             </>
@@ -84,7 +90,7 @@ export async function PackageProgress({
           {admin ? "Open payment receipt →" : "Download your receipt"}
         </Link>
       )}
-      {receipt.data && !staff && (
+      {receipt.data && (!staff || admin) && (
         <details className="package-gallery">
           <summary>Preview receipt</summary>
           <ReceiptPreview id={receipt.data.id} mime={receipt.data.mime} />

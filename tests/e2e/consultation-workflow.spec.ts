@@ -1,65 +1,9 @@
-import { test, expect as playwrightExpect, type Page } from "@playwright/test";
-import PDFDocument from "pdfkit";
+import { test, expect as playwrightExpect } from "@playwright/test";
 import sharp from "sharp";
+import { login, submitConsultation, samplePdf, submittedConsultation } from "./workflow-helpers";
+import { seedPagination } from "./pagination-fixtures";
 
 const expect = playwrightExpect.configure({ timeout: 15_000 });
-
-async function login(page: Page, account: string, landing: string) {
-  await page.goto("/login");
-  await page.getByLabel("Email address", { exact: true }).fill(`isg-qa-${account}@example.com`);
-  await page.getByLabel("Password", { exact: true }).fill(process.env.ISG_WORKFLOW_QA_PASSWORD!);
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await expect(page).toHaveURL(new RegExp(`${landing}$`));
-}
-
-async function submitConsultation(page: Page) {
-  await Promise.all([
-    page.waitForResponse((response) => response.url().endsWith("/api/notifications")),
-    page.goto("/consultation"),
-  ]);
-  for (const [name, value] of Object.entries({
-    firstName: "QA",
-    lastName: "Scholar",
-    phone: "+255700000000",
-    nationality: "Tanzanian",
-    residence: "Tanzania",
-  }))
-    await page.locator(`#${name}`).fill(value);
-  const first = await page.locator("#firstName").boundingBox();
-  const last = await page.locator("#lastName").boundingBox();
-  expect(first?.y).toBe(last?.y);
-  const next = page.getByRole("button", { name: "Continue", exact: true });
-  await next.click();
-  await page.locator("#qualification").selectOption("Diploma");
-  await page.locator("#educationStatus").selectOption("Graduated");
-  await page.locator("#fieldOfStudy").fill("Engineering");
-  await next.click();
-  await page.locator("#studyLevel").selectOption("Undergraduate");
-  await page.locator("#preferredFields").fill("Engineering");
-  await page.locator("#destinations").fill("Canada");
-  await page.locator("#intake").selectOption("Next available intake");
-  await page.locator("#funding").selectOption("Open to advice");
-  await expect(page.getByText("Questions for your advisor", { exact: true })).toHaveCount(0);
-  await next.click();
-  await page.locator('[name="adultConfirmation"]').check();
-  await page.locator('[name="processingConsent"]').check();
-  await page.getByRole("button", { name: "Submit consultation" }).click();
-  await expect(page).toHaveURL(/\/dashboard\/consultations#consultation-payment$/);
-  await page.goto("/consultation");
-  await expect(page).toHaveURL(/\/dashboard\/consultations$/);
-}
-
-async function samplePdf() {
-  const doc = new PDFDocument({ size: "A6" });
-  const chunks: Buffer[] = [];
-  const result = new Promise<Buffer>((resolve, reject) => {
-    doc.on("data", (chunk) => chunks.push(chunk));
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
-    doc.on("error", reject);
-  });
-  doc.text("Isolated browser QA only. No funds were transferred.").end();
-  return result;
-}
 
 test("consultation, receipt correction, admin package assignment, application and review", async ({
   browser,
@@ -99,13 +43,18 @@ test("consultation, receipt correction, admin package assignment, application an
   ).toBeVisible();
   await submitConsultation(student);
 
-  await student
+  await admin.goto("/admin/consultations");
+  const row = admin.getByRole("row").filter({ hasText: "QA Scholar" });
+  await expect(row.getByRole("cell").first()).toHaveText("1");
+  await row.getByRole("cell", { name: "Payment needed", exact: true }).click();
+  await expect(admin.getByRole("heading", { name: "QA Scholar", exact: true })).toBeVisible();
+  await admin
     .getByLabel("Private payment receipt")
     .setInputFiles({ name: "receipt.pdf", mimeType: "application/pdf", buffer: pdf });
-  await student.getByRole("button", { name: "Upload receipt" }).click();
-  await expect(student.getByText("We’ll review your receipt and update this page.")).toBeVisible({
-    timeout: 20_000,
-  });
+  await admin.getByRole("button", { name: "Upload receipt" }).click();
+  await expect(admin.getByRole("link", { name: "Review receipt", exact: true })).toBeVisible();
+  await student.reload();
+  await expect(student.getByText("We’ll review your receipt and update this page.")).toBeVisible();
   await expect(student.getByRole("heading", { name: "Consultation supporting files" })).toHaveCount(0);
   expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 
@@ -145,7 +94,13 @@ test("consultation, receipt correction, admin package assignment, application an
   }));
   expect(actions.display).toBe("flex");
   expect(actions.gap).toBeGreaterThanOrEqual(12);
-  expect(actions.heights.every((height) => height >= 44)).toBe(true);
+  await expect
+    .poll(() =>
+      admin
+        .locator(".case-actions > a")
+        .evaluateAll((links) => links.every((link) => link.getBoundingClientRect().height >= 44)),
+    )
+    .toBe(true);
   await admin.screenshot({ path: info.outputPath("consultation-actions.png") });
   await admin.getByRole("link", { name: "Consultation details", exact: true }).click();
   await expect(admin.getByLabel("Follow-up date (optional)")).toHaveCount(0);
@@ -156,15 +111,23 @@ test("consultation, receipt correction, admin package assignment, application an
   await admin.getByRole("button", { name: "Assign package" }).click();
   await expect(admin.getByRole("link", { name: "Local workflow QA", exact: true })).toBeVisible();
   await student.goto("/dashboard/applications");
+  const packageHref = await student.getByRole("link", { name: "View application" }).getAttribute("href");
   await student.getByRole("link", { name: "View application" }).click();
+  await expect(student).toHaveURL(/\/dashboard\/applications\/[0-9a-f-]+$/);
   await expect(student.getByRole("button", { name: "Save my decision" })).toHaveCount(0);
-  await student
+  const packagePath = packageHref!.replace("/dashboard/", "/admin/");
+  await admin.goto(packagePath);
+  await admin
     .getByLabel("Private payment receipt")
     .setInputFiles({ name: "package-receipt.pdf", mimeType: "application/pdf", buffer: pdf });
-  await student.getByRole("button", { name: "Upload receipt" }).click();
+  await admin.getByRole("button", { name: "Upload receipt" }).click();
+  await expect(
+    admin.getByText("ISG is checking your receipt. Your application form opens after verification."),
+  ).toBeVisible();
+  await student.reload();
   await expect(
     student.getByText("ISG is checking your receipt. Your application form opens after verification."),
-  ).toBeVisible({ timeout: 20000 });
+  ).toBeVisible();
   await openReceipt();
   await admin.getByRole("button", { name: "Verify payment received" }).click();
   await student.reload();
@@ -179,8 +142,10 @@ test("consultation, receipt correction, admin package assignment, application an
     { name: "award-two.png", mimeType: "image/png", buffer: png },
   ]);
   await awards.getByRole("button", { name: "Upload files", exact: true }).click();
-  await expect(awards.getByRole("link", { name: "award-one.pdf" })).toBeVisible({ timeout: 20_000 });
-  await expect(awards.getByRole("link", { name: "award-two.png" })).toBeVisible();
+  await expect(awards.getByRole("link", { name: "award-one.pdf", exact: true })).toBeVisible({
+    timeout: 20_000,
+  });
+  await expect(awards.getByRole("link", { name: "award-two.png", exact: true })).toBeVisible();
   for (const [name, value] of Object.entries({
     cityStreet: "QA Street",
     institutionName: "QA College",
@@ -198,16 +163,29 @@ test("consultation, receipt correction, admin package assignment, application an
   await expect(student.getByRole("link", { name: "Download submitted application" })).toBeVisible();
 
   await admin.goto("/admin/applications");
-  await admin.getByRole("link", { name: "View application" }).click();
+  const applicationRow = admin.getByRole("row").filter({ hasText: "QA Scholar" });
+  await expect(applicationRow.getByRole("cell").first()).toHaveText("1");
+  await applicationRow.getByRole("cell", { name: "Local workflow QA", exact: true }).click();
   await admin.getByRole("link", { name: "Review application", exact: true }).click();
   await expect(admin.getByText("QA College", { exact: true })).toBeVisible();
-  await expect(admin.getByRole("link", { name: "award-two.png" })).toBeVisible();
+  await expect(admin.getByRole("link", { name: "award-two.png", exact: true })).toBeVisible();
   const applicationUrl = admin.url();
-  const documentPath = await admin.getByRole("link", { name: "award-one.pdf" }).getAttribute("href");
+  const documentPath = await admin
+    .getByRole("link", { name: "award-one.pdf", exact: true })
+    .getAttribute("href");
   const file = await admin.request.get(documentPath!);
   expect(file.status()).toBe(200);
   expect(file.headers()["content-type"]).toBe("application/pdf");
   expect(file.headers()["content-disposition"]).toMatch(/^attachment/);
+  expect(file.headers()["content-disposition"]).toContain("award-one.pdf");
+  const preview = await admin.request.get(documentPath! + "?preview=1");
+  expect(preview.status()).toBe(200);
+  expect(preview.headers()["content-disposition"]).toMatch(/^inline/);
+  expect(preview.headers()["cache-control"]).toBe("private, no-store");
+  const pdfView = await admin.context().newPage();
+  await pdfView.goto(new URL(documentPath! + '?preview=1', baseURL).href);
+  await pdfView.screenshot({ path: info.outputPath('document-preview.png') });
+  await pdfView.close();
   const reviewNote = "Please confirm your preferred programme.";
   await admin.getByLabel("Application status").selectOption("needs_information");
   await admin.getByLabel("Note for the applicant (optional)").fill(reviewNote);
@@ -235,8 +213,8 @@ test("consultation, receipt correction, admin package assignment, application an
     { name: "staff-image.png", mimeType: "image/png", buffer: png },
   ]);
   await extra.getByRole("button", { name: "Upload files", exact: true }).click();
-  await expect(extra.getByRole("link", { name: "staff-document.pdf" })).toBeVisible();
-  await expect(extra.getByRole("link", { name: "staff-image.png" })).toBeVisible();
+  await expect(extra.getByRole("link", { name: "staff-document.pdf", exact: true })).toBeVisible();
+  await expect(extra.getByRole("link", { name: "staff-image.png", exact: true })).toBeVisible();
   const fieldPosition = await staffForm.locator('[name="firstName"]').boundingBox();
   const filePosition = await extra.locator('input[type="file"]').boundingBox();
   expect(fieldPosition!.y).toBeLessThan(filePosition!.y);
@@ -244,7 +222,7 @@ test("consultation, receipt correction, admin package assignment, application an
   await expect(admin.getByText("Recorded by ISG staff", { exact: true })).toBeVisible();
   await expect(admin.getByText("Staff entered college", { exact: true })).toBeVisible();
   await student.goto("/dashboard/application");
-  await expect(student.getByRole("link", { name: "staff-document.pdf" })).toBeVisible();
+  await expect(student.getByRole("link", { name: "staff-document.pdf", exact: true })).toBeVisible();
   await expect(student.locator('[name="institutionName"]')).toHaveValue("Staff entered college");
 
   await student.goto("/dashboard");
@@ -287,4 +265,16 @@ test("consultation, receipt correction, admin package assignment, application an
   await student.goto("/dashboard");
   await student.screenshot({ path: info.outputPath("student-application.png") });
   await admin.screenshot({ path: info.outputPath("admin-application.png") });
+  await seedPagination(submittedConsultation!);
+  await admin.goto("/admin/consultations?page=2");
+  const secondPageConsultation = admin.locator("tbody tr").first();
+  await expect(secondPageConsultation.getByRole("cell").first()).toHaveText("21");
+  await secondPageConsultation.getByRole("cell").nth(2).click();
+  await expect(admin).toHaveURL(/\/admin\/cases\/[0-9a-f-]+$/);
+  await admin.goto("/admin/applications?page=2");
+  const secondPageApplication = admin.locator("tbody tr").first();
+  await expect(secondPageApplication.getByRole("cell").first()).toHaveText("21");
+  await admin.screenshot({ path: info.outputPath("numbered-applications.png") });
+  await secondPageApplication.getByRole("cell").nth(2).click();
+  await expect(admin).toHaveURL(/\/admin\/applications\/[0-9a-f-]+$/);
 });

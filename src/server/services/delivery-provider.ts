@@ -49,7 +49,7 @@ export async function sendEmail(
 
 export function greenApiConfig() {
   const api = process.env.GREEN_API_URL?.trim().replace(/\/$/, "");
-  const media = process.env.GREEN_API_MEDIA_URL?.trim().replace(/\/$/, "") || "https://media.greenapi.com";
+  const media = process.env.GREEN_API_MEDIA_URL?.trim().replace(/\/$/, "") || api || "";
   const instance = process.env.GREEN_API_INSTANCE_ID;
   const token = process.env.GREEN_API_TOKEN;
   const validApi = /^https:\/\/(?:[0-9]+\.)?api\.green-?api\.com$/;
@@ -62,10 +62,10 @@ export function greenApiConfig() {
     `${method === "sendFileByUpload" ? media : api}${path}/${method}/${credential}`;
 }
 
-export async function deliveryBatch<T>(items: T[], deliver: (item: T) => Promise<boolean>) {
+export async function deliveryBatch<T>(items: T[], deliver: (item: T) => Promise<boolean>, concurrency = 4) {
   let sent = 0;
-  for (let index = 0; index < items.length; index += 4) {
-    const results = await Promise.allSettled(items.slice(index, index + 4).map(deliver));
+  for (let index = 0; index < items.length; index += concurrency) {
+    const results = await Promise.allSettled(items.slice(index, index + concurrency).map(deliver));
     sent += results.filter((result) => result.status === "fulfilled" && result.value).length;
   }
   return { configured: true, sent, failed: items.length - sent };

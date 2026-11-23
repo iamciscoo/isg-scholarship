@@ -8,6 +8,8 @@ import { proposeApplication } from "@/features/applicants/tracking-actions";
 import { getLead } from "@/server/repositories/leads";
 import { packageStatus } from "@/features/applicants/package-status";
 import { receiptLabels } from "./progress";
+import { FileUpload } from "./file-upload";
+import { UserFiles } from "./user-files";
 
 export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
   const { db, user, role } = await requireStaff(admin);
@@ -67,6 +69,12 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
           </a>
         </div>
         {receipt.data?.review_note && <p>{receipt.data.review_note}</p>}
+        {admin && ["awaiting_receipt", "rejected"].includes(record.payment_status) && (
+          <>
+            <p>Upload the applicant’s consultation receipt, then verify the payment.</p>
+            <FileUpload kind="receipt" applicant={id} />
+          </>
+        )}
       </section>
       {record.payment_status === "verified" && (
         <section className="workspace-panel">
@@ -105,6 +113,7 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
           )}
         </section>
       )}
+      <UserFiles user={id} />
     </Workspace>
   );
 }

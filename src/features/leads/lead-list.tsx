@@ -7,6 +7,7 @@ import { listLeads, getAdvisors } from "@/server/repositories/leads";
 import { leadStages, stageLabel } from "@/lib/validation/leads";
 import { studyLevels } from "@/lib/validation/assessment";
 import { consultationProgress } from "@/features/consultations/progress";
+import { NavigableRow } from "@/components/layout/navigable-row";
 type Query = { stage?: string; level?: string; page?: string; advisor?: string; from?: string; to?: string };
 export async function LeadList({ admin, query }: { admin: boolean; query: Query }) {
   const { db, user, role } = await requireStaff(admin);
@@ -15,12 +16,21 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
   const base = admin ? "/admin" : "/advisor";
   const [all, newLeads, reviewing] = await Promise.all([
     db.from("leads").select("id", { count: "exact", head: true }),
-    db.from("consultation_cases").select("user_id", { count: "exact", head: true }).eq("payment_status", "pending_verification"),
-    db.from("consultation_cases").select("user_id", { count: "exact", head: true }).in("application_status", ["submitted", "in_review"]),
+    db
+      .from("consultation_cases")
+      .select("user_id", { count: "exact", head: true })
+      .eq("payment_status", "pending_verification"),
+    db
+      .from("consultation_cases")
+      .select("user_id", { count: "exact", head: true })
+      .in("application_status", ["submitted", "in_review"]),
   ]);
   const ids = leads.map((lead) => lead.id);
   const cases = ids.length
-    ? await db.from("consultation_cases").select("lead_id,payment_status,completed_at,current_declaration_id,application_status").in("lead_id", ids)
+    ? await db
+        .from("consultation_cases")
+        .select("lead_id,payment_status,completed_at,current_declaration_id,application_status")
+        .in("lead_id", ids)
     : { data: [], error: null };
   const byLead = new Map(cases.data?.map((entry) => [entry.lead_id, entry]));
   const filterPath = admin ? "/admin/consultations" : base;
@@ -37,11 +47,23 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
       <div className="stat-grid">
         {[
           { label: "Consultations", result: all },
-          ...(admin ? [{ label: "Receipts to review", result: newLeads, href: "/admin/payments?status=pending_verification" }] : []),
+          ...(admin
+            ? [
+                {
+                  label: "Receipts to review",
+                  result: newLeads,
+                  href: "/admin/payments?status=pending_verification",
+                },
+              ]
+            : []),
           { label: "Applications to review", result: reviewing, href: `${base}/applications` },
         ].map(({ label, result, ...item }) => (
           <div className="stat-box" key={label}>
-            {"href" in item && typeof item.href === "string" ? <Link href={item.href}>{label}</Link> : <span>{label}</span>}
+            {"href" in item && typeof item.href === "string" ? (
+              <Link href={item.href}>{label}</Link>
+            ) : (
+              <span>{label}</span>
+            )}
             <strong>{result.error ? "Unavailable" : result.count || 0}</strong>
           </div>
         ))}
@@ -108,6 +130,7 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
             <table>
               <thead>
                 <tr>
+                  <th scope="col">#</th>
                   <th>Applicant</th>
                   <th>Reference</th>
                   <th>Study goal</th>
@@ -118,31 +141,43 @@ export async function LeadList({ admin, query }: { admin: boolean; query: Query 
                 </tr>
               </thead>
               <tbody>
-                {leads.map((lead) => {
+                {leads.map((lead, index) => {
                   const record = byLead.get(lead.id);
                   const status = consultationProgress(record || null);
                   const applicantId = lead.eligibility_assessments.applicant_id;
                   return (
-                  <tr key={lead.id}>
-                    <td>
-                      <Link href={record && applicantId ? `${base}/cases/${applicantId}` : `${base}/leads/${lead.id}`}>
-                        {lead.eligibility_assessments.first_name} {lead.eligibility_assessments.last_name}
-                      </Link>
-                      <small>{lead.eligibility_assessments.email}</small>
-                    </td>
-                    <td>{lead.eligibility_assessments.reference}</td>
-                    <td>{lead.eligibility_assessments.study_level}</td>
-                    <td>
-                      <span className="badge">{record ? status.consultation : stageLabel(lead.stage)}</span>
-                    </td>
-                    <td>{record ? status.receipt : "—"}</td>
-                    <td>{record ? status.application : "—"}</td>
-                    <td>
-                      {new Date(lead.created_at).toLocaleDateString("en-GB", {
-                        timeZone: "Africa/Dar_es_Salaam",
-                      })}
-                    </td>
-                  </tr>
+                    <NavigableRow
+                      key={lead.id}
+                      href={
+                        record && applicantId ? `${base}/cases/${applicantId}` : `${base}/leads/${lead.id}`
+                      }
+                    >
+                      <td>{(page - 1) * 20 + index + 1}</td>
+                      <td>
+                        <Link
+                          href={
+                            record && applicantId
+                              ? `${base}/cases/${applicantId}`
+                              : `${base}/leads/${lead.id}`
+                          }
+                        >
+                          {lead.eligibility_assessments.first_name} {lead.eligibility_assessments.last_name}
+                        </Link>
+                        <small>{lead.eligibility_assessments.email}</small>
+                      </td>
+                      <td>{lead.eligibility_assessments.reference}</td>
+                      <td>{lead.eligibility_assessments.study_level}</td>
+                      <td>
+                        <span className="badge">{record ? status.consultation : stageLabel(lead.stage)}</span>
+                      </td>
+                      <td>{record ? status.receipt : "—"}</td>
+                      <td>{record ? status.application : "—"}</td>
+                      <td>
+                        {new Date(lead.created_at).toLocaleDateString("en-GB", {
+                          timeZone: "Africa/Dar_es_Salaam",
+                        })}
+                      </td>
+                    </NavigableRow>
                   );
                 })}
               </tbody>

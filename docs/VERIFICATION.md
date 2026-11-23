@@ -6,6 +6,14 @@ November 19 UI checkpoint: all 20 migrations and adversarial SQL suites passed o
 
 # Current update
 
+23 November 2026 — admin receipt uploads and private applicant files:
+
+- Production build and TypeScript passed; ESLint has no errors and two existing warnings (country-select dependency and React Hook Form compiler compatibility). Production dependency audit: zero vulnerabilities.
+- 107 unit tests across 23 files passed. New coverage checks attachment failures, provider message identifiers, private PDF previews, original download filenames and denied cross-applicant storage reads.
+- All database integration suites passed through migration 054, including administrator-only receipt registration, audit attribution, private-group attachment lookup, cross-user isolation and verification before unlocking the form.
+- The isolated Supabase/Chromium consultation workflow passed: administrator and applicant receipt uploads, replacement after rejection, package payment verification, multiple documents, staff form entry, user/admin review updates, notification interactions and numbered second-page row navigation. Actual Chrome PDF rendering was visually checked. External providers were disabled for these fixtures, and the disposable local database was stopped afterwards.
+- Live GREEN-API accepted one clearly labelled public test PDF via SendFileByUrl (HTTP 200 and a message identifier). Subsequent journal/chat checks did not establish delivery. Live multipart upload was blocked by the browser extension's local-file permission; it is covered by automated request tests, not claimed as live verified.
+
 The current delivery is [applicant operations](APPLICANT-OPERATIONS.md): 19 migrations, real private scanner, consultation/payment, meetings/full forms, applications and private catalogue/public promotion separation. The records below are historical snapshots.
 
 Current checkpoint: 61 unit tests, 35 isolated production-browser tests, all database integration suites, typecheck, ESLint and Docker production build passed. Generated application PDF text and both rendered pages were inspected. Real ClamAV scanned the generated fixture successfully. Existing-admin browser checks confirmed the new empty-state flows and 32 private-page width checks (320/390/768/1440) without horizontal overflow. No real applicant, payment or provider outcome was invented for QA. The current full dependency audit reports zero vulnerabilities, superseding the earlier tooling advisory record. Authenticated private-data RPC advisory flags are intentional role/ownership-guarded functions; raw private tables retain deny-by-default policies. Public launch configuration and actual provider acceptance remain separate from these checks.

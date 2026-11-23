@@ -71,6 +71,7 @@ try {
     ...migrations.filter((f) => f >= "202611220051").map((f) => `supabase/migrations/${f}`),
     "tests/integration/admin-led-workflow.sql",
     "tests/integration/staff-application-entry.sql",
+    "tests/integration/admin-receipt-uploads.sql",
     "scripts/reset-consultations-and-packages.sql",
     "tests/integration/consultation-reset.sql",
   ];

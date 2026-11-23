@@ -132,6 +132,17 @@ td small {
   color: var(--muted);
   margin-top: 5px;
 }
+tr[data-href] {
+  cursor: pointer;
+}
+tr[data-href]:hover,
+tr[data-href]:focus-within {
+  background: #f0f4f9;
+}
+tr[data-href] td a:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 4px;
+}
 .badge {
   display: inline-block;
   font-size: 10px;
@@ -202,6 +213,25 @@ td small {
   align-items: center;
   gap: 8px 16px;
   color: var(--muted);
+}
+.private-file-links {
+  width: 100%;
+  min-width: 0;
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.private-file-links > a:first-child {
+  flex: 1 1 180px;
+}
+.private-file-links > .text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px;
 }
 .case-actions {
   margin-block: 12px;

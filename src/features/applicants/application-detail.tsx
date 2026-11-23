@@ -7,6 +7,7 @@ import { proposalSchema, isPreviewPackage } from "@/lib/validation/opportunities
 import { fullApplicationStatusLabel } from "@/lib/validation/application-review";
 import { PackageProgress } from "./package-progress";
 import { packageStatus } from "./package-status";
+import { UserFiles } from "@/features/consultations/user-files";
 
 export async function ApplicationDetail({
   id,
@@ -91,7 +92,9 @@ export async function ApplicationDetail({
         staff={staff}
         admin={admin}
         testPackage={isPreviewPackage(proposal.name)}
+        applicant={application.user_id}
       />
+      {staff && <UserFiles user={application.user_id} />}
     </Workspace>
   );
 }

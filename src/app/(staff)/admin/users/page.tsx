@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireStaff } from "@/lib/auth/session";
 import { adminClient } from "@/lib/supabase/admin";
 import { UserRoleMenu } from "@/features/admin/user-role-menu";
+import { NavigableRow } from "@/components/layout/navigable-row";
 
 const date = (value: string | null | undefined) =>
   value
@@ -18,9 +19,7 @@ export default async function AdminUsers() {
   const admin = adminClient();
   const [accounts, profiles, roles, assessments, applications, cases] = await Promise.all([
     admin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
-    admin
-      .from("profiles")
-      .select("id,first_name,last_name,phone,nationality,residence,status,created_at"),
+    admin.from("profiles").select("id,first_name,last_name,phone,nationality,residence,status,created_at"),
     admin.from("user_roles").select("user_id,role"),
     admin
       .from("eligibility_assessments")
@@ -45,9 +44,7 @@ export default async function AdminUsers() {
 
   const profileById = new Map((profiles.data || []).map((row) => [row.id, row]));
   const roleById = new Map((roles.data || []).map((row) => [row.user_id, row.role]));
-  const assessmentById = new Map(
-    (assessments.data || []).map((row) => [row.applicant_id as string, row]),
-  );
+  const assessmentById = new Map((assessments.data || []).map((row) => [row.applicant_id as string, row]));
   const caseIds = new Set((cases.data || []).map((row) => row.user_id as string));
   const applicationCount = new Map<string, number>();
   for (const row of applications.data || [])
@@ -79,6 +76,7 @@ export default async function AdminUsers() {
             <table>
               <thead>
                 <tr>
+                  <th scope="col">#</th>
                   <th>User</th>
                   <th>Role</th>
                   <th>Status</th>
@@ -91,13 +89,17 @@ export default async function AdminUsers() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => {
+                {users.map((user, index) => {
                   const profile = profileById.get(user.id);
                   const role = roleById.get(user.id) || "applicant";
                   const assessment = assessmentById.get(user.id);
                   const name = `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim();
                   return (
-                    <tr key={user.id}>
+                    <NavigableRow
+                      key={user.id}
+                      href={caseIds.has(user.id) ? `/admin/cases/${user.id}` : undefined}
+                    >
+                      <td>{index + 1}</td>
                       <td>
                         {name || "Unnamed account"}
                         <small>{user.email}</small>
@@ -106,7 +108,9 @@ export default async function AdminUsers() {
                       <td className="capitalize">{profile?.status || "—"}</td>
                       <td>
                         {profile?.phone || "No phone"}
-                        <small>{[profile?.nationality, profile?.residence].filter(Boolean).join(" · ") || "—"}</small>
+                        <small>
+                          {[profile?.nationality, profile?.residence].filter(Boolean).join(" · ") || "—"}
+                        </small>
                       </td>
                       <td>
                         {assessment ? (
@@ -127,7 +131,7 @@ export default async function AdminUsers() {
                       <td>
                         <UserRoleMenu id={user.id} role={role} />
                       </td>
-                    </tr>
+                    </NavigableRow>
                   );
                 })}
               </tbody>

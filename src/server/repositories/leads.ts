@@ -16,6 +16,7 @@ export async function listLeads(
       { count: "exact" },
     )
     .order("created_at", { ascending: false })
+    .order("id")
     .range((page - 1) * 20, page * 20 - 1);
   if (leadStages.includes(query.stage as (typeof leadStages)[number]))
     request = request.eq("stage", query.stage);

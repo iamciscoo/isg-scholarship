@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { sendReceiptAttachment } from "@/server/services/whatsapp-receipt";
+import { sendReceiptAttachment, receiptCaption } from "@/server/services/whatsapp-receipt";
 
 const id = "80000000-0000-4000-8000-000000000001";
 const group = "123456789@g.us";
@@ -39,7 +39,7 @@ it("uploads the approved receipt as multipart media for the authorized group", a
   expect(db.rpc).toHaveBeenCalledWith("whatsapp_receipt", { p_file: id, p_group: group });
   expect(download).toHaveBeenCalledWith("approved.pdf");
   const [url, { body }] = fetcher.mock.calls[0];
-  expect(url).toBe("https://media.greenapi.com/waInstance123456/sendFileByUpload/fixture-token");
+  expect(url).toBe("https://7107.api.greenapi.com/waInstance123456/sendFileByUpload/fixture-token");
   expect(body.get("chatId")).toBe(group);
   expect(body.get("file").name).toBe("ISG-payment-receipt.pdf");
 });
@@ -74,4 +74,33 @@ it("does not send another copy after an unconfirmed upload", async () => {
   await expect(sendReceiptAttachment(db, id, group, "Open ISG to verify.")).rejects.toThrow();
   expect(fetcher).toHaveBeenCalledTimes(1);
   expect(createSignedUrl).not.toHaveBeenCalled();
+});
+
+it("keeps the receipt pending when private storage is unavailable", async () => {
+  const fetcher = vi.fn();
+  vi.stubGlobal("fetch", fetcher);
+  const { db, download } = fixture(true);
+  download.mockResolvedValue({ data: null, error: { message: "Unavailable" } });
+  await expect(sendReceiptAttachment(db, id, group, "")).rejects.toMatchObject({
+    state: "pending",
+    message: "receipt_storage_unavailable",
+  });
+  expect(fetcher).not.toHaveBeenCalled();
+});
+
+it("reports definite media rejection without falling back to a text-only success", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 415 })));
+  const { db } = fixture(true);
+  await expect(sendReceiptAttachment(db, id, group, "")).rejects.toMatchObject({
+    state: "failed",
+    message: "receipt_media_rejected_415",
+  });
+});
+
+it("fits captions to Green API limits and preserves the applicant and review link", () => {
+  const link = "\nOpen ISG: https://isg.example/admin/receipts/" + id;
+  const caption = receiptCaption("Applicant: Test Scholar\n" + "Details ".repeat(400) + link);
+  expect(caption.length).toBeLessThanOrEqual(1024);
+  expect(caption).toContain("Applicant: Test Scholar");
+  expect(caption.endsWith(link)).toBe(true);
 });

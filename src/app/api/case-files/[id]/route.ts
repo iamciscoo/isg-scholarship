@@ -15,12 +15,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   // Metadata RLS is the authorization boundary, including current account status and advisor assignment.
   const { data: file } = await db
     .from("case_files")
-    .select("storage_path,mime,kind,bytes")
+    .select("storage_path,mime,kind,bytes,original_name")
     .eq("id", id)
     .maybeSingle();
   if (!file) return new Response(null, { status: 404 });
   const storage = adminClient().storage.from("case-files");
   const name = `ISG-${file.kind}-${id}.${file.mime === "application/pdf" ? "pdf" : "webp"}`;
+  const original = file.original_name || name;
   const privateHeaders = {
     "Cache-Control": "private, no-store",
     "Referrer-Policy": "no-referrer",
@@ -29,23 +30,22 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   // Previously accepted files can exceed Vercel's response limit. Authorize these
   // through RLS before redirecting to a short-lived, private attachment URL.
   if (file.bytes > caseFileLimit) {
-    const { data, error } = await storage.createSignedUrl(file.storage_path, 60, { download: name });
+    const { data, error } = await storage.createSignedUrl(file.storage_path, 60, { download: original });
     if (error || !data) return new Response(null, { status: 404 });
     return new Response(null, { status: 307, headers: { ...privateHeaders, Location: data.signedUrl } });
   }
   const { data, error } = await storage.download(file.storage_path);
   if (error || !data) return new Response(null, { status: 404 });
   const inline =
-    file.kind === "receipt" &&
     new URL(request.url).searchParams.get("preview") === "1" &&
-    file.mime === "image/webp";
+    ["image/webp", "application/pdf"].includes(file.mime);
   return new Response(data, {
     headers: {
       "Content-Type": file.mime,
-      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${name}"`,
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${name}"; filename*=UTF-8''${encodeURIComponent(original).replace(/[!'()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`)}`,
       ...privateHeaders,
       "Content-Security-Policy": inline
-        ? "default-src 'none'; frame-ancestors 'self'"
+        ? "sandbox; default-src 'none'; frame-ancestors 'self'"
         : "sandbox; default-src 'none'",
       "X-Frame-Options": inline ? "SAMEORIGIN" : "DENY",
     },

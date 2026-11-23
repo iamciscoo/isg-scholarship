@@ -5,6 +5,7 @@ import { packageStatus } from "./package-status";
 import { proposalSchema } from "@/lib/validation/opportunities";
 import { usdLabel } from "@/lib/format";
 import { fullApplicationStatusLabel } from "@/lib/validation/application-review";
+import { NavigableRow } from "@/components/layout/navigable-row";
 export type ApplicationQuery = { page?: string };
 export async function ApplicationList({
   query,
@@ -68,6 +69,48 @@ export async function ApplicationList({
             </Link>
           )}
         </section>
+      ) : staff ? (
+        <section className="workspace-panel table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Applicant</th>
+                <th scope="col">Package</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Payment</th>
+                <th scope="col">Application</th>
+              </tr>
+            </thead>
+            <tbody>
+              {applications.map((a, index) => {
+                const proposal = proposalSchema.parse(a.proposal);
+                const record = byUser.get(a.user_id);
+                return (
+                  <NavigableRow key={a.id} href={`${base}/${a.id}`}>
+                    <td>{(page - 1) * 20 + index + 1}</td>
+                    <td>
+                      <Link href={`${base}/${a.id}`}>
+                        {names.get(a.user_id) || `Applicant ${a.user_id.slice(0, 8)}`}
+                      </Link>
+                      <small>
+                        <Link href={`${base}/${a.id}`}>View application →</Link>
+                      </small>
+                    </td>
+                    <td>{proposal.name}</td>
+                    <td>{proposal.destination}</td>
+                    <td>{packageStatus(a.package_state, a.status)}</td>
+                    <td>
+                      {record?.application_status
+                        ? fullApplicationStatusLabel(record.application_status)
+                        : "Not submitted"}
+                    </td>
+                  </NavigableRow>
+                );
+              })}
+            </tbody>
+          </table>
+        </section>
       ) : (
         <div className="operation-grid">
           {applications.map((a) => {
@@ -82,11 +125,6 @@ export async function ApplicationList({
                     : packageStatus(a.package_state, a.status)}
                 </span>
                 <h2>{p.data.name}</h2>
-                {staff && (
-                  <p className="application-owner">
-                    {names.get(a.user_id) || `Applicant ${a.user_id.slice(0, 8)}`}
-                  </p>
-                )}
                 <p>
                   {p.data.provider} · {p.data.destination}
                 </p>

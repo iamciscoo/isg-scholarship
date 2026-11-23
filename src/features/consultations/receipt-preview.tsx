@@ -6,6 +6,9 @@ export function ReceiptPreview({ id, mime }: { id: string; mime: string }) {
   if (mime !== "image/webp") {
     return (
       <div className="receipt-links">
+        <Link href={`${download}?preview=1`} target="_blank" rel="noopener noreferrer" className="text-link">
+          View receipt PDF
+        </Link>
         <Link href={download} className="text-link">
           Download receipt PDF
         </Link>

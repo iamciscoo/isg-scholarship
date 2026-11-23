@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { FileLinks } from "@/features/consultations/file-links";
 import { createClient } from "@/lib/supabase/server";
 import { FileUpload } from "@/features/consultations/file-upload";
 import { applicationDocumentCategories, applicationDocumentKeys } from "@/lib/validation/application-review";
@@ -70,10 +70,13 @@ export async function DocumentPanel({
                 <ul className="case-file-list">
                   {documents.map((file, index) => (
                     <li key={file.id}>
-                      <Link className="break-all" href={`/api/case-files/${file.id}`}>
-                        {file.original_name ||
-                          `${file.mime === "application/pdf" ? "PDF" : "Image"} ${documents.length - index}`}
-                      </Link>
+                      <FileLinks
+                        id={file.id}
+                        name={
+                          file.original_name ||
+                          `${file.mime === "application/pdf" ? "PDF" : "Image"} ${documents.length - index}`
+                        }
+                      />
                       {file.review_note && <p className="preserve-lines">{file.review_note}</p>}
                     </li>
                   ))}

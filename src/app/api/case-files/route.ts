@@ -74,7 +74,9 @@ export async function POST(request: Request) {
     const staffUpload = applicant.data !== null;
     if (staffUpload) {
       const { data: role } = await db.from("user_roles").select("role").eq("user_id", user.id).single();
-      if (!role || !["admin", "advisor"].includes(role.role) || kind !== "document" || application.data)
+      const permitted =
+        kind === "receipt" ? role?.role === "admin" : role && ["admin", "advisor"].includes(role.role);
+      if (!permitted)
         return Response.json({ error: "You cannot upload for this applicant." }, { status: 403 });
     }
     const { data: record, error: caseError } = await db
@@ -130,30 +132,42 @@ export async function POST(request: Request) {
       .replace(/[\p{Cc}\p{Cf}\/\\]/gu, "")
       .trim();
     const name = Array.from(originalName).slice(0, 180).join("");
-    const registered = staffUpload
-      ? await db.rpc("register_staff_application_file", {
-          p_user: owner,
-          p_id: id,
-          p_category: category.data,
-          p_path: path,
-          p_mime: validated.mime,
-          p_bytes: validated.data.length,
-          p_hash: createHash("sha256").update(validated.data).digest("hex"),
-          p_name: name,
-        })
-      : await admin.rpc("register_uploaded_case_file", {
-          p_user: owner,
-          p_id: id,
-          p_kind: kind,
-          p_category: category.data,
-          p_path: path,
-          p_mime: validated.mime,
-          p_bytes: validated.data.length,
-          p_hash: createHash("sha256").update(validated.data).digest("hex"),
-          p_application: application.data,
-          p_share_receipt: shareReceipt,
-          p_name: name,
-        });
+    const registered =
+      staffUpload && kind === "receipt"
+        ? await db.rpc("register_admin_payment_file", {
+            p_user: owner,
+            p_id: id,
+            p_path: path,
+            p_mime: validated.mime,
+            p_bytes: validated.data.length,
+            p_hash: createHash("sha256").update(validated.data).digest("hex"),
+            p_application: application.data,
+            p_name: name,
+          })
+        : staffUpload
+          ? await db.rpc("register_staff_application_file", {
+              p_user: owner,
+              p_id: id,
+              p_category: category.data,
+              p_path: path,
+              p_mime: validated.mime,
+              p_bytes: validated.data.length,
+              p_hash: createHash("sha256").update(validated.data).digest("hex"),
+              p_name: name,
+            })
+          : await admin.rpc("register_uploaded_case_file", {
+              p_user: owner,
+              p_id: id,
+              p_kind: kind,
+              p_category: category.data,
+              p_path: path,
+              p_mime: validated.mime,
+              p_bytes: validated.data.length,
+              p_hash: createHash("sha256").update(validated.data).digest("hex"),
+              p_application: application.data,
+              p_share_receipt: shareReceipt,
+              p_name: name,
+            });
     if (registered.error) {
       if (/^(22|23|42|P0)/.test(registered.error.code)) await admin.storage.from("case-files").remove([path]);
       console.error("case_file_registration_failed", { code: registered.error.code });
