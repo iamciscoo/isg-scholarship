@@ -1,5 +1,5 @@
 :where(a[href], button, summary, [role="button"], [role="link"], [role^="menuitem"]) {
-  -webkit-tap-highlight-color: #b88a3533;
+  -webkit-tap-highlight-color: var(--tap-highlight, #b88a3533);
   touch-action: manipulation;
   transition:
     background-color 120ms ease,
@@ -12,16 +12,31 @@
     :active,
     [data-isg-pressed]
   ):not(:disabled):not([aria-disabled="true"]) {
-  filter: brightness(0.82);
-  box-shadow: inset 0 0 0 2px #b88a3566;
+  filter: var(--tap-filter, brightness(0.82));
+  box-shadow: var(--tap-shadow, inset 0 0 0 2px #b88a3566);
 }
 @media (prefers-reduced-motion: no-preference) {
   :where(a[href], button, summary, [role="button"], [role="link"], [role^="menuitem"]):is(
       :active,
       [data-isg-pressed]
     ):not(:disabled):not([aria-disabled="true"]) {
-    scale: 0.98;
+    scale: var(--tap-scale, 0.98);
   }
+}
+:where(
+    .site-header .menu-toggle,
+    .site-header .account-menu-trigger,
+    .site-header nav a,
+    .workspace-home,
+    .workspace-sidebar nav a,
+    .workspace-profile-trigger,
+    .account-menu a,
+    .catalogue-tabs a
+  ) {
+  --tap-highlight: transparent;
+  --tap-shadow: none;
+  --tap-filter: none;
+  --tap-scale: 1.04;
 }
 .destination-menu[data-state="open"],
 .language-menu[data-state="open"] {

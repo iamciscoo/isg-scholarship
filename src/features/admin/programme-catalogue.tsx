@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Form from "next/form";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Text } from "@/lib/i18n/workspace-text";
@@ -8,6 +9,9 @@ import { DeleteForm } from "@/components/forms/delete-form";
 import { deletePromotion } from "./opportunity-actions";
 import { DestinationFlag } from "@/features/consultations/destination-select";
 import type { Programme } from "@/lib/programmes";
+import { CatalogueLayout } from "./catalogue-layout";
+
+const pageSize = 5;
 
 export async function ProgrammeCatalogue({
   db,
@@ -18,60 +22,80 @@ export async function ProgrammeCatalogue({
 }) {
   const t = await getWorkspaceText();
   const requestedPage = Math.max(1, Math.min(100000, Number.parseInt(query.page || "1", 10) || 1));
-  const search = (query.q || "").slice(0, 100).replace(/[%_\\]/g, "");
-  let countRequest = db.from("study_promotions").select("id", { count: "exact", head: true });
-  if (search) countRequest = countRequest.ilike("title", `%${search}%`);
-  const total = await countRequest;
-  if (total.error) throw Error("Programmes unavailable");
-  const pages = Math.max(1, Math.ceil((total.count || 0) / 20));
-  const page = Math.min(requestedPage, pages);
-  let request = db
-    .from("study_promotions")
-    .select("*")
-    .order("title")
-    .order("id")
-    .range((page - 1) * 20, page * 20 - 1);
-  if (search) request = request.ilike("title", `%${search}%`);
-  const [list, edit] = await Promise.all([
-    request,
+  const search = (query.q || "").slice(0, 100).replace(/[%_\\*]/g, "").trim();
+  const filter = <T extends { ilike: (column: string, pattern: string) => T }>(request: T) =>
+    search ? request.ilike("title", `%${search}%`) : request;
+  const fetchPage = (page: number) =>
+    filter(db.from("study_promotions").select("*", { count: "exact" }))
+      .order("title")
+      .order("id")
+      .range((page - 1) * pageSize, page * pageSize - 1);
+  const [requested, edit] = await Promise.all([
+    fetchPage(requestedPage),
     z.uuid().safeParse(query.edit).success
       ? db.from("study_promotions").select("*").eq("id", query.edit).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
   ]);
+  let list = requested;
+  let page = requestedPage;
+  if (page > 1 && (list.status === 416 || (!list.error && !list.data.length))) {
+    const total = await filter(db.from("study_promotions").select("id", { count: "exact", head: true }));
+    if (total.error) throw Error("Programmes unavailable");
+    page = Math.max(1, Math.ceil((total.count || 0) / pageSize));
+    list = await fetchPage(page);
+  }
   if (list.error || edit.error) throw Error("Programmes unavailable");
-  const value = edit.data as Programme | undefined;
-  const href = (next: number, id?: string) =>
-    `/admin/packages?${new URLSearchParams({ tab: "programmes", page: String(next), ...(search ? { q: search } : {}), ...(id ? { edit: id } : {}) })}`;
+  const pages = Math.max(1, Math.ceil((list.count || 0) / pageSize));
+  const value = (edit.data as Programme | null) || undefined;
+  const href = (next: number, id?: string) => {
+    const params = new URLSearchParams({ tab: "programmes", page: String(next) });
+    if (search) params.set("q", search);
+    if (id) params.set("edit", id);
+    return `/admin/packages?${params}`;
+  };
   return (
-    <div className="operation-grid programme-admin-grid">
-      <section className="workspace-panel programme-editor-panel">
-        <div className="panel-head">
-          <h2>{t(value ? "Edit programme" : "Add programme")}</h2>
-          {value && (
-            <Link href="/admin/packages?tab=programmes" className="text-link">
-              <Text>New programme</Text> →
-            </Link>
-          )}
-        </div>
-        <ProgrammeEditor value={value} />
-      </section>
+    <CatalogueLayout
+      key={value?.id || "new-programme"}
+      label={value ? "Edit programme" : "Add programme"}
+      editing={Boolean(value)}
+      editor={
+        <>
+          <div className="panel-head">
+            <h2>{t(value ? "Edit programme" : "Add programme")}</h2>
+            {value && (
+              <Link href={href(page)} className="text-link">
+                <Text>New programme</Text> →
+              </Link>
+            )}
+          </div>
+          <ProgrammeEditor value={value} />
+        </>
+      }
+    >
       <section className="workspace-panel">
         <div className="panel-head">
           <h2>
             <Text>Programme options</Text>
           </h2>
-          <span className="badge">{total.count || 0}</span>
+          <span className="badge">{list.count || 0}</span>
         </div>
-        <form method="get" action="/admin/packages" className="programme-search">
+        <Form action="/admin/packages" className="programme-search">
           <input type="hidden" name="tab" value="programmes" />
           <label>
             <Text>Search programmes</Text>
-            <input name="q" type="search" defaultValue={query.q || ""} maxLength={100} />
+            <input
+              key={search}
+              name="q"
+              type="search"
+              className="input"
+              defaultValue={search}
+              maxLength={100}
+            />
           </label>
           <button className="button button-outline">
             <Text>Search</Text>
           </button>
-        </form>
+        </Form>
         {!list.data?.length && (
           <p role="status">
             <Text>No programmes match these filters.</Text>
@@ -81,7 +105,7 @@ export async function ProgrammeCatalogue({
           {(list.data as Programme[]).map((p, index) => (
             <li key={p.id}>
               <div className="panel-head">
-                <span className="programme-number">{(page - 1) * 20 + index + 1}</span>
+                <span className="programme-number">{(page - 1) * pageSize + index + 1}</span>
                 <span className="badge">{t(p.published ? "Available" : "Unpublished")}</span>
               </div>
               <h3>
@@ -128,6 +152,6 @@ export async function ProgrammeCatalogue({
           )}
         </nav>
       </section>
-    </div>
+    </CatalogueLayout>
   );
 }

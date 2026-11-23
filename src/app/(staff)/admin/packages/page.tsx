@@ -14,6 +14,7 @@ import type { ScholarshipPackage } from "@/lib/validation/opportunities";
 import { usdLabel } from "@/lib/format";
 import { CatalogueTabs } from "@/features/admin/catalogue-tabs";
 import { ProgrammeCatalogue } from "@/features/admin/programme-catalogue";
+import { CatalogueLayout } from "@/features/admin/catalogue-layout";
 
 export default async function ScholarshipPackages({
   searchParams,
@@ -48,27 +49,33 @@ export default async function ScholarshipPackages({
         <Text>{"Scholar packages and programmes"}</Text>
       </h1>
       <CatalogueTabs />
-      <div className="operation-grid scholarship-admin-grid">
-        <section className="workspace-panel">
-          <h2>{selected ? translate("Edit package") : translate("Create a package")}</h2>
-          {selected && query.created === "1" && (
-            <p role="status" className="form-message">
-              <Text>{"Scholarship package created."}</Text>
-            </p>
-          )}
-          {selected && (
-            <Link className="text-link" href="/admin/packages">
-              <Text>{"Create a different package →"}</Text>
-            </Link>
-          )}
-          <ScholarshipPackageEditor value={selected || undefined} />
-        </section>
+      <CatalogueLayout
+        key={selected?.id || "new-package"}
+        label={selected ? "Edit package" : "New package"}
+        editing={Boolean(selected)}
+        editor={
+          <>
+            <h2>{selected ? translate("Edit package") : translate("Create a package")}</h2>
+            {selected && query.created === "1" && (
+              <p role="status" className="form-message">
+                <Text>{"Scholarship package created."}</Text>
+              </p>
+            )}
+            {selected && (
+              <Link className="text-link" href="/admin/packages">
+                <Text>{"Create a different package →"}</Text>
+              </Link>
+            )}
+            <ScholarshipPackageEditor value={selected || undefined} />
+          </>
+        }
+      >
         <section className="workspace-panel">
           <div className="panel-head">
             <h2>
               <Text>{"Saved packages"}</Text>
             </h2>
-            <Link className="button button-outline" href="/admin/packages">
+            <Link className="button button-outline catalogue-desktop-action" href="/admin/packages">
               <Plus size={16} />
               <Text>{"New package"}</Text>
             </Link>
@@ -132,7 +139,7 @@ export default async function ScholarshipPackages({
             )}
           </nav>
         </section>
-      </div>
+      </CatalogueLayout>
     </Workspace>
   );
 }
