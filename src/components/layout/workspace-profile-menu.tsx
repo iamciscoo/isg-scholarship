@@ -56,7 +56,7 @@ export function WorkspaceProfileMenu({
                 <Link
                   className="language-option"
                   href={item.href}
-                  prefetch
+                  prefetch={item.href.startsWith("/dashboard") || undefined}
                   aria-current={item.current ? "page" : undefined}
                 >
                   <item.icon size={18} />

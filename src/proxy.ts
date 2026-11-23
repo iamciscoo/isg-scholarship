@@ -27,13 +27,14 @@ export async function proxy(request: NextRequest) {
           getAll: () => request.cookies.getAll(),
           setAll: (values) => {
             values.forEach(({ name, value }) => request.cookies.set(name, value));
+            headers.set("cookie", request.cookies.toString());
             response = NextResponse.next({ request: { headers } });
             values.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
           },
         },
       },
     );
-    await supabase.auth.getUser();
+    await supabase.auth.getClaims();
   }
   const receiptPreview =
     /^\/api\/case-files\/[0-9a-f-]{36}$/.test(request.nextUrl.pathname) &&

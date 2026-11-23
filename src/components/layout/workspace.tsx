@@ -128,7 +128,7 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
               <Link
                 key={item.id}
                 href={item.href}
-                prefetch={true}
+                prefetch={item.href.startsWith("/dashboard") || undefined}
                 aria-current={item.current ? "page" : undefined}
               >
                 <item.icon size={18} />
