@@ -108,14 +108,21 @@ test("dashboard languages, mobile lists and cancel/save validation", async ({ br
     await student.getByRole("menuitemradio", { name: languages[locale].name, exact: true }).click();
     await expect(student.locator("html")).toHaveAttribute("lang", locale);
     await student.goto("/dashboard");
-    await expect(student.getByText(dictionaries[locale].workspace["Current stage"], { exact: true })).toBeVisible();
+    await expect(
+      student.getByText(dictionaries[locale].workspace["Current stage"], { exact: true }),
+    ).toBeVisible();
     await student.goto("/dashboard/application");
-    await expect(student.getByRole("heading", { level: 1 })).toHaveText(dictionaries[locale].workspace["Scholarship application"]);
+    await expect(student.getByRole("heading", { level: 1 })).toHaveText(
+      dictionaries[locale].workspace["Scholarship application"],
+    );
     await student.goto("/dashboard/profile");
-    await expect(student.getByRole("heading", { level: 1 })).toHaveText(dictionaries[locale].workspace["Your personal details."]);
+    await expect(student.getByRole("heading", { level: 1 })).toHaveText(
+      dictionaries[locale].workspace["Your personal details."],
+    );
     await expect(student.locator("#first_name")).toHaveValue("QA");
     expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
-    if (locale === "ar") await student.screenshot({ path: info.outputPath("arabic-user-profile.png"), fullPage: true });
+    if (locale === "ar")
+      await student.screenshot({ path: info.outputPath("arabic-user-profile.png"), fullPage: true });
   }
   await studentContext.close();
   expect(errors).toEqual([]);

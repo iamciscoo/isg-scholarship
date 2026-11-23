@@ -6,7 +6,7 @@
 - [x] Resolve completed/superseded automated notification contexts with safe backfill and database tests.
 - [x] Compact mobile summaries, filters and applicant/user lists; consultation status first.
 - [x] Dirty-form bottom banner with Cancel and Save, real validation and failure recovery.
-- [ ] Verify responsive/RTL/browser, unit/database/build checks; review, commit, push and verify deployment.
+- [x] Verify responsive/RTL/browser, unit/database/build checks; review, commit, push and verify deployment.
 
 - [x] Public site and brand integration; responsive navigation and public links verified.
 - [x] Guest intake implemented; assessment/lead/consent/outbox transaction and idempotency verified on PostgreSQL.
