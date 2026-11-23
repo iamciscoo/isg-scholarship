@@ -75,6 +75,7 @@ try {
     "tests/integration/staff-application-entry.sql",
     "tests/integration/admin-receipt-uploads.sql",
     "tests/integration/notification-resolution.sql",
+    "tests/integration/managed-programmes.sql",
     "scripts/reset-consultations-and-packages.sql",
     "tests/integration/consultation-reset.sql",
   ];

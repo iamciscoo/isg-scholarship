@@ -12,15 +12,27 @@ import { ScholarshipPackageEditor } from "@/features/admin/scholarship-package-e
 import { deleteScholarshipPackage } from "@/features/admin/scholarship-package-actions";
 import type { ScholarshipPackage } from "@/lib/validation/opportunities";
 import { usdLabel } from "@/lib/format";
+import { CatalogueTabs } from "@/features/admin/catalogue-tabs";
+import { ProgrammeCatalogue } from "@/features/admin/programme-catalogue";
 
 export default async function ScholarshipPackages({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; edit?: string; created?: string }>;
+  searchParams: Promise<{ page?: string; edit?: string; created?: string; tab?: string; q?: string }>;
 }) {
   const { db, user, role } = await requireStaff(true);
   const translate = await getWorkspaceText();
   const query = await searchParams;
+  if (query.tab === "programmes")
+    return (
+      <Workspace role={role} email={user.email || ""} active="packages">
+        <h1>
+          <Text>Scholar packages and programmes</Text>
+        </h1>
+        <CatalogueTabs programmes />
+        <ProgrammeCatalogue db={db} query={query} />
+      </Workspace>
+    );
   const page = Math.max(1, Math.min(100000, Number.parseInt(query.page || "1", 10) || 1));
   const [list, edit] = await Promise.all([
     db.rpc("admin_opportunities", {}, { count: "exact" }).range((page - 1) * 20, page * 20 - 1),
@@ -33,8 +45,9 @@ export default async function ScholarshipPackages({
   return (
     <Workspace role={role} email={user.email || ""} active="packages">
       <h1>
-        <Text>{"Scholarship packages"}</Text>
+        <Text>{"Scholar packages and programmes"}</Text>
       </h1>
+      <CatalogueTabs />
       <div className="operation-grid scholarship-admin-grid">
         <section className="workspace-panel">
           <h2>{selected ? translate("Edit package") : translate("Create a package")}</h2>

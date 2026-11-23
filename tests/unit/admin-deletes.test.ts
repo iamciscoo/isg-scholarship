@@ -45,6 +45,6 @@ it("keeps a package that an application already references", async () => {
 });
 
 it("deletes a public promotion", async () => {
-  expect(await deletePromotion({}, form())).toEqual({ message: "Promotion deleted." });
+  expect(await deletePromotion({}, form())).toEqual({ message: "Programme deleted." });
   expect(mocks.rpc).toHaveBeenCalledWith("delete_study_promotion", { p_id: id });
 });

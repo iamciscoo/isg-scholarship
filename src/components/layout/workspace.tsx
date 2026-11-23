@@ -70,15 +70,9 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
               { href: "/admin/payments", label: "Payments", icon: ClipboardList, id: "payments" },
               {
                 href: "/admin/packages",
-                label: "Scholarship packages",
+                label: "Scholar packages and programmes",
                 icon: ClipboardList,
                 id: "packages",
-              },
-              {
-                href: "/admin/promotions",
-                label: "Public promotions",
-                icon: ClipboardList,
-                id: "promotions",
               },
               { href: "/admin/enquiries", label: "Contact enquiries", icon: Mail, id: "enquiries" },
               { href: "/admin/audit", label: "Activity & delivery", icon: CircleCheck, id: "audit" },
@@ -138,7 +132,7 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
                 aria-current={item.current ? "page" : undefined}
               >
                 <item.icon size={18} />
-                {item.label}
+                {translate(item.label)}
               </Link>
             ))}
             <Link href="/">

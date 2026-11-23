@@ -1,0 +1,221 @@
+.study-path-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+.study-path-filters label,
+.destination-filter {
+  min-width: 0;
+}
+.destination-filter {
+  display: grid;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 650;
+}
+.study-path-filters select,
+.destination-trigger {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  font-size: 14px;
+  height: 48px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.study-path-filter-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.study-path-filter-actions .text-link {
+  padding: 10px 0;
+}
+.destination-select {
+  min-width: 0;
+}
+.destination-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: start;
+  border: 1px solid #bcc7d4;
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--ink);
+}
+.destination-trigger > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.destination-trigger > svg,
+.destination-trigger img {
+  flex-shrink: 0;
+}
+.destination-menu {
+  z-index: 90;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(360px, var(--radix-dropdown-menu-content-available-height));
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px #0d2c6218;
+}
+.destination-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.destination-option > span:nth-child(2) {
+  flex: 1;
+}
+.destination-option[data-highlighted],
+.destination-option[data-state="checked"] {
+  outline: none;
+  background: var(--cream);
+  color: var(--navy);
+}
+.destination-option img {
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.programme-empty {
+  padding-block: 32px;
+}
+.catalogue-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 20px 24px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+.catalogue-tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  font-size: 14px;
+  color: var(--navy);
+}
+.catalogue-tabs a[aria-current="page"] {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.programme-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.programme-editor-grid label,
+.programme-search label {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+.programme-search {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin-block: 20px;
+}
+.programme-search label {
+  flex: 1;
+  font-size: 13px;
+}
+.programme-admin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.programme-admin-list > li {
+  padding-block: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.programme-admin-list h3 {
+  font-size: 18px;
+  margin-block: 12px 8px;
+}
+.programme-admin-list p {
+  font-size: 13px;
+}
+.programme-number {
+  color: var(--muted);
+  font-size: 13px;
+}
+.programme-country-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 12px;
+}
+.programme-country-chips > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  border-radius: 6px;
+  padding: 5px 8px;
+  background: var(--cream);
+}
+@media (max-width: 600px) {
+  .study-path-heading {
+    margin-bottom: 20px;
+  }
+  .study-path-heading h2 {
+    font-size: 26px;
+  }
+  .study-path-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+    padding: 16px;
+  }
+  .study-path-filters label {
+    flex-basis: auto;
+  }
+  .destination-filter {
+    grid-column: 1 / -1;
+  }
+  .study-path-filters select,
+  .destination-trigger,
+  .programme-editor-grid select {
+    font-size: 16px;
+  }
+  .study-path-filters select {
+    padding-inline: 10px 28px;
+  }
+  .programme-admin-grid {
+    gap: 16px;
+  }
+  .programme-admin-grid .workspace-panel {
+    padding: 18px;
+  }
+  .programme-search {
+    gap: 8px;
+  }
+  .programme-search .button {
+    padding-inline: 12px;
+  }
+  .programme-country-chips {
+    gap: 6px;
+  }
+}

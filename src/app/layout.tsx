@@ -6,6 +6,7 @@ import "./globals.css";
 import { getLocale, getMessages } from "@/lib/i18n/server";
 import { LocaleProvider } from "@/lib/i18n/provider";
 import { WhatsApp } from "@/components/layout/whatsapp";
+import { TapFeedback } from "@/components/ui/tap-feedback";
 const manrope = localFont({
   src: "../../public/fonts/Manrope.ttf",
   variable: "--font-manrope",
@@ -36,6 +37,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <LocaleProvider locale={locale} messages={messages}>
           {children}
           <WhatsApp />
+          <TapFeedback />
         </LocaleProvider>
       </body>
     </html>

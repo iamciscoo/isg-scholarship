@@ -1,4 +1,6 @@
-Current programme/consultation checkpoint: 83 unit tests, 43 isolated production-browser tests, all 21 migrations and adversarial database suites, typecheck, lint, dependency audit and Docker build passed. Three focused browser checks also passed against the configured Docker service. Live ngrok inspection confirmed equal destination guide counts and results scrolling after streamed content loaded; the existing consultation draft showed About, Academics, Ambitions and Review, an enabled Submit button and no unavailable notice. No genuine draft was submitted or legal consent accepted during QA. See [Programme and consultation update](PROGRAMMES-CONSULTATION-UPDATE.md) for configuration and scope. Earlier checkpoints below are retained as history.
+23 November 2026 — managed programmes and simplified consultation stages (feature branch; hosted migration pending): 116 unit tests, all migration/adversarial database suites through 056, the production build/typecheck, and three isolated production-browser checks passed. Browser coverage includes 320/390/768/1440 layouts, flag dropdowns, programme filters/pagination, axe accessibility, reduced motion, create/edit/Cancel/unpublish/delete, last-country homepage availability and five stage choices. Independent code review passed. ESLint has no errors and one existing React Hook Form compiler warning; production dependency audit reports zero vulnerabilities. No environment file or live applicant data was changed. Production rollout is held until migration 056 is applied; see [Managed programmes rollout](MANAGED-PROGRAMMES-ROLLOUT.md).
+
+Prior programme/consultation checkpoint: 83 unit tests, 43 isolated production-browser tests, all 21 migrations and adversarial database suites, typecheck, lint, dependency audit and Docker build passed. Three focused browser checks also passed against the configured Docker service. Live ngrok inspection confirmed equal destination guide counts and results scrolling after streamed content loaded; the existing consultation draft showed About, Academics, Ambitions and Review, an enabled Submit button and no unavailable notice. No genuine draft was submitted or legal consent accepted during QA. See [Programme and consultation update](PROGRAMMES-CONSULTATION-UPDATE.md) for configuration and scope. Earlier checkpoints below are retained as history.
 
 Prior advisor/preview checkpoint: 69 unit tests, 41 isolated browser tests, all 21 migrations and adversarial database suites, typecheck, lint and Docker build passed. Six focused Docker checks and four final advisor/photo checks also passed. Live ngrok accepted an empty validation request (422) while rejecting a foreign origin (403), without creating records. See [Advisor preview update](ADVISOR-PREVIEW-UPDATE.md) for scope, configuration and remaining provider limits.
 
@@ -6,7 +8,7 @@ November 19 UI checkpoint: all 20 migrations and adversarial SQL suites passed o
 
 # Current update
 
-23 November 2026 — dashboard languages, mobile flow and notification resolution:
+23 November 2026 â€” dashboard languages, mobile flow and notification resolution:
 
 - 113 unit tests across 25 files passed, including six-language dictionary coverage, canonical form options, authored notification preservation and shared-memory upload bodies.
 - All database suites passed through migration 055. Tests cover notification backfill, old-event replay, unrelated/manual messages, receipt rejection/replacement/approval and independent document requests.
@@ -15,8 +17,7 @@ November 19 UI checkpoint: all 20 migrations and adversarial SQL suites passed o
 - Production testing exposed native processed image data that fetch rejected as shared memory. All four image/storage upload paths now copy into an ordinary ArrayBuffer; the real production receipt/image/document workflow and a targeted regression test passed.
 - Application records are retained for this rollout. Migration 055 marks only identifiable automated notices resolved/read and keeps notification history and authored messages. Hosted migration 055 was applied transactionally and production release `4079d4e` was confirmed Ready. Existing business counts remained 1 consultation, 0 applications and 1 file; five old automated notices were resolved. The live health endpoint returned HTTP 200.
 
-
-23 November 2026 — admin receipt uploads and private applicant files:
+23 November 2026 â€” admin receipt uploads and private applicant files:
 
 - Production build and TypeScript passed; ESLint has no errors and two existing warnings (country-select dependency and React Hook Form compiler compatibility). Production dependency audit: zero vulnerabilities.
 - 107 unit tests across 23 files passed. New coverage checks attachment failures, provider message identifiers, private PDF previews, original download filenames and denied cross-applicant storage reads.
@@ -38,7 +39,7 @@ Observed on 17 November 2026. Launch configuration is distinguished from local a
 
 Automated unit tests cover validation, consent separation, redirect safety, permissions, request limits, challenge validation and email escaping. PostgreSQL integration tests run the actual migrations and RLS on a disposable container using a test-only Supabase identity contract. Browser tests use a real isolated production build with external integration credentials disabled. These are not substitutes for testing Supabase Auth, SMTP, Turnstile and real staff sessions in a separate configured integration project.
 
-Hosted checks performed without test applicants: the server secret can query empty profiles/leads; anonymous assessment reads and anonymous privileged rate-limit RPC calls are denied (HTTP 401 / SQL 42501). All five migration versions 202611170001–202611170005 were observed in hosted migration history. No live website deployment or DNS change was performed.
+Hosted checks performed without test applicants: the server secret can query empty profiles/leads; anonymous assessment reads and anonymous privileged rate-limit RPC calls are denied (HTTP 401 / SQL 42501). All five migration versions 202611170001â€“202611170005 were observed in hosted migration history. No live website deployment or DNS change was performed.
 
 ## Completed checks
 

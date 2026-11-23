@@ -1,0 +1,482 @@
+[
+  {
+    "title": "Engineering & technology",
+    "level": "Undergraduate",
+    "field": "Engineering",
+    "image": "/images/university-campus-1.webp",
+    "text": "Explore design, infrastructure, technology and sustainable systems. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-01"
+  },
+  {
+    "title": "Computer science & software engineering",
+    "level": "Undergraduate",
+    "field": "Computing",
+    "image": "/images/study-2.webp",
+    "text": "Explore software, information systems, data and digital security. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-02"
+  },
+  {
+    "title": "Business & management",
+    "level": "Undergraduate",
+    "field": "Business",
+    "image": "/images/reference-campus.webp",
+    "text": "Compare management, finance, economics and organisational strategy. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-03"
+  },
+  {
+    "title": "Health & life sciences",
+    "level": "Undergraduate",
+    "field": "Health",
+    "image": "/images/study-3.webp",
+    "text": "Explore health sciences, care and wellbeing; professional recognition needs individual checks. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-04"
+  },
+  {
+    "title": "Natural & applied sciences",
+    "level": "Undergraduate",
+    "field": "Research",
+    "image": "/images/reference-library.webp",
+    "text": "Explore natural sciences, quantitative methods and interdisciplinary investigation. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-05"
+  },
+  {
+    "title": "Education & teaching",
+    "level": "Undergraduate",
+    "field": "Education",
+    "image": "/images/campus-life.webp",
+    "text": "Explore teaching, learning, languages and educational leadership. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-06"
+  },
+  {
+    "title": "Law & legal studies",
+    "level": "Undergraduate",
+    "field": "Law",
+    "image": "/images/university-campus-2.webp",
+    "text": "Compare legal studies, public administration and policy in each destination's context. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-07"
+  },
+  {
+    "title": "Psychology & social sciences",
+    "level": "Undergraduate",
+    "field": "Social sciences",
+    "image": "/images/study-together.webp",
+    "text": "Explore society, human behaviour, international relations and development. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-08"
+  },
+  {
+    "title": "Arts, design & media",
+    "level": "Undergraduate",
+    "field": "Arts & design",
+    "image": "/images/reference-study-city.webp",
+    "text": "Explore creative practice, design, media and the built environment. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-09"
+  },
+  {
+    "title": "Agriculture & food systems",
+    "level": "Undergraduate",
+    "field": "Agriculture & environment",
+    "image": "/images/university-campus-3.webp",
+    "text": "Explore food systems, agriculture, ecology and environmental sustainability. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-10"
+  },
+  {
+    "title": "Civil & environmental engineering",
+    "level": "Undergraduate",
+    "field": "Engineering",
+    "image": "/images/university-campus-1.webp",
+    "text": "Explore design, infrastructure, technology and sustainable systems. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-11"
+  },
+  {
+    "title": "Data science & cybersecurity",
+    "level": "Undergraduate",
+    "field": "Computing",
+    "image": "/images/study-2.webp",
+    "text": "Explore software, information systems, data and digital security. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-12"
+  },
+  {
+    "title": "Accounting, finance & economics",
+    "level": "Undergraduate",
+    "field": "Business",
+    "image": "/images/reference-campus.webp",
+    "text": "Compare management, finance, economics and organisational strategy. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-13"
+  },
+  {
+    "title": "Nursing & allied health",
+    "level": "Undergraduate",
+    "field": "Health",
+    "image": "/images/study-3.webp",
+    "text": "Explore health sciences, care and wellbeing; professional recognition needs individual checks. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-14"
+  },
+  {
+    "title": "Mathematics & statistics",
+    "level": "Undergraduate",
+    "field": "Research",
+    "image": "/images/reference-library.webp",
+    "text": "Explore natural sciences, quantitative methods and interdisciplinary investigation. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-15"
+  },
+  {
+    "title": "Languages & communication",
+    "level": "Undergraduate",
+    "field": "Education",
+    "image": "/images/campus-life.webp",
+    "text": "Explore teaching, learning, languages and educational leadership. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-16"
+  },
+  {
+    "title": "Public administration & governance",
+    "level": "Undergraduate",
+    "field": "Law",
+    "image": "/images/university-campus-2.webp",
+    "text": "Compare legal studies, public administration and policy in each destination's context. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-17"
+  },
+  {
+    "title": "International relations & development",
+    "level": "Undergraduate",
+    "field": "Social sciences",
+    "image": "/images/study-together.webp",
+    "text": "Explore society, human behaviour, international relations and development. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-18"
+  },
+  {
+    "title": "Architecture & the built environment",
+    "level": "Undergraduate",
+    "field": "Arts & design",
+    "image": "/images/reference-study-city.webp",
+    "text": "Explore creative practice, design, media and the built environment. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-19"
+  },
+  {
+    "title": "Environmental science & sustainability",
+    "level": "Undergraduate",
+    "field": "Agriculture & environment",
+    "image": "/images/university-campus-3.webp",
+    "text": "Explore food systems, agriculture, ecology and environmental sustainability. Your advisor will check entry subjects, language requirements and suitable course structures.",
+    "key": "legacy-guide-20"
+  },
+  {
+    "title": "Advanced engineering & computing",
+    "level": "Master's",
+    "field": "Engineering",
+    "image": "/images/university-campus-1.webp",
+    "text": "Explore design, infrastructure, technology and sustainable systems. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-21"
+  },
+  {
+    "title": "Artificial intelligence & data science",
+    "level": "Master's",
+    "field": "Computing",
+    "image": "/images/study-2.webp",
+    "text": "Explore software, information systems, data and digital security. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-22"
+  },
+  {
+    "title": "Business, policy & leadership",
+    "level": "Master's",
+    "field": "Business",
+    "image": "/images/reference-campus.webp",
+    "text": "Compare management, finance, economics and organisational strategy. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-23"
+  },
+  {
+    "title": "Public health & life sciences",
+    "level": "Master's",
+    "field": "Health",
+    "image": "/images/study-3.webp",
+    "text": "Explore health sciences, care and wellbeing; professional recognition needs individual checks. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-24"
+  },
+  {
+    "title": "Scientific research methods",
+    "level": "Master's",
+    "field": "Research",
+    "image": "/images/reference-library.webp",
+    "text": "Explore natural sciences, quantitative methods and interdisciplinary investigation. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-25"
+  },
+  {
+    "title": "Education leadership & learning",
+    "level": "Master's",
+    "field": "Education",
+    "image": "/images/campus-life.webp",
+    "text": "Explore teaching, learning, languages and educational leadership. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-26"
+  },
+  {
+    "title": "International & comparative law",
+    "level": "Master's",
+    "field": "Law",
+    "image": "/images/university-campus-2.webp",
+    "text": "Compare legal studies, public administration and policy in each destination's context. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-27"
+  },
+  {
+    "title": "Social policy & development studies",
+    "level": "Master's",
+    "field": "Social sciences",
+    "image": "/images/study-together.webp",
+    "text": "Explore society, human behaviour, international relations and development. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-28"
+  },
+  {
+    "title": "Design, media & creative industries",
+    "level": "Master's",
+    "field": "Arts & design",
+    "image": "/images/reference-study-city.webp",
+    "text": "Explore creative practice, design, media and the built environment. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-29"
+  },
+  {
+    "title": "Agriculture & food security",
+    "level": "Master's",
+    "field": "Agriculture & environment",
+    "image": "/images/university-campus-3.webp",
+    "text": "Explore food systems, agriculture, ecology and environmental sustainability. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-30"
+  },
+  {
+    "title": "Renewable energy & engineering systems",
+    "level": "Master's",
+    "field": "Engineering",
+    "image": "/images/university-campus-1.webp",
+    "text": "Explore design, infrastructure, technology and sustainable systems. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-31"
+  },
+  {
+    "title": "Cybersecurity & information systems",
+    "level": "Master's",
+    "field": "Computing",
+    "image": "/images/study-2.webp",
+    "text": "Explore software, information systems, data and digital security. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-32"
+  },
+  {
+    "title": "International business & finance",
+    "level": "Master's",
+    "field": "Business",
+    "image": "/images/reference-campus.webp",
+    "text": "Compare management, finance, economics and organisational strategy. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-33"
+  },
+  {
+    "title": "Health systems & policy",
+    "level": "Master's",
+    "field": "Health",
+    "image": "/images/study-3.webp",
+    "text": "Explore health sciences, care and wellbeing; professional recognition needs individual checks. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-34"
+  },
+  {
+    "title": "Applied science & interdisciplinary studies",
+    "level": "Master's",
+    "field": "Research",
+    "image": "/images/reference-library.webp",
+    "text": "Explore natural sciences, quantitative methods and interdisciplinary investigation. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-35"
+  },
+  {
+    "title": "Language, literacy & education",
+    "level": "Master's",
+    "field": "Education",
+    "image": "/images/campus-life.webp",
+    "text": "Explore teaching, learning, languages and educational leadership. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-36"
+  },
+  {
+    "title": "Public policy & governance",
+    "level": "Master's",
+    "field": "Law",
+    "image": "/images/university-campus-2.webp",
+    "text": "Compare legal studies, public administration and policy in each destination's context. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-37"
+  },
+  {
+    "title": "Psychology & international relations",
+    "level": "Master's",
+    "field": "Social sciences",
+    "image": "/images/study-together.webp",
+    "text": "Explore society, human behaviour, international relations and development. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-38"
+  },
+  {
+    "title": "Architecture & urban studies",
+    "level": "Master's",
+    "field": "Arts & design",
+    "image": "/images/reference-study-city.webp",
+    "text": "Explore creative practice, design, media and the built environment. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-39"
+  },
+  {
+    "title": "Environment, climate & sustainability",
+    "level": "Master's",
+    "field": "Agriculture & environment",
+    "image": "/images/university-campus-3.webp",
+    "text": "Explore food systems, agriculture, ecology and environmental sustainability. Your advisor will review your first degree, relevant experience and specialisation interests.",
+    "key": "legacy-guide-40"
+  },
+  {
+    "title": "Research in science & technology",
+    "level": "PhD / Research",
+    "field": "Engineering",
+    "image": "/images/university-campus-1.webp",
+    "text": "Explore design, infrastructure, technology and sustainable systems. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-41"
+  },
+  {
+    "title": "Computer science research",
+    "level": "PhD / Research",
+    "field": "Computing",
+    "image": "/images/study-2.webp",
+    "text": "Explore software, information systems, data and digital security. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-42"
+  },
+  {
+    "title": "Business & management research",
+    "level": "PhD / Research",
+    "field": "Business",
+    "image": "/images/reference-campus.webp",
+    "text": "Compare management, finance, economics and organisational strategy. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-43"
+  },
+  {
+    "title": "Health & biomedical research",
+    "level": "PhD / Research",
+    "field": "Health",
+    "image": "/images/study-3.webp",
+    "text": "Explore health sciences, care and wellbeing; professional recognition needs individual checks. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-44"
+  },
+  {
+    "title": "An original research contribution",
+    "level": "PhD / Research",
+    "field": "Research",
+    "image": "/images/reference-library.webp",
+    "text": "Explore natural sciences, quantitative methods and interdisciplinary investigation. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-45"
+  },
+  {
+    "title": "Education & learning research",
+    "level": "PhD / Research",
+    "field": "Education",
+    "image": "/images/campus-life.webp",
+    "text": "Explore teaching, learning, languages and educational leadership. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-46"
+  },
+  {
+    "title": "Law & justice research",
+    "level": "PhD / Research",
+    "field": "Law",
+    "image": "/images/university-campus-2.webp",
+    "text": "Compare legal studies, public administration and policy in each destination's context. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-47"
+  },
+  {
+    "title": "Social sciences & development research",
+    "level": "PhD / Research",
+    "field": "Social sciences",
+    "image": "/images/study-together.webp",
+    "text": "Explore society, human behaviour, international relations and development. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-48"
+  },
+  {
+    "title": "Arts & creative practice research",
+    "level": "PhD / Research",
+    "field": "Arts & design",
+    "image": "/images/reference-study-city.webp",
+    "text": "Explore creative practice, design, media and the built environment. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-49"
+  },
+  {
+    "title": "Agriculture & food systems research",
+    "level": "PhD / Research",
+    "field": "Agriculture & environment",
+    "image": "/images/university-campus-3.webp",
+    "text": "Explore food systems, agriculture, ecology and environmental sustainability. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-50"
+  },
+  {
+    "title": "Infrastructure & engineering research",
+    "level": "PhD / Research",
+    "field": "Engineering",
+    "image": "/images/university-campus-1.webp",
+    "text": "Explore design, infrastructure, technology and sustainable systems. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-51"
+  },
+  {
+    "title": "Artificial intelligence & data research",
+    "level": "PhD / Research",
+    "field": "Computing",
+    "image": "/images/study-2.webp",
+    "text": "Explore software, information systems, data and digital security. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-52"
+  },
+  {
+    "title": "Economics & finance research",
+    "level": "PhD / Research",
+    "field": "Business",
+    "image": "/images/reference-campus.webp",
+    "text": "Compare management, finance, economics and organisational strategy. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-53"
+  },
+  {
+    "title": "Population & public health research",
+    "level": "PhD / Research",
+    "field": "Health",
+    "image": "/images/study-3.webp",
+    "text": "Explore health sciences, care and wellbeing; professional recognition needs individual checks. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-54"
+  },
+  {
+    "title": "Interdisciplinary science research",
+    "level": "PhD / Research",
+    "field": "Research",
+    "image": "/images/reference-library.webp",
+    "text": "Explore natural sciences, quantitative methods and interdisciplinary investigation. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-55"
+  },
+  {
+    "title": "Language & literacy research",
+    "level": "PhD / Research",
+    "field": "Education",
+    "image": "/images/campus-life.webp",
+    "text": "Explore teaching, learning, languages and educational leadership. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-56"
+  },
+  {
+    "title": "Governance & public policy research",
+    "level": "PhD / Research",
+    "field": "Law",
+    "image": "/images/university-campus-2.webp",
+    "text": "Compare legal studies, public administration and policy in each destination's context. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-57"
+  },
+  {
+    "title": "Human behaviour & society research",
+    "level": "PhD / Research",
+    "field": "Social sciences",
+    "image": "/images/study-together.webp",
+    "text": "Explore society, human behaviour, international relations and development. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-58"
+  },
+  {
+    "title": "Design & built environment research",
+    "level": "PhD / Research",
+    "field": "Arts & design",
+    "image": "/images/reference-study-city.webp",
+    "text": "Explore creative practice, design, media and the built environment. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-59"
+  },
+  {
+    "title": "Environment & climate research",
+    "level": "PhD / Research",
+    "field": "Agriculture & environment",
+    "image": "/images/university-campus-3.webp",
+    "text": "Explore food systems, agriculture, ecology and environmental sustainability. Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    "key": "legacy-guide-60"
+  }
+]

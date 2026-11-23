@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { countries } from "@/lib/countries";
 export const approvedImages = [
   "/images/study-1.webp",
   "/images/study-2.webp",
@@ -47,7 +48,16 @@ export const scholarshipPackageSchema = z
 export const promotionSchema = z
   .object({
     title: title(),
-    destination: title(100),
+    destinations: z
+      .array(title(100))
+      .min(1)
+      .max(250)
+      .refine(
+        (values) =>
+          new Set(values).size === values.length &&
+          values.every((name) => countries.some((country) => country.name === name)),
+        "Choose valid destinations.",
+      ),
     studyLevel: title(80),
     field: title(),
     fundingType: title(200),

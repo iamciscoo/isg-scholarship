@@ -60,7 +60,7 @@ export function WorkspaceProfileMenu({
                   aria-current={item.current ? "page" : undefined}
                 >
                   <item.icon size={18} />
-                  <span>{item.label}</span>
+                  <span>{translate(item.label)}</span>
                 </Link>
               </Menu.Item>
             ))}

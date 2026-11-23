@@ -20,10 +20,25 @@ import { getMessages } from "@/lib/i18n/server";
 import { Leaders } from "@/components/public/leaders";
 import { UniversityLife } from "@/components/public/university-life";
 import { getHomepageImage } from "@/server/repositories/marketing-images";
+import { getPublishedProgrammes } from "@/server/repositories/programmes";
+import { programmeDestinations } from "@/lib/programmes";
+import { DestinationFlag } from "@/features/consultations/destination-select";
+import { countries } from "@/lib/countries";
+import { getLocale } from "@/lib/i18n/server";
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 export default async function Home() {
   const { home: h, ui: t } = await getMessages();
-  const heroImage = await getHomepageImage();
+  const [heroImage, programmes, locale] = await Promise.all([
+    getHomepageImage(),
+    getPublishedProgrammes(),
+    getLocale(),
+  ]);
+  const availableDestinations = programmeDestinations(programmes);
+  const regionNames = new Intl.DisplayNames([locale], { type: "region" });
+  const destinationName = (name: string) => {
+    const code = countries.find((country) => country.name === name)?.code;
+    return code ? regionNames.of(code) || name : name;
+  };
   return (
     <div data-home>
       <section className="hero container" data-home-hero>
@@ -47,21 +62,23 @@ export default async function Home() {
               <ArrowRight size={17} />
             </Link>
           </div>
-          <div className="hero-destinations">
-            <span>{h.destinationLabel}</span>
-            <div>
-              {h.destinations.map((name, i) => (
-                <Link
-                  key={name}
-                  href={`/pathways?destination=${encodeURIComponent(["Russia", "United Kingdom", "Germany", "Canada"][i])}#programme-filters`}
-                >
-                  <Image src={`/flags/${["ru", "gb", "de", "ca"][i]}.svg`} width={32} height={24} alt="" />
-                  <span>{name}</span>
-                  <ArrowUpRight size={12} />
-                </Link>
-              ))}
+          {!!availableDestinations.length && (
+            <div className="hero-destinations">
+              <span>{h.destinationLabel}</span>
+              <div>
+                {availableDestinations.map((name) => (
+                  <Link
+                    key={name}
+                    href={`/pathways?destination=${encodeURIComponent(name)}#programme-filters`}
+                  >
+                    <DestinationFlag name={name} />
+                    <span>{destinationName(name)}</span>
+                    <ArrowUpRight size={12} />
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         <div className="hero-scene">
           <div className="hero-cream-plane" aria-hidden="true" />

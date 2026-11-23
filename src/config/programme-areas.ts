@@ -1,32 +1,43 @@
-import { programmeGroups } from "./programme-groups";
-const levels = [
+export const programmeFields = [
   {
-    key: "undergraduate",
-    level: "Undergraduate",
-    guidance: "Your advisor will check entry subjects, language requirements and suitable course structures.",
+    value: "Engineering",
+    label: "Engineering",
   },
   {
-    key: "masters",
-    level: "Master's",
-    guidance: "Your advisor will review your first degree, relevant experience and specialisation interests.",
+    value: "Computing",
+    label: "Computing & data",
   },
   {
-    key: "research",
-    level: "PhD / Research",
-    guidance: "Discuss research preparation, a potential topic and supervisor fit with your advisor.",
+    value: "Business",
+    label: "Business & economics",
+  },
+  {
+    value: "Health",
+    label: "Health & life sciences",
+  },
+  {
+    value: "Research",
+    label: "Science & research",
+  },
+  {
+    value: "Education",
+    label: "Education & languages",
+  },
+  {
+    value: "Law",
+    label: "Law & public policy",
+  },
+  {
+    value: "Social sciences",
+    label: "Social sciences",
+  },
+  {
+    value: "Arts & design",
+    label: "Arts, design & media",
+  },
+  {
+    value: "Agriculture & environment",
+    label: "Agriculture & environment",
   },
 ] as const;
-// One shared editorial catalogue for all countries. Provider availability is confirmed privately.
-export const programmeAreas = levels.flatMap((level) =>
-  [0, 1].flatMap((index) =>
-    programmeGroups.map((group) => ({
-      title: group[level.key][index],
-      level: level.level,
-      field: group.field,
-      image: group.image,
-      text: `${group.focus} ${level.guidance}`,
-    })),
-  ),
-);
-export const programmeFields = programmeGroups.map(({ field, label }) => ({ value: field, label }));
 export const programmesPerPage = 12;

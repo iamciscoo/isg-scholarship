@@ -19,7 +19,12 @@ export async function listLeads(
     .order("id")
     .range((page - 1) * 20, page * 20 - 1);
   if (leadStages.includes(query.stage as (typeof leadStages)[number]))
-    request = request.eq("stage", query.stage);
+    request =
+      query.stage === "qualified"
+        ? request.in("stage", ["qualified", "converted"])
+        : query.stage === "closed"
+          ? request.in("stage", ["closed", "not_currently_eligible"])
+          : request.eq("stage", query.stage);
   if (["Undergraduate", "Master's", "PhD / Research"].includes(query.level || ""))
     request = request.eq("eligibility_assessments.study_level", query.level);
   if (query.advisor && /^[0-9a-f-]{36}$/i.test(query.advisor))

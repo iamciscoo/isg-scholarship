@@ -1,5 +1,5 @@
 "use client";
-import { leadStages, stageLabel } from "@/lib/validation/leads";
+import { leadStages, stageLabel, currentLeadStage } from "@/lib/validation/leads";
 import { ActionForm } from "@/components/forms/action-form";
 import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 import { reviewLead } from "./actions";
@@ -14,7 +14,7 @@ export function ReviewForm({ lead }: { lead: Lead }) {
         <label htmlFor="stage">
           <Text>Review stage</Text>
         </label>
-        <select id="stage" name="stage" defaultValue={lead.stage}>
+        <select id="stage" name="stage" defaultValue={currentLeadStage(lead.stage)}>
           {leadStages.map((stage) => (
             <option key={stage} value={stage}>
               {t(stageLabel(stage))}
