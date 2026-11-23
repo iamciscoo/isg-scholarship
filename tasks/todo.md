@@ -39,11 +39,11 @@ Owner setup remains separate: Turnstile, Supabase Auth SMTP, Resend, staff ident
 - [x] Original-site image references, thumbnail choices and safe public marketing image uploads; admin homepage image selection.
 - [x] Styled progressive-enhancement select pickers and final mobile/desktop/browser/security review; complete final verification/push above.
 
-## Managed programmes and consultation simplification — 23 November
+## Managed programmes and consultation simplification â€” 23 November
 
 - [x] Five clear stage options with legacy state/history compatibility.
 - [x] Combined admin package/programme navigation and programme create/edit/publication/delete controls.
 - [x] Preserve all 60 editorial guides and derive homepage country availability from published records.
 - [x] Compact filters, flag destination dropdown, removed country notice and visible press/reduced-motion feedback.
 - [x] Unit, migration/permission, production build/typecheck, lint, audit, independent review and three focused production-browser checks.
-- [ ] Apply hosted migration 056, then merge the feature branch into production main. Browser URL approval review currently blocks dashboard automation.
+- [x] Applied hosted migration 056 transactionally; verified all 60 guides and retained consultation/file counts. Production merge and branch cleanup are authorized.

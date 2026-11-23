@@ -14,7 +14,7 @@ The compact public filter row uses adjacent study level/field selects and a flag
 
 ## Deployment order
 
-This feature branch must not be merged into production before migration 056 is applied. The hosted schema has not been changed by this continuation: Chrome automatic approval review rejected the dashboard action because it could not determine the browser URL. CLI management access was also unavailable because no Supabase access token was configured. No environment file was changed.
+Migration 056 was applied transactionally through the authorized Supabase SQL dashboard, together with its migration-history entry. Hosted verification confirmed 60 published legacy guides, the four original destinations, and retained business counts: 1 consultation, 0 applications and 1 file. Browser access was recovered by restoring Chrome to the foreground. No environment file was changed. The application can now be merged into production main.
 
 1. Verify hosted migration history through 055 and take the normal hosting backup.
 2. Apply migration 056 through the authorized Supabase migration workflow. For the SQL dashboard, apply its contents and record version `202611230056` in migration history inside one transaction. It performs additive DDL, retains existing records, and seeds only existing public editorial content.
