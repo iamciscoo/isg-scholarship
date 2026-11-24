@@ -64,30 +64,64 @@
     "title1": "ادرس في الخارج.",
     "title2": "بخطة واضحة.",
     "description": "استكشف الدراسة في الخارج وجهّز طلبك مع مستشار من ISG.",
-    "promises": ["إرشاد مصمم لك", "تبقى معلوماتك خاصة", "خطوات واضحة. قرارات مدروسة."],
+    "promises": [
+      "إرشاد مصمم لك",
+      "تبقى معلوماتك خاصة",
+      "خطوات واضحة. قرارات مدروسة."
+    ],
     "introTitle": "طموحات كبيرة. بداية مدروسة.",
     "introText": "قد تبدو الدراسة في الخارج معقدة. تساعدك ISG على فهم الخيارات والاستعداد لهدفك.",
     "aboutLink": "تعرّف على ISG",
     "services": [
-      ["اعثر على اتجاهك", "افهم ملفك الأكاديمي والمسارات التي قد تناسب أهدافك."],
-      ["استعد بثقة", "احصل على دعم عملي للمستندات وخطابات الدافع ومتطلبات التقديم."],
-      ["مستشار إلى جانبك", "اعمل مع مستشار يساعدك على فهم القرارات والخطوات التالية."]
+      [
+        "اعثر على اتجاهك",
+        "افهم ملفك الأكاديمي والمسارات التي قد تناسب أهدافك."
+      ],
+      [
+        "استعد بثقة",
+        "احصل على دعم عملي للمستندات وخطابات الدافع ومتطلبات التقديم."
+      ],
+      [
+        "مستشار إلى جانبك",
+        "اعمل مع مستشار يساعدك على فهم القرارات والخطوات التالية."
+      ]
     ],
     "pathTitle": "إلى أين سيأخذك طموحك؟",
     "pathText": "شهادة أولى أو تخصص جديد أو مساهمة أصيلة. ابدأ بالمسار الذي يناسبك.",
     "degrees": [
-      ["شهادتك الأولى", "البكالوريوس"],
-      ["تخصصك القادم", "الماجستير"],
-      ["مساهمتك الأصيلة", "الدكتوراه والبحث"]
+      [
+        "شهادتك الأولى",
+        "البكالوريوس"
+      ],
+      [
+        "تخصصك القادم",
+        "الماجستير"
+      ],
+      [
+        "مساهمتك الأصيلة",
+        "الدكتوراه والبحث"
+      ]
     ],
     "pathNote": "تختلف فرص التمويل ومتطلبات الجهات. يبدأ كل مسار بظروفك الشخصية.",
     "processTitle": "القليل من الوضوح يصنع فرقًا.",
     "processText": "لست مضطرًا لحسم كل شيء مرة واحدة. هكذا نتقدم معًا.",
     "steps": [
-      ["أخبرنا عن أهدافك", "أنشئ حسابك وأكمل نموذج الاستشارة المختصر. لا تحتاج إلى مستندات في هذه المرحلة."],
-      ["تحقق من دفع الاستشارة", "ادفع 50,000 شلن تنزاني مرة واحدة وارفع الإيصال بشكل خاص."],
-      ["الاستشارة والباقة", "يتواصل معك ISG عبر واتساب ويحدد لك باقة مناسبة. ادفع الرسوم وارفع الإيصال."],
-      ["أكمل طلبك وتابع حالته", "بعد التحقق من دفع رسوم الباقة، أكمل النموذج وتابع تحديثات ISG."]
+      [
+        "أخبرنا عن أهدافك",
+        "أنشئ حسابك وأكمل نموذج الاستشارة المختصر. لا تحتاج إلى مستندات في هذه المرحلة."
+      ],
+      [
+        "تحقق من دفع الاستشارة",
+        "ادفع 50,000 شلن تنزاني مرة واحدة وارفع الإيصال بشكل خاص."
+      ],
+      [
+        "الاستشارة والباقة",
+        "يتواصل معك ISG عبر واتساب ويحدد لك باقة مناسبة. ادفع الرسوم وارفع الإيصال."
+      ],
+      [
+        "أكمل طلبك وتابع حالته",
+        "بعد التحقق من دفع رسوم الباقة، أكمل النموذج وتابع تحديثات ISG."
+      ]
     ],
     "fullJourney": "شاهد الرحلة كاملة",
     "cityTitle": "أماكن جديدة. آفاق جديدة.",
@@ -96,21 +130,42 @@
     "cityLink": "اكتشف مسارك الدراسي",
     "storyTitle": "يربط التعليم أكثر من قاعات الدراسة.",
     "stories": [
-      ["دبلوماسية المنح", "اكتشف كيف تربط الدراسة الدولية المجتمعات والأفكار."],
-      ["قاعات عالمية", "تعلّم إلى جانب أشخاص ذوي تجارب ووجهات نظر مختلفة."],
-      ["ما وراء الحدود", "افهم الأماكن واللغات والمؤسسات المرتبطة بخياراتك."],
-      ["الجيل القادم", "ابنِ معرفة تحملها إلى الفصل القادم من حياتك."]
+      [
+        "دبلوماسية المنح",
+        "اكتشف كيف تربط الدراسة الدولية المجتمعات والأفكار."
+      ],
+      [
+        "قاعات عالمية",
+        "تعلّم إلى جانب أشخاص ذوي تجارب ووجهات نظر مختلفة."
+      ],
+      [
+        "ما وراء الحدود",
+        "افهم الأماكن واللغات والمؤسسات المرتبطة بخياراتك."
+      ],
+      [
+        "الجيل القادم",
+        "ابنِ معرفة تحملها إلى الفصل القادم من حياتك."
+      ]
     ],
     "careTitle": "مستقبلك. اختيارك المدروس.",
     "careText": "يبدأ الإرشاد الجيد بالصدق. افهم الدعم والتكاليف والفرص قبل اتخاذ قرارك.",
-    "carePoints": ["لا وعود بمنح مضمونة", "لا تُرسل طلبات دون موافقتك", "لا مستندات حساسة في التقييم الأول"],
+    "carePoints": [
+      "لا وعود بمنح مضمونة",
+      "لا تُرسل طلبات دون موافقتك",
+      "لا مستندات حساسة في التقييم الأول"
+    ],
     "careLink": "اكتشف دعمنا",
     "faqTitle": "أسئلة قد تدور في ذهنك.",
     "faqText": "إجابات واضحة قبل خطوتك التالية.",
     "ctaTitle": "يبدأ فصلك القادم بمحادثة.",
     "ctaText": "أحضر طموحك. سنساعدك على فهم الطريق أمامك.",
     "destinationLabel": "ابدأ باختيار وجهة",
-    "destinations": ["روسيا", "المملكة المتحدة", "ألمانيا", "كندا"]
+    "destinations": [
+      "روسيا",
+      "المملكة المتحدة",
+      "ألمانيا",
+      "كندا"
+    ]
   },
   "faqs": [
     [
@@ -934,6 +989,52 @@
     "Agriculture & environment": "الزراعة والبيئة",
     "Needs information": "معلومات مطلوبة",
     "Search": "بحث",
-    "Catalogue": "دليل البرامج"
+    "Catalogue": "دليل البرامج",
+    "Education across borders.": "التعليم بلا حدود.",
+    "National leadership and international education provide context for the destinations students explore.": "القيادة الوطنية والتعليم الدولي يضعان سياق الوجهات التي يستكشفها الطلاب.",
+    "President of the Russian Federation": "رئيس الاتحاد الروسي",
+    "Russia is one of the destinations students can explore when considering international university study. Programme requirements and funding must be checked with the relevant institution.": "روسيا من الوجهات التي يمكن للطلاب استكشافها للدراسة الجامعية الدولية. يجب التحقق من المتطلبات والتمويل لدى المؤسسة المعنية.",
+    "President of the United Republic of Tanzania": "رئيسة جمهورية تنزانيا المتحدة",
+    "ISG’s initial focus is supporting students from Tanzania as they consider international education, prepare applications and make informed choices about their next steps.": "تركيز ISG الأول هو دعم الطلاب من تنزانيا عند التفكير في التعليم الدولي وإعداد الطلبات واتخاذ قرارات مدروسة.",
+    "Official presidential profile ↗": "الملف الرسمي للرئيس ↗",
+    "Official presidency website ↗": "الموقع الرسمي للرئاسة ↗",
+    "Profiles provide national context. ISG is an independent advisory service; these images do not imply endorsement or a government partnership.": "تقدم هذه الملفات سياقاً وطنياً. ISG خدمة استشارية مستقلة؛ ولا تعني هذه الصور تأييداً أو شراكة حكومية.",
+    "More than a university.": "أكثر من جامعة.",
+    "Your next environment.": "بيئتك القادمة.",
+    "ISG informs and supports students throughout the application process, from exploring destinations to preparing documents and following up on applications.": "تقدم ISG المعلومات والدعم للطلاب طوال عملية التقديم، من استكشاف الوجهات إلى إعداد المستندات ومتابعة الطلبات.",
+    "Explore study paths": "استكشف مسارات الدراسة",
+    "Swipe to explore campus life →": "اسحب لاستكشاف الحياة الجامعية ←",
+    "Find a place to grow.": "اعثر على مكان للنمو.",
+    "Explore the learning environment, course structure and student life that fit your ambitions.": "استكشف بيئة التعلم وهيكل المقررات والحياة الطلابية التي تناسب طموحاتك.",
+    "Make room for discovery.": "أفسح مجالاً للاكتشاف.",
+    "Think about libraries, research facilities and the academic support you will need throughout your studies.": "فكّر في المكتبات ومرافق البحث والدعم الأكاديمي الذي ستحتاجه خلال دراستك.",
+    "Feel at home, further afield.": "اشعر بأنك في بيتك ولو كنت بعيداً.",
+    "Prepare for the language, culture and everyday life of an international student community.": "استعد للغة والثقافة والحياة اليومية في مجتمع طلابي دولي.",
+    "Service terms": "شروط الخدمة",
+    "Clear expectations, from the start.": "توقعات واضحة من البداية.",
+    "The principles that guide your use of the ISG platform.": "المبادئ التي تنظّم استخدامك لمنصة ISG.",
+    "Independent advisory support": "دعم استشاري مستقل",
+    "ISG provides education advisory and application support. It does not award scholarships, grant admission or issue visas. Information is general until reviewed for your circumstances. Providers may change requirements, fees and deadlines.": "تقدم ISG الاستشارة التعليمية ودعم الطلبات. وهي لا تمنح منحاً دراسية ولا قبولاً ولا تأشيرات. المعلومات عامة حتى تُراجع حسب حالتك. وقد تغيّر الجهات المتطلبات والرسوم والمواعيد.",
+    "Your responsibilities": "مسؤولياتك",
+    "Provide accurate information, protect your account and review documents before approving them. Do not share official application portal passwords. Use the platform lawfully and do not attempt to access another person’s data or internal research.": "قدّم معلومات دقيقة، واحمِ حسابك، وراجع المستندات قبل اعتمادها. لا تشارك كلمات المرور الخاصة بالبوابات الرسمية. استخدم المنصة بشكل قانوني ولا تحاول الوصول إلى بيانات الآخرين أو الأبحاث الداخلية.",
+    "Applications and authorization": "الطلبات والتفويض",
+    "Before authorizing a proposed application, you must receive the provider details, relevant selection requirements, material costs and information about where your data will be sent. No initial assessment constitutes permission to submit an application.": "قبل تفويض طلب مقترح، يجب أن تحصل على بيانات الجهة ومتطلبات الاختيار والتكاليف المهمة ومعلومات عن مكان إرسال بياناتك. لا يُعد التقييم الأولي إذناً بتقديم الطلب.",
+    "Fees, cancellation and refunds": "الرسوم والإلغاء والاسترداد",
+    "An enquiry does not create a paid engagement. The agreed service quote must specify fees, currency, scope, payment arrangements and cancellation or refund terms. No general refund schedule is published until ISG approves one. Ask for these terms before paying.": "لا يُنشئ الاستفسار خدمة مدفوعة. يجب أن يحدد العرض المتفق عليه الرسوم والعملة والنطاق وترتيبات الدفع وشروط الإلغاء أو الاسترداد. لا تُنشر سياسة استرداد عامة قبل اعتماد ISG لها. اطلب هذه الشروط قبل الدفع.",
+    "No guaranteed outcome": "لا يوجد نتيجة مضمونة",
+    "Funding, admissions and immigration decisions are made independently by the relevant bodies. Neither an assessment nor payment guarantees a scholarship, admission or visa.": "تُتخذ قرارات التمويل والقبول والهجرة بشكل مستقل من الجهات المختصة. لا يضمن التقييم ولا الدفع الحصول على منحة أو قبول أو تأشيرة.",
+    "Personal information": "المعلومات الشخصية",
+    "Read the privacy information before submitting an assessment. Contact ISG about corrections or personal data requests. Do not include sensitive documents in an initial enquiry.": "اقرأ معلومات الخصوصية قبل إرسال التقييم. تواصل مع ISG بشأن التصحيحات أو طلبات البيانات الشخصية. لا تُدرج مستندات حساسة في الاستفسار الأول.",
+    "Cookie information": "معلومات ملفات تعريف الارتباط",
+    "Only what the platform needs.": "فقط ما تحتاجه المنصة.",
+    "A straightforward explanation of the storage used by this release.": "شرح مبسّط للتخزين الذي يستخدمه هذا الإصدار.",
+    "Essential account cookies": "ملفات تعريف الارتباط الأساسية للحساب",
+    "When authentication is configured, Supabase session cookies keep you signed in and support secure session renewal. Signing out removes the current session. The assessment form keeps its temporary progress in component memory; it does not save your personal details in browser storage.": "عند تفعيل المصادقة، تُبقيك ملفات جلسة Supabase مسجلاً للدخول وتدعم تجديد الجلسة بأمان. تسجيل الخروج يزيل الجلسة الحالية. يحتفظ نموذج التقييم بتقدمه المؤقت في ذاكرة المكوّن ولا يحفظ بياناتك الشخصية في تخزين المتصفح.",
+    "Abuse prevention": "منع إساءة الاستخدام",
+    "Cloudflare Turnstile is used on public submissions and authentication when configured. It processes security signals to assess automated abuse. See Cloudflare’s Turnstile privacy information for details.": "يُستخدم Cloudflare Turnstile في الإرسال العام والمصادقة عند تفعيله. يعالج إشارات أمنية لتقييم إساءة الاستخدام الآلية. راجع معلومات خصوصية Turnstile للتفاصيل.",
+    "Optional tracking": "التتبع الاختياري",
+    "This release does not include advertising cookies or optional analytics. A separate consent choice must be implemented before adding any tracking that requires it.": "لا يتضمن هذا الإصدار ملفات تعريف ارتباط إعلانية أو تحليلات اختيارية. يجب تنفيذ موافقة منفصلة قبل إضافة أي تتبع يتطلبها.",
+    "Your browser controls": "إعدادات المتصفح",
+    "You can clear cookies in your browser settings. Blocking essential account cookies may prevent sign-in from working.": "يمكنك حذف ملفات تعريف الارتباط من إعدادات المتصفح. قد يمنع حظر الملفات الأساسية تسجيل الدخول."
   }
 }

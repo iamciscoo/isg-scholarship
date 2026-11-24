@@ -10,10 +10,6 @@ export default function Terms() {
         description="The principles that guide your use of the ISG platform."
       />
       <article className="container page-body legal-copy">
-        <div className="notice">
-          Pre-launch service information. These terms require ISG’s legal and business review before
-          production use. A paid engagement needs a separate, approved service agreement.
-        </div>
         <h2>Independent advisory support</h2>
         <p>
           ISG provides education advisory and application support. It does not award scholarships, grant

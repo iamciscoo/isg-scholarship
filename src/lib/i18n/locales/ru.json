@@ -89,9 +89,18 @@
     "pathTitle": "Куда приведут ваши цели?",
     "pathText": "Первый диплом, новая специализация или собственный вклад в науку. Начните с подходящего направления.",
     "degrees": [
-      ["Ваш первый диплом", "Бакалавриат"],
-      ["Новая специализация", "Магистратура"],
-      ["Ваш вклад в науку", "Аспирантура и исследования"]
+      [
+        "Ваш первый диплом",
+        "Бакалавриат"
+      ],
+      [
+        "Новая специализация",
+        "Магистратура"
+      ],
+      [
+        "Ваш вклад в науку",
+        "Аспирантура и исследования"
+      ]
     ],
     "pathNote": "Финансирование и требования организаций различаются. Каждый путь начинается с вашей личной ситуации.",
     "processTitle": "Немного ясности меняет многое.",
@@ -121,10 +130,22 @@
     "cityLink": "Изучить направления учёбы",
     "storyTitle": "Образование объединяет больше, чем аудитории.",
     "stories": [
-      ["Стипендиальная дипломатия", "Узнайте, как международная учёба связывает сообщества и идеи."],
-      ["Международные аудитории", "Учитесь вместе с людьми с разным опытом и взглядами."],
-      ["За пределами границ", "Разберитесь в странах, языках и организациях, связанных с вашим выбором."],
-      ["Следующее поколение", "Получайте знания для новой главы вашей жизни."]
+      [
+        "Стипендиальная дипломатия",
+        "Узнайте, как международная учёба связывает сообщества и идеи."
+      ],
+      [
+        "Международные аудитории",
+        "Учитесь вместе с людьми с разным опытом и взглядами."
+      ],
+      [
+        "За пределами границ",
+        "Разберитесь в странах, языках и организациях, связанных с вашим выбором."
+      ],
+      [
+        "Следующее поколение",
+        "Получайте знания для новой главы вашей жизни."
+      ]
     ],
     "careTitle": "Ваше будущее. Ваш осознанный выбор.",
     "careText": "Хорошая консультация начинается с честности. Разберитесь в поддержке, стоимости и возможностях, прежде чем принять решение.",
@@ -139,7 +160,12 @@
     "ctaTitle": "Ваша новая глава начинается с разговора.",
     "ctaText": "Расскажите о своих целях. Мы поможем разобраться в пути впереди.",
     "destinationLabel": "Начните с выбора страны",
-    "destinations": ["Россия", "Великобритания", "Германия", "Канада"]
+    "destinations": [
+      "Россия",
+      "Великобритания",
+      "Германия",
+      "Канада"
+    ]
   },
   "faqs": [
     [
@@ -963,6 +989,52 @@
     "Agriculture & environment": "Сельское хозяйство и окружающая среда",
     "Needs information": "Нужны сведения",
     "Search": "Поиск",
-    "Catalogue": "Каталог"
+    "Catalogue": "Каталог",
+    "Education across borders.": "Образование без границ.",
+    "National leadership and international education provide context for the destinations students explore.": "Национальное руководство и международное образование задают контекст стран, которые рассматривают студенты.",
+    "President of the Russian Federation": "Президент Российской Федерации",
+    "Russia is one of the destinations students can explore when considering international university study. Programme requirements and funding must be checked with the relevant institution.": "Россия — одна из стран, которые студенты могут рассмотреть для обучения в университете за рубежом. Требования и финансирование нужно уточнять у соответствующего вуза.",
+    "President of the United Republic of Tanzania": "Президент Объединённой Республики Танзания",
+    "ISG’s initial focus is supporting students from Tanzania as they consider international education, prepare applications and make informed choices about their next steps.": "Приоритет ISG — поддержка студентов из Танзании, которые рассматривают обучение за рубежом, готовят заявки и принимают взвешенные решения.",
+    "Official presidential profile ↗": "Официальный профиль президента ↗",
+    "Official presidency website ↗": "Официальный сайт президента ↗",
+    "Profiles provide national context. ISG is an independent advisory service; these images do not imply endorsement or a government partnership.": "Эти профили дают национальный контекст. ISG — независимая консультационная служба; изображения не означают одобрения или партнёрства с государством.",
+    "More than a university.": "Больше, чем университет.",
+    "Your next environment.": "Ваша новая среда.",
+    "ISG informs and supports students throughout the application process, from exploring destinations to preparing documents and following up on applications.": "ISG информирует и поддерживает студентов на всём пути поступления: от выбора стран до подготовки документов и отслеживания заявок.",
+    "Explore study paths": "Изучить направления",
+    "Swipe to explore campus life →": "Пролистайте, чтобы увидеть студенческую жизнь →",
+    "Find a place to grow.": "Найдите место для роста.",
+    "Explore the learning environment, course structure and student life that fit your ambitions.": "Изучите среду обучения, структуру курсов и студенческую жизнь, подходящие вашим целям.",
+    "Make room for discovery.": "Освободите место открытиям.",
+    "Think about libraries, research facilities and the academic support you will need throughout your studies.": "Подумайте о библиотеках, исследовательской инфраструктуре и академической поддержке на время учёбы.",
+    "Feel at home, further afield.": "Почувствуйте себя как дома вдали от дома.",
+    "Prepare for the language, culture and everyday life of an international student community.": "Подготовьтесь к языку, культуре и повседневной жизни международного студенческого сообщества.",
+    "Service terms": "Условия обслуживания",
+    "Clear expectations, from the start.": "Ясные ожидания с самого начала.",
+    "The principles that guide your use of the ISG platform.": "Принципы, по которым вы пользуетесь платформой ISG.",
+    "Independent advisory support": "Независимая консультационная поддержка",
+    "ISG provides education advisory and application support. It does not award scholarships, grant admission or issue visas. Information is general until reviewed for your circumstances. Providers may change requirements, fees and deadlines.": "ISG консультирует по образованию и помогает с заявками. Она не присуждает стипендии, не зачисляет и не выдаёт визы. Информация носит общий характер, пока не рассмотрена ваша ситуация. Учреждения могут менять требования, стоимость и сроки.",
+    "Your responsibilities": "Ваши обязанности",
+    "Provide accurate information, protect your account and review documents before approving them. Do not share official application portal passwords. Use the platform lawfully and do not attempt to access another person’s data or internal research.": "Указывайте точные данные, защищайте аккаунт и проверяйте документы перед утверждением. Не передавайте пароли официальных порталов подачи заявок. Пользуйтесь платформой законно и не пытайтесь получить доступ к чужим данным или внутренним исследованиям.",
+    "Applications and authorization": "Заявки и разрешение",
+    "Before authorizing a proposed application, you must receive the provider details, relevant selection requirements, material costs and information about where your data will be sent. No initial assessment constitutes permission to submit an application.": "Прежде чем одобрить предложенную заявку, вы должны получить данные учреждения, требования отбора, значимые расходы и сведения о том, куда передаются ваши данные. Первичная оценка не является разрешением на подачу заявки.",
+    "Fees, cancellation and refunds": "Стоимость, отмена и возврат",
+    "An enquiry does not create a paid engagement. The agreed service quote must specify fees, currency, scope, payment arrangements and cancellation or refund terms. No general refund schedule is published until ISG approves one. Ask for these terms before paying.": "Запрос не создаёт платную услугу. Согласованное предложение должно указывать стоимость, валюту, объём, порядок оплаты и условия отмены или возврата. Общая политика возврата не публикуется до утверждения ISG. Запросите эти условия до оплаты.",
+    "No guaranteed outcome": "Результат не гарантируется",
+    "Funding, admissions and immigration decisions are made independently by the relevant bodies. Neither an assessment nor payment guarantees a scholarship, admission or visa.": "Решения о финансировании, зачислении и иммиграции принимают соответствующие органы независимо. Ни оценка, ни оплата не гарантируют стипендию, зачисление или визу.",
+    "Personal information": "Персональные данные",
+    "Read the privacy information before submitting an assessment. Contact ISG about corrections or personal data requests. Do not include sensitive documents in an initial enquiry.": "Прочитайте информацию о конфиденциальности перед отправкой оценки. Обращайтесь в ISG по исправлениям и запросам о персональных данных. Не прикладывайте чувствительные документы к первому запросу.",
+    "Cookie information": "Информация о cookie",
+    "Only what the platform needs.": "Только то, что нужно платформе.",
+    "A straightforward explanation of the storage used by this release.": "Простое объяснение хранилища, используемого этой версией.",
+    "Essential account cookies": "Основные cookie аккаунта",
+    "When authentication is configured, Supabase session cookies keep you signed in and support secure session renewal. Signing out removes the current session. The assessment form keeps its temporary progress in component memory; it does not save your personal details in browser storage.": "Если вход настроен, сеансовые cookie Supabase сохраняют вход и обеспечивают безопасное продление сеанса. Выход удаляет текущий сеанс. Форма оценки хранит временный прогресс в памяти компонента и не сохраняет ваши данные в хранилище браузера.",
+    "Abuse prevention": "Защита от злоупотреблений",
+    "Cloudflare Turnstile is used on public submissions and authentication when configured. It processes security signals to assess automated abuse. See Cloudflare’s Turnstile privacy information for details.": "Cloudflare Turnstile используется для публичных отправок и входа, если он настроен. Он обрабатывает сигналы безопасности для оценки автоматических злоупотреблений. Подробности — в информации о конфиденциальности Turnstile.",
+    "Optional tracking": "Необязательное отслеживание",
+    "This release does not include advertising cookies or optional analytics. A separate consent choice must be implemented before adding any tracking that requires it.": "Эта версия не использует рекламные cookie и необязательную аналитику. Отдельное согласие потребуется до добавления любого отслеживания.",
+    "Your browser controls": "Настройки браузера",
+    "You can clear cookies in your browser settings. Blocking essential account cookies may prevent sign-in from working.": "Вы можете удалить cookie в настройках браузера. Блокировка основных cookie аккаунта может нарушить вход."
   }
 }

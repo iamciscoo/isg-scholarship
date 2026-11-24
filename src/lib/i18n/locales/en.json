@@ -89,9 +89,18 @@
     "pathTitle": "Where will your ambition take you?",
     "pathText": "A first degree, a new specialism or an original contribution. Start with the pathway that feels like you.",
     "degrees": [
-      ["Your first degree", "Undergraduate"],
-      ["Your next specialism", "Master’s"],
-      ["Your original contribution", "PhD & research"]
+      [
+        "Your first degree",
+        "Undergraduate"
+      ],
+      [
+        "Your next specialism",
+        "Master’s"
+      ],
+      [
+        "Your original contribution",
+        "PhD & research"
+      ]
     ],
     "pathNote": "Funding availability and provider requirements vary. Every pathway begins with your individual circumstances.",
     "processTitle": "A little clarity goes a long way.",
@@ -101,7 +110,10 @@
         "Tell us your goals",
         "Create your account and complete the short consultation form. No documents are needed yet."
       ],
-      ["Verify your consultation payment", "Pay TZS 50,000 once and upload a private receipt."],
+      [
+        "Verify your consultation payment",
+        "Pay TZS 50,000 once and upload a private receipt."
+      ],
       [
         "Meet your advisor",
         "ISG contacts you on WhatsApp and assigns a suitable package. Pay its fee and upload your receipt."
@@ -118,10 +130,22 @@
     "cityLink": "Explore your study pathway",
     "storyTitle": "Education connects more than classrooms.",
     "stories": [
-      ["Scholarship diplomacy", "Explore how international study can connect communities and ideas."],
-      ["Global classrooms", "Learn alongside people with different experiences and perspectives."],
-      ["Beyond borders", "Understand the places, languages and institutions behind your study choices."],
-      ["The next generation", "Build knowledge you can carry into the next chapter of your life."]
+      [
+        "Scholarship diplomacy",
+        "Explore how international study can connect communities and ideas."
+      ],
+      [
+        "Global classrooms",
+        "Learn alongside people with different experiences and perspectives."
+      ],
+      [
+        "Beyond borders",
+        "Understand the places, languages and institutions behind your study choices."
+      ],
+      [
+        "The next generation",
+        "Build knowledge you can carry into the next chapter of your life."
+      ]
     ],
     "careTitle": "Your future. Your informed choice.",
     "careText": "Good guidance starts with honesty. Understand the support, the costs and the opportunities before deciding how to proceed.",
@@ -136,7 +160,12 @@
     "ctaTitle": "Your next chapter starts with a conversation.",
     "ctaText": "Bring your ambition. We'll help you understand the path ahead.",
     "destinationLabel": "Start with a destination",
-    "destinations": ["Russia", "United Kingdom", "Germany", "Canada"]
+    "destinations": [
+      "Russia",
+      "United Kingdom",
+      "Germany",
+      "Canada"
+    ]
   },
   "faqs": [
     [
@@ -960,6 +989,52 @@
     "Agriculture & environment": "Agriculture & environment",
     "Needs information": "Needs information",
     "Search": "Search",
-    "Catalogue": "Catalogue"
+    "Catalogue": "Catalogue",
+    "Education across borders.": "Education across borders.",
+    "National leadership and international education provide context for the destinations students explore.": "National leadership and international education provide context for the destinations students explore.",
+    "President of the Russian Federation": "President of the Russian Federation",
+    "Russia is one of the destinations students can explore when considering international university study. Programme requirements and funding must be checked with the relevant institution.": "Russia is one of the destinations students can explore when considering international university study. Programme requirements and funding must be checked with the relevant institution.",
+    "President of the United Republic of Tanzania": "President of the United Republic of Tanzania",
+    "ISG’s initial focus is supporting students from Tanzania as they consider international education, prepare applications and make informed choices about their next steps.": "ISG’s initial focus is supporting students from Tanzania as they consider international education, prepare applications and make informed choices about their next steps.",
+    "Official presidential profile ↗": "Official presidential profile ↗",
+    "Official presidency website ↗": "Official presidency website ↗",
+    "Profiles provide national context. ISG is an independent advisory service; these images do not imply endorsement or a government partnership.": "Profiles provide national context. ISG is an independent advisory service; these images do not imply endorsement or a government partnership.",
+    "More than a university.": "More than a university.",
+    "Your next environment.": "Your next environment.",
+    "ISG informs and supports students throughout the application process, from exploring destinations to preparing documents and following up on applications.": "ISG informs and supports students throughout the application process, from exploring destinations to preparing documents and following up on applications.",
+    "Explore study paths": "Explore study paths",
+    "Swipe to explore campus life →": "Swipe to explore campus life →",
+    "Find a place to grow.": "Find a place to grow.",
+    "Explore the learning environment, course structure and student life that fit your ambitions.": "Explore the learning environment, course structure and student life that fit your ambitions.",
+    "Make room for discovery.": "Make room for discovery.",
+    "Think about libraries, research facilities and the academic support you will need throughout your studies.": "Think about libraries, research facilities and the academic support you will need throughout your studies.",
+    "Feel at home, further afield.": "Feel at home, further afield.",
+    "Prepare for the language, culture and everyday life of an international student community.": "Prepare for the language, culture and everyday life of an international student community.",
+    "Service terms": "Service terms",
+    "Clear expectations, from the start.": "Clear expectations, from the start.",
+    "The principles that guide your use of the ISG platform.": "The principles that guide your use of the ISG platform.",
+    "Independent advisory support": "Independent advisory support",
+    "ISG provides education advisory and application support. It does not award scholarships, grant admission or issue visas. Information is general until reviewed for your circumstances. Providers may change requirements, fees and deadlines.": "ISG provides education advisory and application support. It does not award scholarships, grant admission or issue visas. Information is general until reviewed for your circumstances. Providers may change requirements, fees and deadlines.",
+    "Your responsibilities": "Your responsibilities",
+    "Provide accurate information, protect your account and review documents before approving them. Do not share official application portal passwords. Use the platform lawfully and do not attempt to access another person’s data or internal research.": "Provide accurate information, protect your account and review documents before approving them. Do not share official application portal passwords. Use the platform lawfully and do not attempt to access another person’s data or internal research.",
+    "Applications and authorization": "Applications and authorization",
+    "Before authorizing a proposed application, you must receive the provider details, relevant selection requirements, material costs and information about where your data will be sent. No initial assessment constitutes permission to submit an application.": "Before authorizing a proposed application, you must receive the provider details, relevant selection requirements, material costs and information about where your data will be sent. No initial assessment constitutes permission to submit an application.",
+    "Fees, cancellation and refunds": "Fees, cancellation and refunds",
+    "An enquiry does not create a paid engagement. The agreed service quote must specify fees, currency, scope, payment arrangements and cancellation or refund terms. No general refund schedule is published until ISG approves one. Ask for these terms before paying.": "An enquiry does not create a paid engagement. The agreed service quote must specify fees, currency, scope, payment arrangements and cancellation or refund terms. No general refund schedule is published until ISG approves one. Ask for these terms before paying.",
+    "No guaranteed outcome": "No guaranteed outcome",
+    "Funding, admissions and immigration decisions are made independently by the relevant bodies. Neither an assessment nor payment guarantees a scholarship, admission or visa.": "Funding, admissions and immigration decisions are made independently by the relevant bodies. Neither an assessment nor payment guarantees a scholarship, admission or visa.",
+    "Personal information": "Personal information",
+    "Read the privacy information before submitting an assessment. Contact ISG about corrections or personal data requests. Do not include sensitive documents in an initial enquiry.": "Read the privacy information before submitting an assessment. Contact ISG about corrections or personal data requests. Do not include sensitive documents in an initial enquiry.",
+    "Cookie information": "Cookie information",
+    "Only what the platform needs.": "Only what the platform needs.",
+    "A straightforward explanation of the storage used by this release.": "A straightforward explanation of the storage used by this release.",
+    "Essential account cookies": "Essential account cookies",
+    "When authentication is configured, Supabase session cookies keep you signed in and support secure session renewal. Signing out removes the current session. The assessment form keeps its temporary progress in component memory; it does not save your personal details in browser storage.": "When authentication is configured, Supabase session cookies keep you signed in and support secure session renewal. Signing out removes the current session. The assessment form keeps its temporary progress in component memory; it does not save your personal details in browser storage.",
+    "Abuse prevention": "Abuse prevention",
+    "Cloudflare Turnstile is used on public submissions and authentication when configured. It processes security signals to assess automated abuse. See Cloudflare’s Turnstile privacy information for details.": "Cloudflare Turnstile is used on public submissions and authentication when configured. It processes security signals to assess automated abuse. See Cloudflare’s Turnstile privacy information for details.",
+    "Optional tracking": "Optional tracking",
+    "This release does not include advertising cookies or optional analytics. A separate consent choice must be implemented before adding any tracking that requires it.": "This release does not include advertising cookies or optional analytics. A separate consent choice must be implemented before adding any tracking that requires it.",
+    "Your browser controls": "Your browser controls",
+    "You can clear cookies in your browser settings. Blocking essential account cookies may prevent sign-in from working.": "You can clear cookies in your browser settings. Blocking essential account cookies may prevent sign-in from working."
   }
 }

@@ -89,9 +89,18 @@
     "pathTitle": "Où vos ambitions vous mèneront-elles ?",
     "pathText": "Un premier diplôme, une spécialisation ou une contribution originale. Choisissez votre point de départ.",
     "degrees": [
-      ["Votre premier diplôme", "Licence"],
-      ["Votre spécialisation", "Master"],
-      ["Votre contribution originale", "Doctorat et recherche"]
+      [
+        "Votre premier diplôme",
+        "Licence"
+      ],
+      [
+        "Votre spécialisation",
+        "Master"
+      ],
+      [
+        "Votre contribution originale",
+        "Doctorat et recherche"
+      ]
     ],
     "pathNote": "Les financements et conditions varient. Chaque parcours dépend de votre situation personnelle.",
     "processTitle": "Un peu de clarté change beaucoup.",
@@ -101,7 +110,10 @@
         "Présentez vos objectifs",
         "Créez votre compte et remplissez le court formulaire de consultation. Aucun document n’est requis à ce stade."
       ],
-      ["Faites vérifier votre paiement", "Payez une seule fois 50 000 TZS et déposez un reçu privé."],
+      [
+        "Faites vérifier votre paiement",
+        "Payez une seule fois 50 000 TZS et déposez un reçu privé."
+      ],
       [
         "Conseil et forfait",
         "ISG vous contacte sur WhatsApp et vous attribue un forfait. Payez les frais et téléversez le reçu."
@@ -126,8 +138,14 @@
         "Des classes mondiales",
         "Apprenez aux côtés de personnes aux expériences et perspectives différentes."
       ],
-      ["Au-delà des frontières", "Comprenez les lieux, les langues et les établissements liés à vos choix."],
-      ["La prochaine génération", "Construisez des connaissances pour le prochain chapitre de votre vie."]
+      [
+        "Au-delà des frontières",
+        "Comprenez les lieux, les langues et les établissements liés à vos choix."
+      ],
+      [
+        "La prochaine génération",
+        "Construisez des connaissances pour le prochain chapitre de votre vie."
+      ]
     ],
     "careTitle": "Votre avenir. Votre choix éclairé.",
     "careText": "Un bon accompagnement commence par l’honnêteté. Comprenez les services, les frais et les possibilités avant de choisir.",
@@ -142,7 +160,12 @@
     "ctaTitle": "Votre prochain chapitre commence par une conversation.",
     "ctaText": "Apportez votre ambition. Nous vous aiderons à comprendre la suite.",
     "destinationLabel": "Choisissez une destination",
-    "destinations": ["Russie", "Royaume-Uni", "Allemagne", "Canada"]
+    "destinations": [
+      "Russie",
+      "Royaume-Uni",
+      "Allemagne",
+      "Canada"
+    ]
   },
   "faqs": [
     [
@@ -966,6 +989,52 @@
     "Agriculture & environment": "Agriculture et environnement",
     "Needs information": "Informations requises",
     "Search": "Rechercher",
-    "Catalogue": "Catalogue"
+    "Catalogue": "Catalogue",
+    "Education across borders.": "Une éducation sans frontières.",
+    "National leadership and international education provide context for the destinations students explore.": "Le leadership national et l’éducation internationale éclairent les destinations que les étudiants explorent.",
+    "President of the Russian Federation": "Président de la Fédération de Russie",
+    "Russia is one of the destinations students can explore when considering international university study. Programme requirements and funding must be checked with the relevant institution.": "La Russie fait partie des destinations que les étudiants peuvent explorer pour leurs études universitaires à l’international. Les conditions et le financement doivent être vérifiés auprès de l’établissement concerné.",
+    "President of the United Republic of Tanzania": "Présidente de la République unie de Tanzanie",
+    "ISG’s initial focus is supporting students from Tanzania as they consider international education, prepare applications and make informed choices about their next steps.": "ISG accompagne d’abord les étudiants de Tanzanie lorsqu’ils envisagent des études à l’international, préparent leurs candidatures et font des choix éclairés.",
+    "Official presidential profile ↗": "Profil officiel du président ↗",
+    "Official presidency website ↗": "Site officiel de la présidence ↗",
+    "Profiles provide national context. ISG is an independent advisory service; these images do not imply endorsement or a government partnership.": "Ces profils apportent un contexte national. ISG est un service de conseil indépendant ; ces images n’impliquent ni approbation ni partenariat avec un gouvernement.",
+    "More than a university.": "Plus qu’une université.",
+    "Your next environment.": "Votre prochain environnement.",
+    "ISG informs and supports students throughout the application process, from exploring destinations to preparing documents and following up on applications.": "ISG informe et accompagne les étudiants tout au long du processus de candidature, de l’exploration des destinations à la préparation des documents et au suivi des candidatures.",
+    "Explore study paths": "Explorer les parcours",
+    "Swipe to explore campus life →": "Balayez pour explorer la vie de campus →",
+    "Find a place to grow.": "Trouvez un lieu pour grandir.",
+    "Explore the learning environment, course structure and student life that fit your ambitions.": "Explorez l’environnement d’apprentissage, la structure des cours et la vie étudiante qui correspondent à vos ambitions.",
+    "Make room for discovery.": "Faites place à la découverte.",
+    "Think about libraries, research facilities and the academic support you will need throughout your studies.": "Pensez aux bibliothèques, aux équipements de recherche et au soutien académique dont vous aurez besoin pendant vos études.",
+    "Feel at home, further afield.": "Sentez-vous chez vous, plus loin.",
+    "Prepare for the language, culture and everyday life of an international student community.": "Préparez-vous à la langue, à la culture et au quotidien d’une communauté étudiante internationale.",
+    "Service terms": "Conditions de service",
+    "Clear expectations, from the start.": "Des attentes claires, dès le départ.",
+    "The principles that guide your use of the ISG platform.": "Les principes qui encadrent votre utilisation de la plateforme ISG.",
+    "Independent advisory support": "Conseil indépendant",
+    "ISG provides education advisory and application support. It does not award scholarships, grant admission or issue visas. Information is general until reviewed for your circumstances. Providers may change requirements, fees and deadlines.": "ISG fournit des conseils éducatifs et un accompagnement aux candidatures. Elle n’attribue pas de bourses, n’accorde pas d’admission et ne délivre pas de visas. Les informations restent générales tant qu’elles n’ont pas été examinées pour votre situation. Les établissements peuvent modifier les conditions, les frais et les délais.",
+    "Your responsibilities": "Vos responsabilités",
+    "Provide accurate information, protect your account and review documents before approving them. Do not share official application portal passwords. Use the platform lawfully and do not attempt to access another person’s data or internal research.": "Fournissez des informations exactes, protégez votre compte et relisez les documents avant de les approuver. Ne partagez pas les mots de passe des portails officiels de candidature. Utilisez la plateforme légalement et ne tentez pas d’accéder aux données d’autrui ni à la recherche interne.",
+    "Applications and authorization": "Candidatures et autorisation",
+    "Before authorizing a proposed application, you must receive the provider details, relevant selection requirements, material costs and information about where your data will be sent. No initial assessment constitutes permission to submit an application.": "Avant d’autoriser une candidature proposée, vous devez recevoir les détails de l’établissement, les critères de sélection, les coûts importants et l’information sur la destination de vos données. Aucune évaluation initiale ne vaut autorisation de soumettre une candidature.",
+    "Fees, cancellation and refunds": "Frais, annulation et remboursements",
+    "An enquiry does not create a paid engagement. The agreed service quote must specify fees, currency, scope, payment arrangements and cancellation or refund terms. No general refund schedule is published until ISG approves one. Ask for these terms before paying.": "Une demande de renseignements ne crée pas de prestation payante. Le devis convenu doit préciser les frais, la devise, la portée, les modalités de paiement et les conditions d’annulation ou de remboursement. Aucun barème général de remboursement n’est publié avant approbation par ISG. Demandez ces conditions avant de payer.",
+    "No guaranteed outcome": "Aucun résultat garanti",
+    "Funding, admissions and immigration decisions are made independently by the relevant bodies. Neither an assessment nor payment guarantees a scholarship, admission or visa.": "Les décisions de financement, d’admission et d’immigration sont prises indépendamment par les organismes compétents. Ni une évaluation ni un paiement ne garantit une bourse, une admission ou un visa.",
+    "Personal information": "Informations personnelles",
+    "Read the privacy information before submitting an assessment. Contact ISG about corrections or personal data requests. Do not include sensitive documents in an initial enquiry.": "Lisez les informations de confidentialité avant de soumettre une évaluation. Contactez ISG pour les corrections ou les demandes relatives aux données personnelles. N’incluez pas de documents sensibles dans une première demande.",
+    "Cookie information": "Informations sur les cookies",
+    "Only what the platform needs.": "Uniquement ce dont la plateforme a besoin.",
+    "A straightforward explanation of the storage used by this release.": "Une explication simple du stockage utilisé par cette version.",
+    "Essential account cookies": "Cookies essentiels du compte",
+    "When authentication is configured, Supabase session cookies keep you signed in and support secure session renewal. Signing out removes the current session. The assessment form keeps its temporary progress in component memory; it does not save your personal details in browser storage.": "Lorsque l’authentification est configurée, les cookies de session Supabase vous maintiennent connecté et permettent un renouvellement sécurisé de la session. La déconnexion supprime la session en cours. Le formulaire d’évaluation garde sa progression temporaire en mémoire ; il n’enregistre pas vos données personnelles dans le stockage du navigateur.",
+    "Abuse prevention": "Prévention des abus",
+    "Cloudflare Turnstile is used on public submissions and authentication when configured. It processes security signals to assess automated abuse. See Cloudflare’s Turnstile privacy information for details.": "Cloudflare Turnstile est utilisé pour les envois publics et l’authentification lorsqu’il est configuré. Il traite des signaux de sécurité pour évaluer les abus automatisés. Consultez les informations de confidentialité de Turnstile pour en savoir plus.",
+    "Optional tracking": "Suivi facultatif",
+    "This release does not include advertising cookies or optional analytics. A separate consent choice must be implemented before adding any tracking that requires it.": "Cette version n’inclut pas de cookies publicitaires ni d’analytique facultative. Un consentement distinct doit être mis en place avant d’ajouter un suivi qui l’exige.",
+    "Your browser controls": "Les contrôles de votre navigateur",
+    "You can clear cookies in your browser settings. Blocking essential account cookies may prevent sign-in from working.": "Vous pouvez effacer les cookies dans les paramètres de votre navigateur. Bloquer les cookies essentiels du compte peut empêcher la connexion."
   }
 }

@@ -77,7 +77,10 @@
         "Tafuta mwelekeo wako",
         "Elewa wasifu wako wa kitaaluma na njia za masomo zinazoweza kuendana na malengo yako."
       ],
-      ["Jiandae kwa kujiamini", "Pata msaada wa nyaraka, barua za maelezo binafsi na mahitaji ya maombi."],
+      [
+        "Jiandae kwa kujiamini",
+        "Pata msaada wa nyaraka, barua za maelezo binafsi na mahitaji ya maombi."
+      ],
       [
         "Mshauri akiwa upande wako",
         "Shirikiana na mshauri anayekusaidia kufanya maamuzi na kuelewa hatua zinazofuata."
@@ -86,9 +89,18 @@
     "pathTitle": "Malengo yako yatakupeleka wapi?",
     "pathText": "Shahada ya kwanza, utaalamu mpya au mchango wa kipekee. Anza na njia inayokufaa.",
     "degrees": [
-      ["Shahada yako ya kwanza", "Shahada ya kwanza"],
-      ["Utaalamu wako unaofuata", "Shahada ya uzamili"],
-      ["Mchango wako wa kipekee", "Uzamivu na utafiti"]
+      [
+        "Shahada yako ya kwanza",
+        "Shahada ya kwanza"
+      ],
+      [
+        "Utaalamu wako unaofuata",
+        "Shahada ya uzamili"
+      ],
+      [
+        "Mchango wako wa kipekee",
+        "Uzamivu na utafiti"
+      ]
     ],
     "pathNote": "Ufadhili na masharti hutofautiana. Kila njia huanza kwa kuzingatia hali yako binafsi.",
     "processTitle": "Uwazi kidogo huleta tofauti kubwa.",
@@ -98,7 +110,10 @@
         "Eleza malengo yako",
         "Fungua akaunti na ujaze fomu fupi ya ushauri. Huhitaji nyaraka katika hatua hii."
       ],
-      ["Thibitisha malipo ya ushauri", "Lipa TZS 50,000 mara moja na pakia risiti kwa faragha."],
+      [
+        "Thibitisha malipo ya ushauri",
+        "Lipa TZS 50,000 mara moja na pakia risiti kwa faragha."
+      ],
       [
         "Ushauri na kifurushi",
         "ISG itawasiliana nawe kupitia WhatsApp na kukupangia kifurushi. Lipa ada na upakie risiti."
@@ -119,9 +134,18 @@
         "Diplomasia ya ufadhili",
         "Chunguza jinsi masomo ya kimataifa yanavyoweza kuunganisha jamii na mawazo."
       ],
-      ["Madarasa ya kimataifa", "Jifunze pamoja na watu wenye uzoefu na mitazamo tofauti."],
-      ["Zaidi ya mipaka", "Elewa maeneo, lugha na taasisi zinazohusiana na chaguo zako."],
-      ["Kizazi kijacho", "Jenga maarifa utakayobeba katika sura inayofuata ya maisha yako."]
+      [
+        "Madarasa ya kimataifa",
+        "Jifunze pamoja na watu wenye uzoefu na mitazamo tofauti."
+      ],
+      [
+        "Zaidi ya mipaka",
+        "Elewa maeneo, lugha na taasisi zinazohusiana na chaguo zako."
+      ],
+      [
+        "Kizazi kijacho",
+        "Jenga maarifa utakayobeba katika sura inayofuata ya maisha yako."
+      ]
     ],
     "careTitle": "Mustakabali wako. Chaguo lako lenye taarifa.",
     "careText": "Ushauri mzuri huanza kwa uaminifu. Elewa msaada, gharama na fursa kabla ya kuamua kuendelea.",
@@ -136,7 +160,12 @@
     "ctaTitle": "Sura yako mpya inaanza kwa mazungumzo.",
     "ctaText": "Leta malengo yako. Tutakusaidia kuelewa njia iliyo mbele.",
     "destinationLabel": "Anza na nchi unayopendelea",
-    "destinations": ["Urusi", "Uingereza", "Ujerumani", "Kanada"]
+    "destinations": [
+      "Urusi",
+      "Uingereza",
+      "Ujerumani",
+      "Kanada"
+    ]
   },
   "faqs": [
     [
@@ -960,6 +989,52 @@
     "Agriculture & environment": "Kilimo na mazingira",
     "Needs information": "Taarifa zinahitajika",
     "Search": "Tafuta",
-    "Catalogue": "Katalogi"
+    "Catalogue": "Katalogi",
+    "Education across borders.": "Elimu bila mipaka.",
+    "National leadership and international education provide context for the destinations students explore.": "Uongozi wa kitaifa na elimu ya kimataifa hutoa muktadha wa nchi wanazochunguza wanafunzi.",
+    "President of the Russian Federation": "Rais wa Shirikisho la Urusi",
+    "Russia is one of the destinations students can explore when considering international university study. Programme requirements and funding must be checked with the relevant institution.": "Urusi ni mojawapo ya nchi wanafunzi wanazoweza kuchunguza kwa masomo ya chuo kikuu nje ya nchi. Masharti na ufadhili lazima vithibitishwe na taasisi husika.",
+    "President of the United Republic of Tanzania": "Rais wa Jamhuri ya Muungano wa Tanzania",
+    "ISG’s initial focus is supporting students from Tanzania as they consider international education, prepare applications and make informed choices about their next steps.": "Lengo la kwanza la ISG ni kusaidia wanafunzi kutoka Tanzania wanapofikiria elimu ya kimataifa, kuandaa maombi na kufanya maamuzi sahihi.",
+    "Official presidential profile ↗": "Wasifu rasmi wa rais ↗",
+    "Official presidency website ↗": "Tovuti rasmi ya urais ↗",
+    "Profiles provide national context. ISG is an independent advisory service; these images do not imply endorsement or a government partnership.": "Wasifu huu unatoa muktadha wa kitaifa. ISG ni huduma huru ya ushauri; picha hizi hazimaanishi ridhaa wala ushirikiano na serikali.",
+    "More than a university.": "Zaidi ya chuo kikuu.",
+    "Your next environment.": "Mazingira yako mapya.",
+    "ISG informs and supports students throughout the application process, from exploring destinations to preparing documents and following up on applications.": "ISG huwahabarisha na kuwaunga mkono wanafunzi katika mchakato wote wa maombi, kuanzia kuchunguza nchi hadi kuandaa nyaraka na kufuatilia maombi.",
+    "Explore study paths": "Chunguza njia za masomo",
+    "Swipe to explore campus life →": "Telezesha kuchunguza maisha ya chuo →",
+    "Find a place to grow.": "Pata mahali pa kukua.",
+    "Explore the learning environment, course structure and student life that fit your ambitions.": "Chunguza mazingira ya kujifunzia, muundo wa kozi na maisha ya wanafunzi yanayolingana na malengo yako.",
+    "Make room for discovery.": "Toa nafasi ya ugunduzi.",
+    "Think about libraries, research facilities and the academic support you will need throughout your studies.": "Fikiria maktaba, vifaa vya utafiti na msaada wa kitaaluma utakaohitaji katika masomo yako.",
+    "Feel at home, further afield.": "Jisikie uko nyumbani, mbali zaidi.",
+    "Prepare for the language, culture and everyday life of an international student community.": "Jiandae kwa lugha, utamaduni na maisha ya kila siku ya jamii ya wanafunzi wa kimataifa.",
+    "Service terms": "Masharti ya huduma",
+    "Clear expectations, from the start.": "Matarajio yaliyo wazi tangu mwanzo.",
+    "The principles that guide your use of the ISG platform.": "Kanuni zinazoongoza matumizi yako ya jukwaa la ISG.",
+    "Independent advisory support": "Ushauri huru",
+    "ISG provides education advisory and application support. It does not award scholarships, grant admission or issue visas. Information is general until reviewed for your circumstances. Providers may change requirements, fees and deadlines.": "ISG hutoa ushauri wa elimu na msaada wa maombi. Haitoi ufadhili, hakuna udahili wala visa. Taarifa ni za jumla hadi zihakikiwe kwa hali yako. Taasisi zinaweza kubadilisha masharti, ada na makataa.",
+    "Your responsibilities": "Majukumu yako",
+    "Provide accurate information, protect your account and review documents before approving them. Do not share official application portal passwords. Use the platform lawfully and do not attempt to access another person’s data or internal research.": "Toa taarifa sahihi, linda akaunti yako na hakiki nyaraka kabla ya kuzikubali. Usishiriki nywila za tovuti rasmi za maombi. Tumia jukwaa kwa mujibu wa sheria na usijaribu kufikia data ya mtu mwingine au utafiti wa ndani.",
+    "Applications and authorization": "Maombi na idhini",
+    "Before authorizing a proposed application, you must receive the provider details, relevant selection requirements, material costs and information about where your data will be sent. No initial assessment constitutes permission to submit an application.": "Kabla ya kuidhinisha ombi lililopendekezwa, lazima upate taarifa za taasisi, masharti ya uteuzi, gharama muhimu na mahali data yako itakopelekwa. Tathmini ya awali haitoi idhini ya kuwasilisha ombi.",
+    "Fees, cancellation and refunds": "Ada, kughairi na marejesho",
+    "An enquiry does not create a paid engagement. The agreed service quote must specify fees, currency, scope, payment arrangements and cancellation or refund terms. No general refund schedule is published until ISG approves one. Ask for these terms before paying.": "Maulizo hayaleti huduma ya malipo. Nukuu iliyokubaliwa lazima ieleze ada, sarafu, wigo, mipango ya malipo na masharti ya kughairi au kurejesha fedha. Hakuna ratiba ya jumla ya marejesho inayochapishwa hadi ISG iidhinishe. Omba masharti haya kabla ya kulipa.",
+    "No guaranteed outcome": "Hakuna uhakika wa matokeo",
+    "Funding, admissions and immigration decisions are made independently by the relevant bodies. Neither an assessment nor payment guarantees a scholarship, admission or visa.": "Maamuzi ya ufadhili, udahili na uhamiaji hufanywa kwa uhuru na taasisi husika. Tathmini au malipo hayahakikishi ufadhili, udahili au visa.",
+    "Personal information": "Taarifa binafsi",
+    "Read the privacy information before submitting an assessment. Contact ISG about corrections or personal data requests. Do not include sensitive documents in an initial enquiry.": "Soma taarifa za faragha kabla ya kuwasilisha tathmini. Wasiliana na ISG kuhusu marekebisho au maombi ya data binafsi. Usiweke nyaraka nyeti kwenye maulizo ya kwanza.",
+    "Cookie information": "Taarifa za vidakuzi",
+    "Only what the platform needs.": "Kinachohitajika tu na jukwaa.",
+    "A straightforward explanation of the storage used by this release.": "Maelezo rahisi ya hifadhi inayotumika na toleo hili.",
+    "Essential account cookies": "Vidakuzi muhimu vya akaunti",
+    "When authentication is configured, Supabase session cookies keep you signed in and support secure session renewal. Signing out removes the current session. The assessment form keeps its temporary progress in component memory; it does not save your personal details in browser storage.": "Pale uthibitishaji umewekwa, vidakuzi vya kipindi vya Supabase hukuweka umeingia na kusaidia kuhuisha kipindi kwa usalama. Kutoka hufuta kipindi cha sasa. Fomu ya tathmini huhifadhi maendeleo ya muda kwenye kumbukumbu; haihifadhi taarifa zako binafsi kwenye hifadhi ya kivinjari.",
+    "Abuse prevention": "Kuzuia matumizi mabaya",
+    "Cloudflare Turnstile is used on public submissions and authentication when configured. It processes security signals to assess automated abuse. See Cloudflare’s Turnstile privacy information for details.": "Cloudflare Turnstile hutumika kwa mawasilisho ya umma na uthibitishaji pale imewekwa. Huchakata ishara za usalama kutathmini matumizi mabaya ya kiotomatiki. Angalia taarifa za faragha za Turnstile kwa maelezo.",
+    "Optional tracking": "Ufuatiliaji wa hiari",
+    "This release does not include advertising cookies or optional analytics. A separate consent choice must be implemented before adding any tracking that requires it.": "Toleo hili halina vidakuzi vya matangazo wala uchanganuzi wa hiari. Ridhaa tofauti lazima itekelezwe kabla ya kuongeza ufuatiliaji unaohitaji hivyo.",
+    "Your browser controls": "Vidhibiti vya kivinjari chako",
+    "You can clear cookies in your browser settings. Blocking essential account cookies may prevent sign-in from working.": "Unaweza kufuta vidakuzi kwenye mipangilio ya kivinjari chako. Kuzuia vidakuzi muhimu vya akaunti kunaweza kuzuia kuingia."
   }
 }

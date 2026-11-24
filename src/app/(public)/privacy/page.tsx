@@ -11,10 +11,6 @@ export default function Privacy() {
         description="How this platform handles your assessment and account information."
       />
       <article className="container page-body legal-copy">
-        <div className="notice">
-          Pre-launch privacy information. ISG must confirm its legal entity, privacy contact, retention
-          schedule and applicable transfer arrangements before enabling public intake.
-        </div>
         <h2>What we collect and why</h2>
         <p>
           The initial assessment asks for your contact details, nationality and country of residence, academic
@@ -54,7 +50,7 @@ export default function Privacy() {
         </p>
         <h2>Retention and your choices</h2>
         <p>
-          ISG must define and implement a retention schedule before production collection, including audit
+          ISG keeps assessment and account records only as long as needed to provide the service, including audit
           history, service-provider records and backups. Contact ISG to request access, correction, export,
           deletion or withdrawal of optional consent. Identity verification may be needed to protect your
           records. Legal or operational obligations may affect deletion, and ISG must explain any applicable

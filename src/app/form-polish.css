@@ -119,6 +119,9 @@ option {
   color: var(--navy);
   font-size: 20px;
 }
+.localized-content {
+  display: contents;
+}
 .country-select {
   position: relative;
 }
