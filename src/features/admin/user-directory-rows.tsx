@@ -11,7 +11,7 @@ export type DirectoryUser = {
   status: string;
   phone: string;
   location: string;
-  href?: string;
+  caseHref?: string;
   reference?: string;
   applications: number;
   joined: string;
@@ -44,10 +44,12 @@ export function UserDirectoryRows({ users }: { users: DirectoryUser[] }) {
           </thead>
           <tbody>
             {users.map((user) => (
-              <NavigableRow key={user.id} href={user.href}>
+              <NavigableRow key={user.id} href={`/admin/users/${user.id}`}>
                 <td>{user.number}</td>
                 <td>
-                  {user.name || <Text>Unnamed account</Text>}
+                  <Link className="text-link" href={`/admin/users/${user.id}`}>
+                    {user.name || <Text>Unnamed account</Text>}
+                  </Link>
                   <small>{user.email}</small>
                 </td>
                 <td className="capitalize">
@@ -61,8 +63,8 @@ export function UserDirectoryRows({ users }: { users: DirectoryUser[] }) {
                   <small>{user.location}</small>
                 </td>
                 <td>
-                  {user.href ? (
-                    <Link className="text-link" href={user.href}>
+                  {user.caseHref ? (
+                    <Link className="text-link" href={user.caseHref}>
                       {user.reference || <Text>Open case</Text>}
                     </Link>
                   ) : (
@@ -91,13 +93,9 @@ export function UserDirectoryRows({ users }: { users: DirectoryUser[] }) {
               <UserRoleMenu id={user.id} role={user.role} />
             </div>
             <h2>
-              {user.href ? (
-                <Link href={user.href}>
-                  {user.name || <Text>Unnamed account</Text>} <span aria-hidden>→</span>
-                </Link>
-              ) : (
-                user.name || <Text>Unnamed account</Text>
-              )}
+              <Link className="user-directory-card-link" href={`/admin/users/${user.id}`}>
+                {user.name || <Text>Unnamed account</Text>} <span aria-hidden>→</span>
+              </Link>
             </h2>
             <p className="case-email">{user.email}</p>
             <p>
@@ -110,8 +108,8 @@ export function UserDirectoryRows({ users }: { users: DirectoryUser[] }) {
                   <Text>Consultation</Text>
                 </dt>
                 <dd>
-                  {user.href ? (
-                    <Link href={user.href}>{user.reference || <Text>Open case</Text>}</Link>
+                  {user.caseHref ? (
+                    <Link href={user.caseHref}>{user.reference || <Text>Open case</Text>}</Link>
                   ) : (
                     <Text>None</Text>
                   )}

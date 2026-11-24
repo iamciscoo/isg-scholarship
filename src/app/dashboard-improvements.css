@@ -313,6 +313,19 @@ body:has(.unsaved-changes-bar) .whatsapp-floater {
     margin: 0 0 4px;
     line-height: 1.4;
   }
+  .user-directory-card {
+    position: relative;
+  }
+  .user-directory-card-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .user-directory-card .row-menu-trigger,
+  .user-directory-card .case-card-progress a {
+    position: relative;
+    z-index: 1;
+  }
   .case-list-card p,
   .user-directory-card p {
     font-size: 12px;

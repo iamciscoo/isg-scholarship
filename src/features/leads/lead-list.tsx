@@ -10,17 +10,16 @@ import { getLocale } from "@/lib/i18n/server";
 import { LeadFilters, type LeadQuery } from "./lead-filters";
 import { ConsultationRows } from "./consultation-rows";
 export async function LeadList({ admin, query }: { admin: boolean; query: LeadQuery }) {
-  const { db, user, role } = await requireStaff(admin);
-  const locale = await getLocale();
-  const { leads, count, error, page } = await listLeads(db, query);
-  const advisors = admin ? await getAdvisors(db) : [];
+  const [{ db, user, role }, locale] = await Promise.all([requireStaff(admin), getLocale()]);
   const base = admin ? "/admin" : "/advisor";
-  const [all, newLeads, reviewing] = await Promise.all([
+  const [{ leads, count, error, page }, advisors, all, newLeads, reviewing] = await Promise.all([
+    listLeads(db, query),
+    admin ? getAdvisors(db) : [],
     db.from("leads").select("id", { count: "exact", head: true }),
-    db
+    admin ? db
       .from("consultation_cases")
       .select("user_id", { count: "exact", head: true })
-      .eq("payment_status", "pending_verification"),
+      .eq("payment_status", "pending_verification") : { count: 0, error: null },
     db
       .from("consultation_cases")
       .select("user_id", { count: "exact", head: true })
