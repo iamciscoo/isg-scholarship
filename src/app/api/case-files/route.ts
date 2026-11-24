@@ -10,6 +10,15 @@ import { caseFileLimit, caseFileSizeError, caseUploadKinds } from "@/lib/validat
 import { wakeNotifications } from "@/server/services/notification-delivery";
 import { storageBody } from "@/server/services/storage-body";
 import { stagedPdfPath, stagedPdfStorage } from "@/server/services/case-pdf-staging";
+import {
+  applicationDocumentCategories,
+  type ApplicationDocumentCategory,
+} from "@/lib/validation/application-review";
+
+const receiptCategories: Record<string, string> = {
+  payment_receipt: "Payment receipt",
+  package_payment: "Package payment receipt",
+};
 
 export const maxDuration = 60;
 
@@ -155,11 +164,16 @@ export async function POST(request: Request) {
       });
       throw Error("Private storage is unavailable. Please try again.");
     }
-    const suppliedName = fd.get("originalName");
-    const originalName = (typeof suppliedName === "string" ? suppliedName : file.name)
-      .replace(/[\p{Cc}\p{Cf}\/\\]/gu, "")
-      .trim();
-    const name = Array.from(originalName).slice(0, 180).join("");
+    const label =
+      applicationDocumentCategories[category.data as ApplicationDocumentCategory] ||
+      receiptCategories[String(category.data)] ||
+      (kind === "receipt" ? "Payment receipt" : "Document");
+    const { count } = await admin
+      .from("case_files")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", owner)
+      .eq("category", String(category.data ?? ""));
+    const name = `${label}${count ? ` ${count + 1}` : ""}.${validated.extension}`;
     const registered =
       staffUpload && kind === "receipt"
         ? await db.rpc("register_admin_payment_file", {

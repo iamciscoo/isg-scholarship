@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { applicationDraftSchema } from "@/lib/validation/application-form";
+import { fullApplicationStatusLabel } from "@/lib/validation/application-review";
 import { FullApplicationForm } from "./full-application-form";
 import { DocumentPanel } from "./document-panel";
 import { ApplicationTabs } from "./application-tabs";
@@ -72,10 +73,27 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
       ) : (
         <ApplicationTabs
           details={
+            <section className="workspace-panel">
+              <span className="status-pill">{fullApplicationStatusLabel(record.application_status)}</span>
+              {closed ? (
+                <p>
+                  <Text>{"This application is closed. Reopen its status before editing details."}</Text>
+                </p>
+              ) : (
+                <p>
+                  <Text>{"The applicant's answers are entered in the Application tab."}</Text>
+                </p>
+              )}
+              <Link className="text-link" href={`/${area}/cases/${id}`}>
+                <Text>{"View consultation →"}</Text>
+              </Link>
+            </section>
+          }
+          application={
             <>
               {record.current_declaration_id && (
                 <div className="workspace-action-row case-actions">
-                  <Link href={`/${area}/declarations/${record.current_declaration_id}`}>
+                  <Link className="button button-outline" href={`/${area}/declarations/${record.current_declaration_id}`}>
                     <Text>{"Review recorded application"}</Text>
                   </Link>
                 </div>

@@ -22,7 +22,9 @@ export function ApplicationTabs({
   const id = useId();
   const [active, setActive] = useState<(typeof tabs)[number]["id"]>("details");
   const hasDocuments = Boolean(documents);
-  const shown = tabs.filter((tab) => tab.id !== "documents" || hasDocuments);
+  const shown = tabs.filter((tab) =>
+    tab.id === "documents" ? hasDocuments : tab.id === "application" ? Boolean(application) : true,
+  );
 
   useEffect(() => {
     const sync = () => {

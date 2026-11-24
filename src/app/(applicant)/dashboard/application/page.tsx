@@ -169,7 +169,7 @@ export default async function ApplicationDetails() {
               ))}
           </>
         }
-        documents={<DocumentPanel user={user.id} />}
+        documents={<DocumentPanel user={user.id} removable={!record.current_declaration_id} />}
       />
     </Workspace>
   );

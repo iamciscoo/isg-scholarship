@@ -3,6 +3,38 @@ import { createClient } from "@/lib/supabase/server";
 import { adminClient } from "@/lib/supabase/admin";
 import { authConfigured } from "@/lib/supabase/config";
 import { caseFileLimit } from "@/lib/validation/case-file";
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  if (!authConfigured()) return new Response(null, { status: 503 });
+  if (!z.uuid().safeParse(id).success) return new Response(null, { status: 404 });
+  const db = await createClient();
+  const {
+    data: { user },
+  } = await db.auth.getUser();
+  if (!user) return new Response(null, { status: 401 });
+  const { data: file } = await db
+    .from("case_files")
+    .select("storage_path,user_id,kind")
+    .eq("id", id)
+    .maybeSingle();
+  if (!file) return new Response(null, { status: 404 });
+  const { data: role } = await db.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
+  const staff = role?.role === "admin" || role?.role === "advisor";
+  if (!staff) {
+    if (file.user_id !== user.id || file.kind !== "document") return new Response(null, { status: 403 });
+    const { data: record } = await db
+      .from("consultation_cases")
+      .select("current_declaration_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (record?.current_declaration_id) return new Response(null, { status: 409 });
+  }
+  const admin = adminClient();
+  const { error } = await admin.from("case_files").delete().eq("id", id);
+  if (error) return new Response(null, { status: 500 });
+  await admin.storage.from("case-files").remove([file.storage_path]);
+  return new Response(null, { status: 204 });
+}
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!authConfigured()) return new Response(null, { status: 503 });

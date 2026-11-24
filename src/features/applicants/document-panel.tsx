@@ -8,10 +8,12 @@ export async function DocumentPanel({
   user,
   staff = false,
   editable = false,
+  removable = false,
 }: {
   user: string;
   staff?: boolean;
   editable?: boolean;
+  removable?: boolean;
 }) {
   const db = await createClient();
   const [requests, files] = await Promise.all([
@@ -78,6 +80,7 @@ export async function DocumentPanel({
                     <li key={file.id}>
                       <FileLinks
                         id={file.id}
+                        removable={removable}
                         name={
                           file.original_name ||
                           `${file.mime === "application/pdf" ? "PDF" : "Image"} ${documents.length - index}`

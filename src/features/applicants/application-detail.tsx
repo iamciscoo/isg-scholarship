@@ -48,13 +48,25 @@ export async function ApplicationDetail({
   const { data: draft } = paid
     ? await db.from("application_form_drafts").select("data").eq("user_id", application.user_id).maybeSingle()
     : { data: null };
-  const applicationForm =
-    paid && !record.current_declaration_id ? (
-      <FullApplicationForm
-        applicant={staff ? application.user_id : undefined}
-        initial={(draft?.data ?? {}) as Partial<FullApplication>}
-      />
-    ) : undefined;
+  const applicationTab = !paid ? undefined : (
+    <>
+      {record.current_declaration_id ? (
+        <section className="workspace-panel">
+          <Link
+            className="button button-primary"
+            href={staff ? `${area}/declarations/${record.current_declaration_id}` : "/dashboard/application"}
+          >
+            {staff ? translate("Review recorded application") : translate("View application")}
+          </Link>
+        </section>
+      ) : (
+        <FullApplicationForm
+          applicant={staff ? application.user_id : undefined}
+          initial={(draft?.data ?? {}) as Partial<FullApplication>}
+        />
+      )}
+    </>
+  );
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
       <Link className="text-link" href={`${area}/applications`}>
@@ -80,23 +92,8 @@ export async function ApplicationDetail({
                   <Link className="text-link" href={`${area}/cases/${application.user_id}`}>
                     <Text>{"View consultation"}</Text>
                   </Link>
-                  {record.current_declaration_id && (
-                    <Link
-                      className="button button-primary"
-                      href={`${area}/declarations/${record.current_declaration_id}`}
-                    >
-                      <Text>{"Review application"}</Text>
-                    </Link>
-                  )}
                 </div>
-              ) : (
-                paid &&
-                record.current_declaration_id && (
-                  <Link className="button button-primary" href="/dashboard/application">
-                    {translate("View application")}
-                  </Link>
-                )
-              )}
+              ) : null}
             </section>
             <PackageProgress
               id={id}
@@ -110,12 +107,12 @@ export async function ApplicationDetail({
             />
           </>
         }
-        application={applicationForm}
+        application={applicationTab}
         documents={
           staff ? (
             <UserFiles user={application.user_id} />
           ) : paid ? (
-            <DocumentPanel user={application.user_id} />
+            <DocumentPanel user={application.user_id} removable={!record.current_declaration_id} />
           ) : undefined
         }
       />
