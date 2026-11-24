@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useActionState, useCallback, useState } from "react";
-import { authenticate, resetPassword } from "./actions";
+import { authenticate, resetPassword, type AuthState } from "./actions";
 import { Turnstile } from "@/components/forms/turnstile";
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from "lucide-react";
+import { Check, Circle, Eye, EyeOff } from "lucide-react";
 import { useLocale } from "@/lib/i18n/provider";
+import { useWorkspaceText } from "@/lib/i18n/workspace-text";
+import { passwordRequirements } from "@/lib/validation/auth";
 export function AuthForm({
   mode,
   configured,
@@ -25,12 +27,25 @@ export function AuthForm({
   );
   const [token, setToken] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmation, setConfirmation] = useState("");
+  const [dismissed, dismiss] = useState<AuthState>();
+  const translate = useWorkspaceText();
   const {
     m: { ui: t },
   } = useLocale();
   const onToken = useCallback((v: string) => setToken(v), []);
+  const visibleError = pending || dismissed === state ? undefined : state.error;
+  const newPassword = mode === "register" || mode === "reset-password";
+  const mismatch = confirmation !== "" && confirmation !== password;
+  const messageFor = (field: AuthState["field"]) => (state.field === field ? visibleError : undefined);
+  const clearError = (field: AuthState["field"]) => {
+    if (!state.field || state.field === field || (field === "email" && mode === "login")) dismiss(state);
+  };
+  const confirmationError =
+    messageFor("confirmPassword") || (mismatch ? "The two passwords must match." : undefined);
   return (
-    <form className="form-stack" action={action} onReset={(event) => event.preventDefault()}>
+    <form className="form-stack" action={action} noValidate onReset={(event) => event.preventDefault()}>
       <input type="hidden" name="mode" value={mode} />
       <input type="hidden" name="next" value={next || ""} />
       <input type="hidden" name="captcha" value={token} />
@@ -42,7 +57,19 @@ export function AuthForm({
       {mode !== "reset-password" && (
         <div className="field">
           <label htmlFor="auth-email">{t.email}</label>
-          <input id="auth-email" name="email" type="email" autoComplete="email" required maxLength={254} />
+          <input
+            id="auth-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            maxLength={254}
+            readOnly={pending}
+            aria-invalid={!!messageFor("email")}
+            aria-describedby={messageFor("email") ? "auth-email-error" : undefined}
+            onChange={() => clearError("email")}
+          />
+          <AuthError id="auth-email-error" message={messageFor("email")} />
         </div>
       )}
       {mode !== "forgot-password" && (
@@ -57,6 +84,22 @@ export function AuthForm({
               required
               minLength={mode === "login" ? 1 : 12}
               maxLength={128}
+              readOnly={pending}
+              value={password}
+              aria-invalid={!!messageFor("password")}
+              aria-describedby={
+                [
+                  newPassword ? "auth-password-requirements" : "",
+                  messageFor("password") ? "auth-password-error" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ") || undefined
+              }
+              onChange={(event) => {
+                setPassword(event.target.value);
+                if (state.field === "confirmPassword") dismiss(state);
+                else clearError("password");
+              }}
             />
             <button
               type="button"
@@ -66,10 +109,21 @@ export function AuthForm({
               {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
             </button>
           </div>
-          {mode !== "login" && (
-            <span className="field-help">
-              At least 12 characters, including uppercase, lowercase and a number.
-            </span>
+          <AuthError id="auth-password-error" message={messageFor("password")} />
+          {newPassword && (
+            <ul id="auth-password-requirements" className="password-requirements">
+              {passwordRequirements.map((rule) => {
+                const met = rule.meets(password);
+                const Icon = met ? Check : Circle;
+                return (
+                  <li key={rule.message} data-met={met}>
+                    <Icon size={13} aria-hidden />
+                    {translate(rule.message)}
+                    <span className="sr-only"> {translate(met ? "Met" : "Required")}</span>
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </div>
       )}
@@ -85,31 +139,56 @@ export function AuthForm({
               minLength={12}
               maxLength={128}
               required
+              readOnly={pending}
+              value={confirmation}
+              aria-invalid={!!confirmationError}
+              aria-describedby={confirmationError ? "auth-confirm-error" : undefined}
+              onChange={(event) => {
+                setConfirmation(event.target.value);
+                clearError("confirmPassword");
+              }}
             />
+            <AuthError id="auth-confirm-error" message={confirmationError} />
           </div>
-          <label className="checkbox-field">
-            <input name="adult" type="checkbox" required />
-            {t.adult}
-          </label>
-          <label className="checkbox-field">
-            <input name="terms" type="checkbox" required />
-            <span>
-              {t.acceptTerms} <Link href="/terms">Terms</Link> · <Link href="/privacy">Privacy</Link>
-            </span>
-          </label>
+          <div>
+            <label className="checkbox-field">
+              <input
+                name="adult"
+                type="checkbox"
+                required
+                onChange={() => clearError("adult")}
+                aria-invalid={!!messageFor("adult")}
+                aria-describedby={messageFor("adult") ? "auth-adult-error" : undefined}
+              />
+              {t.adult}
+            </label>
+            <AuthError id="auth-adult-error" message={messageFor("adult")} />
+          </div>
+          <div>
+            <label className="checkbox-field">
+              <input
+                name="terms"
+                type="checkbox"
+                required
+                onChange={() => clearError("terms")}
+                aria-invalid={!!messageFor("terms")}
+                aria-describedby={messageFor("terms") ? "auth-terms-error" : undefined}
+              />
+              <span>
+                {t.acceptTerms} <Link href="/terms">Terms</Link> · <Link href="/privacy">Privacy</Link>
+              </span>
+            </label>
+            <AuthError id="auth-terms-error" message={messageFor("terms")} />
+          </div>
         </>
       )}
       {mode !== "reset-password" && captchaRequired && (
         <Turnstile action="auth" nonce={nonce} onToken={onToken} resetKey={pending ? 1 : 0} />
       )}
-      {state.error && (
-        <p className="notice notice-error" role="alert">
-          {state.error}
-        </p>
-      )}
+      <AuthError message={messageFor(undefined)} />
       {state.message && (
         <p className="form-message" role="status">
-          {state.message}
+          {translate(state.message)}
         </p>
       )}
       <Button disabled={!configured || pending || (mode !== "reset-password" && captchaRequired && !token)}>
@@ -134,4 +213,13 @@ export function AuthForm({
       </div>
     </form>
   );
+}
+
+function AuthError({ id, message }: { id?: string; message?: string }) {
+  const t = useWorkspaceText();
+  return message ? (
+    <p id={id} className="field-error" role="alert">
+      {t(message)}
+    </p>
+  ) : null;
 }

@@ -66,7 +66,7 @@ export function DeleteForm({
         </div>
       </dialog>
       {state.error && (
-        <p role="alert" className="notice notice-error">
+        <p role="alert" className="field-error">
           {state.error}
         </p>
       )}

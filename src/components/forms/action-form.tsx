@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useDirtyForm } from "./unsaved-changes";
 import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
-export type ActionState = { error?: string; message?: string };
+export type ActionState = { error?: string; message?: string; fieldErrors?: Record<string, string> };
 export function ActionForm({
   action,
   children,
@@ -39,7 +39,7 @@ export function ActionForm({
         {children}
       </fieldset>
       {state.error && (
-        <p role="alert" className="notice notice-error">
+        <p role="alert" className="field-error">
           {t(state.error)}
         </p>
       )}

@@ -51,6 +51,21 @@ test("logo and utility links zoom without a pointer border and retain keyboard f
   await logo.focus();
   await expect(logo).toHaveCSS("outline-style", "solid");
 });
+test("registration password requirements and confirmation update while typing", async ({ page }) => {
+  await page.goto("/register");
+  const password = page.locator("#auth-password");
+  const confirm = page.locator("#auth-password-confirm");
+  const passed = page.locator('#auth-password-requirements [data-met="true"]');
+  await password.fill("lowercase");
+  await expect(passed).toHaveCount(1);
+  await password.fill("AnExample1234");
+  await expect(passed).toHaveCount(4);
+  await confirm.fill("AnExample1235");
+  await expect(page.locator("#auth-confirm-error")).toBeVisible();
+  await confirm.fill("AnExample1234");
+  await expect(page.locator("#auth-confirm-error")).toHaveCount(0);
+  await expect(confirm).toHaveAttribute("aria-invalid", "false");
+});
 test("unauthenticated private routes stay protected", async ({ page, request, baseURL }) => {
   for (const path of [
     "/admin",

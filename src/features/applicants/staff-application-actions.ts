@@ -5,6 +5,7 @@ import { requireStaff } from "@/lib/auth/session";
 import type { ActionState } from "@/components/forms/action-form";
 import {
   applicationFields,
+  applicationFieldErrors,
   applicationDraftSchema,
   fullApplicationSchema,
 } from "@/lib/validation/application-form";
@@ -27,18 +28,9 @@ export async function saveStaffApplication(
     ...values,
     guardianPermission: fd.get("guardianPermission") === "on",
   });
-  if (!parsed.success)
-    return {
-      error: parsed.error.issues
-        .slice(0, 3)
-        .map(
-          (issue) =>
-            `${applicationFields.flatMap((section) => section.fields).find((field) => field.key === issue.path[0])?.label || "Contact permission"}: ${issue.message}`,
-        )
-        .join(" "),
-    };
+  if (!parsed.success) return { fieldErrors: applicationFieldErrors(parsed.error.issues) };
   if (submit && fd.get("declaration") !== "on")
-    return { error: "Confirm the source of the details before saving the application." };
+    return { fieldErrors: { declaration: "Confirm the source of the details before saving the application." } };
   const { error } = await db.rpc("save_staff_application", {
     p_user: applicant,
     p_data: parsed.data,

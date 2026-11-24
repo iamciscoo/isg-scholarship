@@ -114,10 +114,6 @@
     font-size: 13px;
     line-height: 1.75;
   }
-  .hero-destinations > div {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .hero-destinations a {
     font-size: 12px;
     gap: 8px;

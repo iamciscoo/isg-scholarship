@@ -2,7 +2,7 @@
 import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Check } from "lucide-react";
 import { assessmentFields, assessmentSchema, type AssessmentInput } from "@/lib/validation/assessment";
@@ -13,6 +13,7 @@ import { steps, consentFields } from "./fields";
 import { AssessmentReview } from "./assessment-review";
 import { saveConsultationDraft } from "@/features/consultations/actions";
 import { requestId } from "@/lib/request-id";
+import { CountrySelect } from "@/features/applicants/country-select";
 const titles = ["About", "Academics", "Ambitions", "Review"];
 export function AssessmentForm({
   enabled,
@@ -123,6 +124,7 @@ export function AssessmentForm({
     }
   }
   const values = form.getValues();
+  const watched = useWatch({ control: form.control });
   return (
     <div className="container assessment-shell">
       <aside className="assessment-sidebar">
@@ -163,11 +165,29 @@ export function AssessmentForm({
                 key={field.name}
               >
                 <label htmlFor={field.name}>{translate(field.label)}</label>
-                {field.options ? (
+                {field.name === "nationality" || field.name === "residence" ? (
+                  <Controller
+                    control={form.control}
+                    name={field.name}
+                    render={({ field: country, fieldState }) => (
+                      <CountrySelect
+                        id={country.name}
+                        name={country.name}
+                        mode={country.name === "nationality" ? "demonym" : "country"}
+                        defaultValue={country.value}
+                        inputRef={country.ref}
+                        onValueChange={country.onChange}
+                        onBlur={country.onBlur}
+                        invalid={!!fieldState.error}
+                        describedBy={`${country.name}-error`}
+                      />
+                    )}
+                  />
+                ) : field.options ? (
                   <select
                     id={field.name}
                     // Controlled so the value shown is always the value validated (iOS keeps an untouched default otherwise).
-                    value={String(form.watch(field.name) ?? "")}
+                    value={String(watched[field.name] ?? "")}
                     onChange={(event) =>
                       form.setValue(field.name, event.target.value as never, {
                         shouldValidate: true,
@@ -255,7 +275,7 @@ export function AssessmentForm({
           />
         </div>
         {error && (
-          <p role="alert" className="notice notice-error mt-6">
+          <p role="alert" className="field-error mt-6">
             {translate(error)}
           </p>
         )}

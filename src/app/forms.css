@@ -36,6 +36,12 @@
   color: #a3332c;
   font-size: 12px;
 }
+@media (max-width: 767px) {
+  body:has(:is(textarea, input:not([type="checkbox"], [type="radio"], [type="file"], [type="hidden"], [readonly])):focus)
+    .whatsapp-floater {
+    visibility: hidden;
+  }
+}
 .field-help {
   font-size: 11px;
   color: var(--muted);

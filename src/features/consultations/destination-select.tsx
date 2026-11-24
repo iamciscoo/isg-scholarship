@@ -1,19 +1,17 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import * as Menu from "@radix-ui/react-dropdown-menu";
 import * as Popover from "@radix-ui/react-popover";
 import { Check, ChevronDown, Globe } from "lucide-react";
-import { countries } from "@/lib/countries";
+import { countryCodeForName } from "@/lib/countries";
+import { CountryFlag } from "@/components/ui/country-flag";
 import { useLocale } from "@/lib/i18n/provider";
 import { useWorkspaceText } from "@/lib/i18n/workspace-text";
 
-const countryCodes = new Map(countries.map(({ name, code }) => [name, code]));
-
-export function DestinationFlag({ name }: { name: string }) {
-  const code = countryCodes.get(name);
+export function DestinationFlag({ name, eager }: { name: string; eager?: boolean }) {
+  const code = countryCodeForName(name);
   if (!code) return <Globe size={20} aria-hidden />;
-  return <Image src={`/flags/${code.toLowerCase()}.svg`} width={24} height={18} alt="" />;
+  return <CountryFlag code={code} eager={eager} />;
 }
 
 export function DestinationSelect({
@@ -38,7 +36,7 @@ export function DestinationSelect({
   const t = useWorkspaceText();
   const regions = new Intl.DisplayNames([locale], { type: "region" });
   const countryName = (value: string) => {
-    const code = countryCodes.get(value);
+    const code = countryCodeForName(value);
     return (code && regions.of(code)) || value;
   };
   const selectedLabel =
@@ -139,7 +137,7 @@ function DestinationChoices({
       !term ||
       normalize(value).includes(term) ||
       normalize(countryName(value)).includes(term) ||
-      countryCodes.get(value)?.toLowerCase() === term,
+      countryCodeForName(value)?.toLowerCase() === term,
   );
   return (
     <>

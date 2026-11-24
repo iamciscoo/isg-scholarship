@@ -7,5 +7,5 @@ export const countries = codes
   .map((code) => ({ code, name: display.of(code) ?? code }))
   .filter((country) => country.name !== country.code)
   .sort((a, b) => a.name.localeCompare(b.name));
-export const countryFlag = (code: string) =>
-  String.fromCodePoint(...[...code].map((letter) => 0x1f1e6 + letter.charCodeAt(0) - 65));
+const countryCodes = new Map(countries.map(({ name, code }) => [name.toLowerCase(), code]));
+export const countryCodeForName = (name: string) => countryCodes.get(name.trim().toLowerCase());

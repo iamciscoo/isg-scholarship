@@ -23,7 +23,8 @@ import { getHomepageImage } from "@/server/repositories/marketing-images";
 import { getPublishedProgrammes } from "@/server/repositories/programmes";
 import { programmeDestinations } from "@/lib/programmes";
 import { DestinationFlag } from "@/features/consultations/destination-select";
-import { countries } from "@/lib/countries";
+import { countryCodeForName } from "@/lib/countries";
+import { DestinationCarousel } from "@/components/public/destination-carousel";
 import { getLocale } from "@/lib/i18n/server";
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 export default async function Home() {
@@ -36,7 +37,7 @@ export default async function Home() {
   const availableDestinations = programmeDestinations(programmes);
   const regionNames = new Intl.DisplayNames([locale], { type: "region" });
   const destinationName = (name: string) => {
-    const code = countries.find((country) => country.name === name)?.code;
+    const code = countryCodeForName(name);
     return code ? regionNames.of(code) || name : name;
   };
   return (
@@ -63,21 +64,18 @@ export default async function Home() {
             </Link>
           </div>
           {!!availableDestinations.length && (
-            <div className="hero-destinations">
-              <span>{h.destinationLabel}</span>
-              <div>
+            <DestinationCarousel label={h.destinationLabel}>
                 {availableDestinations.map((name) => (
                   <Link
                     key={name}
                     href={`/pathways?destination=${encodeURIComponent(name)}#programme-filters`}
                   >
-                    <DestinationFlag name={name} />
+                    <DestinationFlag name={name} eager />
                     <span>{destinationName(name)}</span>
                     <ArrowUpRight size={12} />
                   </Link>
                 ))}
-              </div>
-            </div>
+            </DestinationCarousel>
           )}
         </div>
         <div className="hero-scene">

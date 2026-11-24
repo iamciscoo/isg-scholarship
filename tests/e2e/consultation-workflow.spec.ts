@@ -130,9 +130,12 @@ test("consultation, receipt correction, admin package assignment, application an
   ).toBeVisible();
   await openReceipt();
   await admin.getByRole("button", { name: "Verify payment received" }).click();
+  await expect(admin.getByRole("heading", { name: /· approved/i })).toBeVisible();
   await student.reload();
   await student.getByRole("link", { name: "Fill application form" }).click();
   await expect(student.getByRole("heading", { name: "Application details" })).toBeVisible();
+  await student.getByRole("button", { name: "Submit application", exact: true }).click();
+  await expect(student.locator("#application-institutionName-error")).toHaveText("This field is required.");
 
   const awards = student
     .locator("article")

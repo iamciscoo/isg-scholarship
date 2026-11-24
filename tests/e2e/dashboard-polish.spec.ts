@@ -72,7 +72,7 @@ test("dashboard languages, mobile lists and cancel/save validation", async ({ br
     (el as HTMLInputElement).value = "00000000-0000-4000-8000-000000000000";
   });
   await banner.getByRole("button", { name: "Save status", exact: true }).click();
-  await expect(admin.locator(".notice-error[role=alert]")).toContainText("permission");
+  await expect(admin.locator(".field-error[role=alert]")).toContainText("permission");
   await expect(admin.locator("#stage")).toHaveValue(next);
   await expect(banner).toBeVisible();
   await admin.locator('input[name="id"]').evaluate((el, id) => {

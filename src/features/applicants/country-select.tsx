@@ -1,9 +1,10 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type Ref } from "react";
 import { useLocale } from "@/lib/i18n/provider";
 import { useWorkspaceText } from "@/lib/i18n/workspace-text";
 
-import { countries, countryFlag as flag } from "@/lib/countries";
+import { countries } from "@/lib/countries";
+import { CountryFlag } from "@/components/ui/country-flag";
 // Nationality reads as a demonym: picking Tanzania stores "Tanzanian". Unknown codes fall back to the name.
 const demonyms: Record<string, string> = {
   TZ: "Tanzanian",
@@ -165,11 +166,21 @@ export function CountrySelect({
   name,
   defaultValue = "",
   mode = "country",
+  onValueChange,
+  onBlur,
+  inputRef,
+  invalid,
+  describedBy,
 }: {
   id: string;
   name: string;
   defaultValue?: string;
   mode?: "country" | "demonym";
+  onValueChange?: (value: string) => void;
+  onBlur?: () => void;
+  inputRef?: Ref<HTMLInputElement>;
+  invalid?: boolean;
+  describedBy?: string;
 }) {
   const { locale } = useLocale();
   const translate = useWorkspaceText();
@@ -179,53 +190,114 @@ export function CountrySelect({
   const [value, setValue] = useState(defaultValue);
   const [query, setQuery] = useState(defaultValue);
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
   const matches = useMemo(() => {
-    const term = query.trim().toLowerCase();
-    if (!term || term === value.toLowerCase()) return countries;
-    return countries.filter((country) =>
-      [country.name, regionNames.of(country.code), mode === "demonym" ? demonyms[country.code] : ""].some(
-        (name) => name?.toLocaleLowerCase(locale).includes(term),
-      ),
+    const normalize = (text: string) =>
+      text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase(locale);
+    const term = normalize(query.trim());
+    if (!term || term === normalize(value)) return countries;
+    return countries.filter(
+      (country) =>
+        country.code.toLowerCase() === term ||
+        [country.name, regionNames.of(country.code), mode === "demonym" ? demonyms[country.code] : ""].some(
+          (name) => name && normalize(name).includes(term),
+        ),
     );
   }, [query, value, regionNames, mode, locale]);
-  const selected = countries.find((country) => label(country) === value);
+  const selected = countries.find((country) => label(country) === value || country.name === value);
   const visibleValue = !open && selected && locale !== "en" ? regionNames.of(selected.code) || value : query;
+  const optionId = (index: number) => `${id}-option-${index}`;
+  const choose = (country: (typeof countries)[number]) => {
+    const next = label(country);
+    setValue(next);
+    setQuery(next);
+    setOpen(false);
+    setActive(-1);
+    onValueChange?.(next);
+    onBlur?.();
+  };
   return (
     <div className="country-select">
-      <input type="hidden" name={name} value={value} />
+      {!onValueChange && <input type="hidden" name={name} value={value} />}
       <input
+        ref={inputRef}
         id={id}
+        className={selected ? "country-input-with-flag" : undefined}
         type="text"
         role="combobox"
         autoComplete="off"
         aria-expanded={open}
-        aria-controls={`${name}-options`}
+        aria-controls={open ? `${id}-options` : undefined}
+        aria-activedescendant={open && active >= 0 ? optionId(active) : undefined}
+        aria-autocomplete="list"
+        aria-invalid={invalid}
+        aria-describedby={describedBy}
         placeholder={translate("Search for a country")}
         value={visibleValue}
         onChange={(event) => {
           setQuery(event.target.value);
           setValue("");
+          onValueChange?.("");
+          setActive(-1);
           setOpen(true);
         }}
-        onFocus={() => setOpen(true)}
-        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        onFocus={() => {
+          setOpen(true);
+          setActive(-1);
+        }}
+        onBlur={() => {
+          setOpen(false);
+          setQuery(value);
+          onBlur?.();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            setOpen(false);
+            setActive(-1);
+            return;
+          }
+          if (open && event.key === "Enter" && matches[active]) {
+            event.preventDefault();
+            choose(matches[active]);
+            return;
+          }
+          if ((event.key === "ArrowDown" || event.key === "ArrowUp") && matches.length) {
+            event.preventDefault();
+            const change = event.key === "ArrowDown" ? 1 : -1;
+            const next = Math.min(matches.length - 1, Math.max(0, active + change));
+            setOpen(true);
+            setActive(next);
+            requestAnimationFrame(() =>
+              document.getElementById(optionId(next))?.scrollIntoView({ block: "nearest" }),
+            );
+          }
+        }}
       />
-      {open && matches.length > 0 && (
-        <ul className="country-list" id={`${name}-options`} role="listbox">
-          {matches.slice(0, 80).map((country) => (
-            <li key={country.code}>
+      {selected && (
+        <span className="country-selected-flag">
+          <CountryFlag code={selected.code} />
+        </span>
+      )}
+      {open && (
+        <ul className="country-list" id={`${id}-options`} role="listbox" aria-labelledby={id}>
+          {!matches.length && (
+            <li className="country-empty" role="presentation">
+              {translate("No countries found.")}
+            </li>
+          )}
+          {matches.map((country, index) => (
+            <li key={country.code} role="presentation">
               <button
+                id={optionId(index)}
                 type="button"
                 role="option"
+                tabIndex={-1}
+                data-highlighted={active === index || undefined}
                 aria-selected={value === label(country)}
                 onMouseDown={(event) => event.preventDefault()}
-                onClick={() => {
-                  setValue(label(country));
-                  setQuery(label(country));
-                  setOpen(false);
-                }}
+                onClick={() => choose(country)}
               >
-                <span aria-hidden>{flag(country.code)}</span>
+                <CountryFlag code={country.code} />
                 {regionNames.of(country.code) || country.name}
                 {mode === "demonym" && locale === "en" && <small>{label(country)}</small>}
               </button>

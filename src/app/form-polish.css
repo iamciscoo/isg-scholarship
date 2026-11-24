@@ -122,6 +122,15 @@ option {
 .country-select {
   position: relative;
 }
+.country-selected-flag {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: 15px;
+  pointer-events: none;
+}
+.country-select .country-input-with-flag {
+  padding-inline-start: 44px;
+}
 .country-list {
   position: absolute;
   z-index: 30;
@@ -151,8 +160,26 @@ option {
   cursor: pointer;
 }
 .country-list button:hover,
+.country-list button[data-highlighted],
 .country-list button:focus-visible {
   background: var(--cream);
+}
+.country-list img {
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.country-empty {
+  padding: 8px;
+  color: var(--muted);
+}
+@media (max-width: 767px) {
+  .country-list {
+    position: relative;
+    inset: auto;
+    margin-top: 4px;
+    max-height: 180px;
+    overscroll-behavior: contain;
+  }
 }
 .country-list small {
   margin-left: auto;

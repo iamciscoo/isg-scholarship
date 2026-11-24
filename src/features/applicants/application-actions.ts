@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import {
   applicationFields,
+  applicationFieldErrors,
   applicationDraftSchema,
   fullApplicationSchema,
 } from "@/lib/validation/application-form";
@@ -35,19 +36,9 @@ export async function saveFullApplication(_: ActionState, fd: FormData): Promise
     email: user.email,
     guardianPermission: fd.get("guardianPermission") === "on",
   });
-  if (!parsed.success) {
-    const fields = applicationFields.flatMap((section) => section.fields);
-    return {
-      error: parsed.error.issues
-        .slice(0, 3)
-        .map(
-          (i) => `${fields.find((f) => f.key === i.path[0])?.label || "Guardian permission"}: ${i.message}`,
-        )
-        .join(" "),
-    };
-  }
+  if (!parsed.success) return { fieldErrors: applicationFieldErrors(parsed.error.issues) };
   if (declare && fd.get("declaration") !== "on")
-    return { error: "Accept the declaration before submitting." };
+    return { fieldErrors: { declaration: "Accept the declaration before submitting." } };
   const { error } = await db.rpc("save_application_form", { p_data: parsed.data, p_declare: declare });
   if (error?.message === "Application review is closed")
     return { error: "This application review is closed. Contact your advisor if you need to make changes." };

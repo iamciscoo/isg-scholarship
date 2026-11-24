@@ -58,6 +58,9 @@ export const applicationDraftSchema = fullApplicationSchema
   })
   .strict();
 export type FullApplication = z.infer<typeof fullApplicationSchema>;
+export function applicationFieldErrors(issues: readonly { path: PropertyKey[]; message: string }[]) {
+  return Object.fromEntries(issues.map(({ path, message }) => [String(path[0]), message]).reverse());
+}
 export const applicationFields: {
   title: string;
   fields: {

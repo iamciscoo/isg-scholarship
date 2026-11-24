@@ -1,5 +1,6 @@
 import { test, expect as playwrightExpect, type Page } from "@playwright/test";
 import sharp from "sharp";
+import { chooseCountry } from "./workflow-helpers";
 
 const qa = process.env.ISG_PAYMENT_QA === "true";
 const expect = playwrightExpect.configure({ timeout: 15000 });
@@ -20,10 +21,9 @@ async function submitConsultation(page: Page) {
     firstName: "Preview",
     lastName: "Student",
     phone: "+255700000000",
-    nationality: "Tanzanian",
-    residence: "Tanzania",
   }))
     await page.locator(`#${field}`).fill(value);
+  for (const id of ["nationality", "residence"]) await chooseCountry(page, id, "Tanzania");
   const next = page.getByRole("button", { name: "Continue", exact: true });
   await next.click();
   await page.locator("#qualification").selectOption("Diploma");

@@ -2,6 +2,10 @@ import { expect as playwrightExpect, type Page } from "@playwright/test";
 import PDFDocument from "pdfkit";
 const expect = playwrightExpect.configure({ timeout: 15_000 });
 export let submittedConsultation: Record<string, unknown> | undefined;
+export async function chooseCountry(page: Page, id: string, country: string) {
+  await page.locator(`#${id}`).fill(country);
+  await page.getByRole("option", { name: new RegExp(`^${country}(?: |$)`) }).click();
+}
 export async function login(page: Page, account: string, landing: string) {
   await page.goto("/login");
   await page.getByLabel("Email address", { exact: true }).fill(`isg-qa-${account}@example.com`);
@@ -22,10 +26,10 @@ export async function submitConsultation(page: Page) {
     firstName: "QA",
     lastName: "Scholar",
     phone: "+255700000000",
-    nationality: "Tanzanian",
-    residence: "Tanzania",
   }))
     await page.locator(`#${name}`).fill(value);
+  await chooseCountry(page, "nationality", "Tanzania");
+  await chooseCountry(page, "residence", "Tanzania");
   const first = await page.locator("#firstName").boundingBox();
   const last = await page.locator("#lastName").boundingBox();
   expect(first?.y).toBe(last?.y);

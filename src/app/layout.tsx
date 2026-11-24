@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { headers } from "next/headers";
 import { site } from "@/config/site";
@@ -7,6 +7,7 @@ import { getLocale, getMessages } from "@/lib/i18n/server";
 import { LocaleProvider } from "@/lib/i18n/provider";
 import { WhatsApp } from "@/components/layout/whatsapp";
 import { TapFeedback } from "@/components/ui/tap-feedback";
+import { MobileInputVisibility } from "@/components/forms/mobile-input-visibility";
 const manrope = localFont({
   src: "../../public/fonts/Manrope.ttf",
   variable: "--font-manrope",
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
     description: "International scholarship guidance, with you at every step.",
   },
 };
+export const viewport: Viewport = { interactiveWidget: "resizes-content" };
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   await headers(); // Render with the per-request CSP nonce supplied by proxy.
   const [locale, messages] = await Promise.all([getLocale(), getMessages()]);
@@ -38,6 +40,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           {children}
           <WhatsApp />
           <TapFeedback />
+          <MobileInputVisibility />
         </LocaleProvider>
       </body>
     </html>

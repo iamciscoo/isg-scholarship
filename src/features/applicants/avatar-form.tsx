@@ -132,7 +132,7 @@ export function AvatarForm({ version }: { version: string | null }) {
         </div>
       </div>
       {(error || state.error) && (
-        <p className="notice notice-error" role="alert">
+        <p className="field-error" role="alert">
           {translate(error || state.error || "")}
         </p>
       )}

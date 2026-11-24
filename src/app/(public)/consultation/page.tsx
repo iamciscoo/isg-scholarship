@@ -31,12 +31,12 @@ export default async function Consultation() {
       challengeRequired={challengeRequired()}
       initialStep={restored.step}
       initial={{
-        ...restored.data,
         firstName: profile.first_name,
         lastName: profile.last_name,
         phone: profile.phone,
         nationality: profile.nationality,
         residence: profile.residence,
+        ...restored.data,
         email: user.email || "",
       }}
       nonce={(await headers()).get("x-nonce") || undefined}

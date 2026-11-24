@@ -1,11 +1,12 @@
 "use client";
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { applicationFields, declarationText, type FullApplication } from "@/lib/validation/application-form";
 import { saveFullApplication } from "./application-actions";
 import { saveStaffApplication } from "./staff-application-actions";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useDirtyForm } from "@/components/forms/unsaved-changes";
+import type { ActionState } from "@/components/forms/action-form";
 import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 export function FullApplicationForm({
   initial,
@@ -20,6 +21,7 @@ export function FullApplicationForm({
   );
   const [answers, setAnswers] = useState(initial);
   const [declaration, setDeclaration] = useState(false);
+  const [edited, setEdited] = useState<Record<string, ActionState>>({});
   const saved = useRef(initial);
   const draftButton = useRef<HTMLButtonElement>(null);
   const t = useWorkspaceText();
@@ -31,11 +33,38 @@ export function FullApplicationForm({
     onCancel: () => {
       setAnswers(saved.current);
       setDeclaration(false);
+      setEdited(Object.fromEntries(Object.keys(state.fieldErrors || {}).map((name) => [name, state])));
     },
     onSaved: () => {
       saved.current = answers;
     },
   });
+  useEffect(() => {
+    if (!pending && state.fieldErrors) {
+      formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+    }
+  }, [formRef, pending, state]);
+  const errorFor = (name: string) =>
+    pending || edited[name] === state ? undefined : state.fieldErrors?.[name];
+  const clearError = (name: string) => setEdited((current) => ({ ...current, [name]: state }));
+  const fieldAttrs = (name: string) => ({
+    "aria-invalid": !!errorFor(name),
+    "aria-describedby": errorFor(name) ? `application-${name}-error` : undefined,
+  });
+  const inline = (name: string) => {
+    const error = errorFor(name);
+    return (
+      error && (
+        <span id={`application-${name}-error`} role="alert" className="field-error">
+          {t(error)}
+        </span>
+      )
+    );
+  };
+  const update = (name: keyof FullApplication, value: string | boolean) => {
+    setAnswers((current) => ({ ...current, [name]: value }));
+    clearError(name);
+  };
   return (
     <form action={action} ref={formRef} className="form-stack" aria-busy={pending}>
       {applicationFields.map((section) => (
@@ -43,16 +72,18 @@ export function FullApplicationForm({
           <legend>{t(section.title)}</legend>
           <div className="form-grid">
             {section.fields.map((f) => (
-              <label className="field" key={f.key}>
-                {t(f.label)}
-                {f.optional ? ` (${t("optional")})` : ""}
+              <div className="field" key={f.key}>
+                <label htmlFor={`application-${f.key}`}>
+                  {t(f.label)}
+                  {f.optional ? ` (${t("optional")})` : ""}
+                </label>
                 {f.options ? (
                   <select
+                    id={`application-${f.key}`}
+                    {...fieldAttrs(f.key)}
                     name={f.key}
                     value={String(answers[f.key] || "")}
-                    onChange={(event) =>
-                      setAnswers((current) => ({ ...current, [f.key]: event.target.value }))
-                    }
+                    onChange={(event) => update(f.key, event.target.value)}
                   >
                     <option value="">{t("Not provided")}</option>
                     {f.options.map((x) => (
@@ -63,48 +94,55 @@ export function FullApplicationForm({
                   </select>
                 ) : (
                   <input
+                    id={`application-${f.key}`}
+                    {...fieldAttrs(f.key)}
                     name={f.key}
                     type={f.type || "text"}
                     maxLength={f.type === "email" ? 254 : 160}
                     min={f.type === "number" ? 1950 : undefined}
                     max={f.type === "number" ? 2099 : undefined}
                     value={String(answers[f.key] || "")}
-                    onChange={(event) =>
-                      setAnswers((current) => ({ ...current, [f.key]: event.target.value }))
-                    }
+                    onChange={(event) => update(f.key, event.target.value)}
                     readOnly={f.key === "email"}
                   />
                 )}
-              </label>
+                {inline(f.key)}
+              </div>
             ))}
           </div>
         </fieldset>
       ))}
-      <label className="checkbox-field">
-        <input
-          type="checkbox"
-          name="guardianPermission"
-          checked={answers.guardianPermission || false}
-          onChange={(event) =>
-            setAnswers((current) => ({ ...current, guardianPermission: event.target.checked }))
-          }
-          disabled={pending}
-        />
-        {t(
-          applicant
-            ? "The applicant confirmed permission to share this contact’s details."
-            : "My nominated contact has given me permission to share their details with ISG.",
-        )}
-      </label>
+      <div>
+        <label className="checkbox-field">
+          <input
+            {...fieldAttrs("guardianPermission")}
+            type="checkbox"
+            name="guardianPermission"
+            checked={answers.guardianPermission || false}
+            onChange={(event) => update("guardianPermission", event.target.checked)}
+            disabled={pending}
+          />
+          {t(
+            applicant
+              ? "The applicant confirmed permission to share this contact’s details."
+              : "My nominated contact has given me permission to share their details with ISG.",
+          )}
+        </label>
+        {inline("guardianPermission")}
+      </div>
       <section className="notice">
         <h3>{t(applicant ? "Staff confirmation" : "Declaration")}</h3>
         {!applicant && <p>{t(declarationText)}</p>}
         <label className="checkbox-field">
           <input
+            {...fieldAttrs("declaration")}
             type="checkbox"
             name="declaration"
             checked={declaration}
-            onChange={(event) => setDeclaration(event.target.checked)}
+            onChange={(event) => {
+              setDeclaration(event.target.checked);
+              clearError("declaration");
+            }}
             disabled={pending}
           />
           {t(
@@ -113,9 +151,10 @@ export function FullApplicationForm({
               : "I sign this declaration electronically.",
           )}
         </label>
+        {inline("declaration")}
       </section>
       {state.error && (
-        <p className="notice notice-error" role="alert">
+        <p className="field-error" role="alert">
           {t(state.error)}
         </p>
       )}

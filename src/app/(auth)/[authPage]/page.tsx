@@ -45,10 +45,10 @@ export default async function AuthPage({
       <h1>{copy[mode][0]}</h1>
       <p>{copy[mode][1]}</p>
       {query.account && (
-        <p className="notice notice-error mb-5">Your account is unavailable. Please contact ISG.</p>
+        <p className="field-error mb-5" role="alert">Your account is unavailable. Please contact ISG.</p>
       )}
       {query.error && (
-        <p className="notice notice-error mb-5">
+        <p className="field-error mb-5" role="alert">
           This link could not be verified. Please request a new link.
         </p>
       )}

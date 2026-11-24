@@ -9,7 +9,11 @@ import { authSchema, passwordSchema, safeNext } from "@/lib/validation/auth";
 import { clientIdentity, sameOrigin } from "@/lib/security/request";
 import { requireUser } from "@/lib/auth/session";
 import { wakeNotifications } from "@/server/services/notification-delivery";
-export type AuthState = { error?: string; message?: string };
+export type AuthState = {
+  error?: string;
+  field?: "email" | "password" | "confirmPassword" | "adult" | "terms";
+  message?: string;
+};
 export async function authenticate(_previous: AuthState, fd: FormData): Promise<AuthState> {
   if (!authConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY)
     return { error: "Account services are awaiting setup. Please contact ISG." };
@@ -22,8 +26,9 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
     .string()
     .max(2048)
     .safeParse(fd.get("captcha") || "");
-  if (!mode.success || !email.success || !captchaToken.success || (captchaRequired && !captchaToken.data))
-    return { error: "Check your email and complete the security check." };
+  if (!mode.success || !captchaToken.success || (captchaRequired && !captchaToken.data))
+    return { error: "Complete the security check and try again." };
+  if (!email.success) return { field: "email", error: "Enter a valid email address." };
   const rate = await adminClient().rpc("consume_rate_limit", {
     p_key: `auth:${clientIdentity(requestHeaders)}`,
     p_limit: 10,
@@ -43,14 +48,14 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
     };
   }
   const credentials = authSchema.safeParse({ email: email.data, password: fd.get("password") });
-  if (!credentials.success) return { error: "Enter a valid email and password." };
+  if (!credentials.success) return { field: "password", error: "Enter your password." };
   if (mode.data === "register") {
     const password = passwordSchema.safeParse(credentials.data.password);
-    if (!password.success) return { error: password.error.issues[0].message };
-    if (fd.get("terms") !== "on" || fd.get("adult") !== "on")
-      return { error: "Confirm you are 18 or older and accept the terms and privacy information." };
+    if (!password.success) return { field: "password", error: password.error.issues[0].message };
+    if (fd.get("adult") !== "on") return { field: "adult", error: "Confirm you are 18 or older." };
+    if (fd.get("terms") !== "on") return { field: "terms", error: "Accept the terms and privacy information." };
     if (fd.get("confirmPassword") !== credentials.data.password)
-      return { error: "The two passwords must match." };
+      return { field: "confirmPassword", error: "The two passwords must match." };
     const { data: registered, error } = await db.auth.signUp({
       ...credentials.data,
       options: {
@@ -71,7 +76,7 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
     ...credentials.data,
     options: captchaRequired ? { captchaToken: captchaToken.data } : undefined,
   });
-  if (error) return { error: "We couldn’t sign you in. Check your email and password." };
+  if (error) return { field: "password", error: "We couldn’t sign you in. Check your email and password." };
   const requested = String(fd.get("next") || "");
   if (!requested && data.user) {
     const { data: role } = await db.from("user_roles").select("role").eq("user_id", data.user.id).single();
@@ -90,8 +95,9 @@ export async function resetPassword(_state: AuthState, fd: FormData): Promise<Au
   const requestHeaders = await headers();
   if (!sameOrigin(requestHeaders.get("origin"), requestHeaders)) return { error: "Request origin is not allowed." };
   const password = passwordSchema.safeParse(fd.get("password"));
-  if (!password.success) return { error: password.error.issues[0].message };
+  if (!password.success) return { field: "password", error: password.error.issues[0].message };
   const { error } = await db.auth.updateUser({ password: password.data });
+  if (error?.code === "same_password") return { field: "password", error: "Choose a different password." };
   if (error)
     return { error: "This recovery session could not update your password. Request a new recovery link." };
   await db.auth.signOut({ scope: "local" });
