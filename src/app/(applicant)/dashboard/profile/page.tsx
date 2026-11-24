@@ -3,8 +3,13 @@ import { requireUser } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { ProfileForm } from "@/features/applicants/profile-form";
 import { AvatarForm } from "@/features/applicants/avatar-form";
+import { PasswordForm } from "@/features/applicants/password-form";
 export default async function Profile() {
   const { profile, user, role } = await requireUser();
+  const providers: string[] =
+    user.app_metadata?.providers ??
+    (user.app_metadata?.provider ? [String(user.app_metadata.provider)] : []);
+  const hasPassword = Boolean(profile.password_set_at) || providers.includes("email");
   return (
     <Workspace role={role} email={user.email || ""} active="profile">
       <h1>
@@ -22,6 +27,9 @@ export default async function Profile() {
       </section>
       <section className="workspace-panel">
         <ProfileForm profile={profile} />
+      </section>
+      <section className="workspace-panel">
+        <PasswordForm hasPassword={hasPassword} />
       </section>
     </Workspace>
   );

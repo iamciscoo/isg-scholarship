@@ -19,7 +19,7 @@ export const requireUser = cache(async () => {
   }
   const [{ data: profile }, { data: roleRecord }] = await Promise.all([
     db.from("profiles")
-      .select("id,first_name,last_name,phone,nationality,residence,status,avatar_path,updated_at")
+      .select("id,first_name,last_name,phone,nationality,residence,status,avatar_path,updated_at,password_set_at")
       .eq("id", user.id)
       .single(),
     db.from("user_roles").select("role").eq("user_id", user.id).single(),
