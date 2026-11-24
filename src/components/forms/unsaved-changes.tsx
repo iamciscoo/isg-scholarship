@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { LoadingDots } from "@/components/ui/loading-dots";
 import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 import type { ActionState } from "./action-form";
 
@@ -42,6 +43,7 @@ export function UnsavedChangesProvider({ children }: { children: React.ReactNode
             {forms.length > 1 ? ` (${forms.length})` : ""}
           </p>
           <Button type="button" onClick={active.save} disabled={active.pending}>
+            {active.pending && <LoadingDots />}
             {t(active.pending ? "Saving" : active.label)}
           </Button>
         </aside>

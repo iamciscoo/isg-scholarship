@@ -11,11 +11,15 @@ type Profile = {
   nationality: string;
   residence: string;
 };
-export function ProfileForm({ profile }: { profile: Profile }) {
+export function ProfileForm({ profile, email }: { profile: Profile; email: string }) {
   const t = useWorkspaceText();
   return (
     <ActionForm action={saveProfile} label="Save profile">
       <div className="form-grid">
+        <div className="field">
+          <label htmlFor="profile-email">{t("Email address")}</label>
+          <input id="profile-email" name="email" defaultValue={email} readOnly autoComplete="email" />
+        </div>
         {(
           [
             { name: "first_name", label: "First name", auto: "given-name" },

@@ -26,7 +26,7 @@ export default async function Profile() {
         <AvatarForm version={profile.avatar_path ? profile.updated_at : null} />
       </section>
       <section className="workspace-panel">
-        <ProfileForm profile={profile} />
+        <ProfileForm profile={profile} email={user.email || ""} />
       </section>
       <section className="workspace-panel">
         <PasswordForm hasPassword={hasPassword} />

@@ -122,6 +122,10 @@ option {
 .localized-content {
   display: contents;
 }
+.field input[readonly] {
+  background: #f2f5f9;
+  color: var(--muted);
+}
 .country-select {
   position: relative;
 }
