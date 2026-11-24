@@ -195,6 +195,7 @@ test("consultation, receipt correction, admin package assignment, application an
   await applicationRow.getByRole("cell", { name: "Local workflow QA", exact: true }).click();
   await admin.getByRole("link", { name: "Review application", exact: true }).click();
   await expect(admin.getByText("QA College", { exact: true })).toBeVisible();
+  await admin.getByRole("tab", { name: "Documents", exact: true }).click();
   await expect(admin.getByRole("link", { name: "award-two.png", exact: true })).toBeVisible();
   const applicationUrl = admin.url();
   const documentPath = await admin
@@ -213,6 +214,7 @@ test("consultation, receipt correction, admin package assignment, application an
   await pdfView.goto(new URL(documentPath! + '?preview=1', baseURL).href);
   await pdfView.screenshot({ path: info.outputPath('document-preview.png') });
   await pdfView.close();
+  await admin.getByRole("tab", { name: "Details", exact: true }).click();
   const reviewNote = "Please confirm your preferred programme.";
   await admin.getByLabel("Application status").selectOption("needs_information");
   await admin.getByLabel("Note for the applicant (optional)").fill(reviewNote);
@@ -231,7 +233,8 @@ test("consultation, receipt correction, admin package assignment, application an
   await staffForm.locator('[name="institutionName"]').fill("Staff entered college");
   await staffForm.locator('[name="declaration"]').check();
   await admin.getByRole("button", { name: "Save application for applicant" }).click();
-  await expect(admin.getByText("Application recorded. You can add files below.")).toBeVisible();
+  await expect(admin.getByText("Application recorded. Open Documents to add files.")).toBeVisible();
+  await admin.getByRole("tab", { name: "Documents", exact: true }).click();
   const extra = admin
     .locator("article")
     .filter({ has: admin.getByRole("heading", { name: "Other supporting documents", exact: true }) });
@@ -242,9 +245,8 @@ test("consultation, receipt correction, admin package assignment, application an
   await extra.getByRole("button", { name: "Upload files", exact: true }).click();
   await expect(extra.getByRole("link", { name: "staff-document.pdf", exact: true })).toBeVisible();
   await expect(extra.getByRole("link", { name: "staff-image.png", exact: true })).toBeVisible();
-  const fieldPosition = await staffForm.locator('[name="firstName"]').boundingBox();
-  const filePosition = await extra.locator('input[type="file"]').boundingBox();
-  expect(fieldPosition!.y).toBeLessThan(filePosition!.y);
+  await admin.getByRole("tab", { name: "Details", exact: true }).click();
+  await expect(staffForm.locator('[name="institutionName"]')).toHaveValue("Staff entered college");
   await admin.getByRole("link", { name: "Review recorded application" }).click();
   await expect(admin.getByText("Recorded by ISG staff", { exact: true })).toBeVisible();
   await expect(admin.getByText("Staff entered college", { exact: true })).toBeVisible();

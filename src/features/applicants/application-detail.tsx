@@ -11,6 +11,8 @@ import { fullApplicationStatusLabel } from "@/lib/validation/application-review"
 import { PackageProgress } from "./package-progress";
 import { packageStatus } from "./package-status";
 import { UserFiles } from "@/features/consultations/user-files";
+import { ApplicationTabs } from "./application-tabs";
+import { DocumentPanel } from "./document-panel";
 
 export async function ApplicationDetail({
   id,
@@ -50,57 +52,69 @@ export async function ApplicationDetail({
       <p>
         {proposal.provider} · {proposal.destination} · {proposal.studyLevel}
       </p>
-      <section className="workspace-panel">
-        <span className="status-pill">
-          {record.current_declaration_id
-            ? fullApplicationStatusLabel(record.application_status)
-            : packageStatus(application.package_state, application.status)}
-        </span>
-        {proposal.requirements && <p className="preserve-lines">{proposal.requirements}</p>}
-        {proposal.supportSummary && <p className="preserve-lines">{proposal.supportSummary}</p>}
-        {staff ? (
-          <div className="workspace-action-row">
-            <Link className="text-link" href={`${area}/cases/${application.user_id}`}>
-              <Text>{"View consultation"}</Text>
-            </Link>
-            {paid && (
-              <Link
-                className="button button-outline"
-                href={`${area}/cases/${application.user_id}/application`}
-              >
-                <Text>{"Enter application details"}</Text>
-              </Link>
-            )}
-            {record.current_declaration_id && (
-              <Link
-                className="button button-primary"
-                href={`${area}/declarations/${record.current_declaration_id}`}
-              >
-                <Text>{"Review application"}</Text>
-              </Link>
-            )}
-          </div>
-        ) : (
-          paid && (
-            <Link className="button button-primary" href="/dashboard/application">
-              {record.current_declaration_id
-                ? translate("View application")
-                : translate("Fill application form")}
-            </Link>
-          )
-        )}
-      </section>
-      <PackageProgress
-        id={id}
-        state={application.package_state}
-        status={application.status}
-        fee={proposal.packageFee}
-        staff={staff}
-        admin={admin}
-        testPackage={isPreviewPackage(proposal.name)}
-        applicant={application.user_id}
+      <ApplicationTabs
+        details={
+          <>
+            <section className="workspace-panel">
+              <span className="status-pill">
+                {record.current_declaration_id
+                  ? fullApplicationStatusLabel(record.application_status)
+                  : packageStatus(application.package_state, application.status)}
+              </span>
+              {proposal.requirements && <p className="preserve-lines">{proposal.requirements}</p>}
+              {proposal.supportSummary && <p className="preserve-lines">{proposal.supportSummary}</p>}
+              {staff ? (
+                <div className="workspace-action-row">
+                  <Link className="text-link" href={`${area}/cases/${application.user_id}`}>
+                    <Text>{"View consultation"}</Text>
+                  </Link>
+                  {paid && (
+                    <Link
+                      className="button button-outline"
+                      href={`${area}/cases/${application.user_id}/application`}
+                    >
+                      <Text>{"Enter application details"}</Text>
+                    </Link>
+                  )}
+                  {record.current_declaration_id && (
+                    <Link
+                      className="button button-primary"
+                      href={`${area}/declarations/${record.current_declaration_id}`}
+                    >
+                      <Text>{"Review application"}</Text>
+                    </Link>
+                  )}
+                </div>
+              ) : (
+                paid && (
+                  <Link className="button button-primary" href="/dashboard/application">
+                    {record.current_declaration_id
+                      ? translate("View application")
+                      : translate("Fill application form")}
+                  </Link>
+                )
+              )}
+            </section>
+            <PackageProgress
+              id={id}
+              state={application.package_state}
+              status={application.status}
+              fee={proposal.packageFee}
+              staff={staff}
+              admin={admin}
+              testPackage={isPreviewPackage(proposal.name)}
+              applicant={application.user_id}
+            />
+          </>
+        }
+        documents={
+          staff ? (
+            <UserFiles user={application.user_id} />
+          ) : paid ? (
+            <DocumentPanel user={application.user_id} />
+          ) : undefined
+        }
       />
-      {staff && <UserFiles user={application.user_id} />}
     </Workspace>
   );
 }

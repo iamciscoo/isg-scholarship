@@ -11,6 +11,7 @@ import { applicationFields } from "@/lib/validation/application-form";
 import { fullApplicationStatusLabel, fullApplicationStatuses } from "@/lib/validation/application-review";
 import { reviewFullApplication } from "./application-actions";
 import { DocumentPanel } from "./document-panel";
+import { ApplicationTabs } from "./application-tabs";
 import { ApplicationUpdates, applicationDate } from "./application-updates";
 
 export async function ApplicationReview({ id, admin = false }: { id: string; admin?: boolean }) {
@@ -65,83 +66,93 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
           {current ? fullApplicationStatusLabel(status) : translate("Earlier submission")}
         </span>
       </div>
-      <div className="workspace-action-row case-actions">
-        <Link className="text-link" href={`/api/application-pdf/${id}`}>
-          <Text>{"Download application"}</Text>
-        </Link>
-        {current && (
-          <Link href={`${area}/cases/${declaration.user_id}/application`}>
-            <Text>{"Edit application"}</Text>
-          </Link>
-        )}
-        <Link className="text-link" href={`${area}/cases/${declaration.user_id}`}>
-          <Text>{"View consultation"}</Text>
-        </Link>
-        {!current && caseRecord.data.current_declaration_id && (
-          <Link className="text-link" href={`${area}/declarations/${caseRecord.data.current_declaration_id}`}>
-            <Text>{"Open latest submission"}</Text>
-          </Link>
-        )}
-      </div>
-      {current && admin && (
-        <section className="workspace-panel">
-          <h2>
-            <Text>{"Application status"}</Text>
-          </h2>
-          <ActionForm action={reviewFullApplication} label="Save status">
-            <input name="declaration" type="hidden" value={id} />
-            <input name="previous" type="hidden" value={status} />
-            <label>
-              <Text>{"Application status"}</Text>
-              <select name="status" defaultValue={status}>
-                {fullApplicationStatuses
-                  .filter(
-                    (value) => value === status || !["submitted", "approved", "declined"].includes(value),
-                  )
-                  .map((value) => (
-                    <option key={value} value={value}>
-                      {fullApplicationStatusLabel(value)}
-                    </option>
-                  ))}
-              </select>
-            </label>
-            <label>
-              <Text>{"Note for the applicant (optional)"}</Text>
-              <textarea
-                name="note"
-                maxLength={2000}
-                placeholder={translate("Add instructions if the applicant needs to do something.")}
-              />
-            </label>
-          </ActionForm>
-        </section>
-      )}
-      <section className="workspace-panel">
-        <h2>
-          <Text>{"Submitted information"}</Text>
-        </h2>
-        <div className="operation-grid">
-          {applicationFields.map((section) => (
-            <article key={section.title} className="operation-card">
-              <h3>{<Text>{section.title}</Text>}</h3>
-              <dl className="package-fees">
-                {section.fields.map((field) => (
-                  <div key={field.key} className="break-words">
-                    <dt>{<Text>{field.label}</Text>}</dt>
-                    <dd className="min-w-0">{String(declaration.data[field.key] || "—")}</dd>
-                  </div>
+      <ApplicationTabs
+        details={
+          <>
+            <div className="workspace-action-row case-actions">
+              <Link className="text-link" href={`/api/application-pdf/${id}`}>
+                <Text>{"Download application"}</Text>
+              </Link>
+              {current && (
+                <Link href={`${area}/cases/${declaration.user_id}/application`}>
+                  <Text>{"Edit application"}</Text>
+                </Link>
+              )}
+              <Link className="text-link" href={`${area}/cases/${declaration.user_id}`}>
+                <Text>{"View consultation"}</Text>
+              </Link>
+              {!current && caseRecord.data.current_declaration_id && (
+                <Link
+                  className="text-link"
+                  href={`${area}/declarations/${caseRecord.data.current_declaration_id}`}
+                >
+                  <Text>{"Open latest submission"}</Text>
+                </Link>
+              )}
+            </div>
+            {current && admin && (
+              <section className="workspace-panel">
+                <h2>
+                  <Text>{"Application status"}</Text>
+                </h2>
+                <ActionForm action={reviewFullApplication} label="Save status">
+                  <input name="declaration" type="hidden" value={id} />
+                  <input name="previous" type="hidden" value={status} />
+                  <label>
+                    <Text>{"Application status"}</Text>
+                    <select name="status" defaultValue={status}>
+                      {fullApplicationStatuses
+                        .filter(
+                          (value) =>
+                            value === status || !["submitted", "approved", "declined"].includes(value),
+                        )
+                        .map((value) => (
+                          <option key={value} value={value}>
+                            {fullApplicationStatusLabel(value)}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                  <label>
+                    <Text>{"Note for the applicant (optional)"}</Text>
+                    <textarea
+                      name="note"
+                      maxLength={2000}
+                      placeholder={translate("Add instructions if the applicant needs to do something.")}
+                    />
+                  </label>
+                </ActionForm>
+              </section>
+            )}
+            <section className="workspace-panel">
+              <h2>
+                <Text>{"Submitted information"}</Text>
+              </h2>
+              <div className="operation-grid">
+                {applicationFields.map((section) => (
+                  <article key={section.title} className="operation-card">
+                    <h3>{<Text>{section.title}</Text>}</h3>
+                    <dl className="package-fees">
+                      {section.fields.map((field) => (
+                        <div key={field.key} className="break-words">
+                          <dt>{<Text>{field.label}</Text>}</dt>
+                          <dd className="min-w-0">{String(declaration.data[field.key] || "—")}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </article>
                 ))}
-              </dl>
-            </article>
-          ))}
-        </div>
-        <p>
-          <Text>{"Guardian contact permission:"}</Text>{" "}
-          {declaration.data.guardianPermission ? translate("Confirmed") : translate("Not recorded")}
-        </p>
-      </section>
-      {current && <DocumentPanel user={declaration.user_id} staff />}
-      <ApplicationUpdates updates={updates.data} />
+              </div>
+              <p>
+                <Text>{"Guardian contact permission:"}</Text>{" "}
+                {declaration.data.guardianPermission ? translate("Confirmed") : translate("Not recorded")}
+              </p>
+            </section>
+            <ApplicationUpdates updates={updates.data} />
+          </>
+        }
+        documents={current ? <DocumentPanel user={declaration.user_id} staff /> : undefined}
+      />
     </Workspace>
   );
 }

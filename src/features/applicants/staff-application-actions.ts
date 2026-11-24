@@ -48,5 +48,5 @@ export async function saveStaffApplication(
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/application");
   if (submit) wakeNotifications();
-  return { message: submit ? "Application recorded. You can add files below." : "Applicant draft saved." };
+  return { message: submit ? "Application recorded. Open Documents to add files." : "Applicant draft saved." };
 }

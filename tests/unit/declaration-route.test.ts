@@ -57,9 +57,10 @@ it("opens the exact accepted PDF and its applicant case after administrator auth
   const links: string[] = [];
   function collect(node: React.ReactNode) {
     if (Array.isArray(node)) return node.forEach(collect);
-    if (!React.isValidElement<{ href?: string; children?: React.ReactNode }>(node)) return;
+    if (!React.isValidElement<{ href?: string; children?: React.ReactNode; details?: React.ReactNode }>(node)) return;
     if (node.props.href) links.push(node.props.href);
     collect(node.props.children);
+    collect(node.props.details);
   }
   collect(tree);
   expect(requireStaff).toHaveBeenCalledWith(true);

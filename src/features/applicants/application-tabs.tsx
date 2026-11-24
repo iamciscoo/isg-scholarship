@@ -8,20 +8,22 @@ const tabs = [
   { id: "documents", label: "Documents" },
 ] as const;
 
-export function ApplicationTabs({ details, documents }: { details: ReactNode; documents: ReactNode }) {
+export function ApplicationTabs({ details, documents }: { details: ReactNode; documents?: ReactNode }) {
   const t = useWorkspaceText();
   const id = useId();
   const [active, setActive] = useState<(typeof tabs)[number]["id"]>("details");
+  const hasDocuments = Boolean(documents);
 
   useEffect(() => {
-    const sync = () => setActive(window.location.hash === "#application-documents" ? "documents" : "details");
+    const sync = () =>
+      setActive(hasDocuments && window.location.hash === "#application-documents" ? "documents" : "details");
     const frame = requestAnimationFrame(sync);
     window.addEventListener("hashchange", sync);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("hashchange", sync);
     };
-  }, []);
+  }, [hasDocuments]);
 
   function select(next: typeof active) {
     setActive(next);
@@ -30,9 +32,15 @@ export function ApplicationTabs({ details, documents }: { details: ReactNode; do
     window.history.replaceState(window.history.state, "", url);
   }
 
+  if (!hasDocuments) return <>{details}</>;
+
   return (
     <>
-      <div className="catalogue-tabs application-tabs" role="tablist" aria-label={t("Scholarship application")}>
+      <div
+        className="catalogue-tabs application-tabs"
+        role="tablist"
+        aria-label={t("Scholarship application")}
+      >
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -46,8 +54,10 @@ export function ApplicationTabs({ details, documents }: { details: ReactNode; do
             onKeyDown={(event) => {
               if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
               event.preventDefault();
-              const next = event.key === "Home" || (event.key !== "End" && active === "documents")
-                ? "details" : "documents";
+              const next =
+                event.key === "Home" || (event.key !== "End" && active === "documents")
+                  ? "details"
+                  : "documents";
               select(next);
               document.getElementById(`${id}-tab-${next}`)?.focus();
             }}

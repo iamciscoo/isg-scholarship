@@ -7,6 +7,7 @@ import { Workspace } from "@/components/layout/workspace";
 import { applicationDraftSchema } from "@/lib/validation/application-form";
 import { FullApplicationForm } from "./full-application-form";
 import { DocumentPanel } from "./document-panel";
+import { ApplicationTabs } from "./application-tabs";
 
 export async function StaffApplicationEditor({ id, admin }: { id: string; admin: boolean }) {
   const { db, user, role } = await requireStaff(admin);
@@ -69,31 +70,35 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
           <Text>{"Verify the package payment before entering application details."}</Text>
         </p>
       ) : (
-        <>
-          {record.current_declaration_id && (
-            <div className="workspace-action-row case-actions">
-              <Link href={`/${area}/declarations/${record.current_declaration_id}`}>
-                <Text>{"Review recorded application"}</Text>
-              </Link>
-            </div>
-          )}
-          {closed ? (
-            <p>
-              <Text>{"This application is closed. Reopen its status before editing details."}</Text>
-            </p>
-          ) : (
-            <section className="workspace-panel">
-              <h2>
-                <Text>{"Application details"}</Text>
-              </h2>
-              <p>
-                <Text>{"Enter the information provided by the applicant. Files can be added below."}</Text>
-              </p>
-              <FullApplicationForm initial={initial} applicant={id} />
-            </section>
-          )}
-          <DocumentPanel user={id} staff editable />
-        </>
+        <ApplicationTabs
+          details={
+            <>
+              {record.current_declaration_id && (
+                <div className="workspace-action-row case-actions">
+                  <Link href={`/${area}/declarations/${record.current_declaration_id}`}>
+                    <Text>{"Review recorded application"}</Text>
+                  </Link>
+                </div>
+              )}
+              {closed ? (
+                <p>
+                  <Text>{"This application is closed. Reopen its status before editing details."}</Text>
+                </p>
+              ) : (
+                <section className="workspace-panel">
+                  <h2>
+                    <Text>{"Application details"}</Text>
+                  </h2>
+                  <p>
+                    <Text>{"Enter the information provided by the applicant."}</Text>
+                  </p>
+                  <FullApplicationForm initial={initial} applicant={id} />
+                </section>
+              )}
+            </>
+          }
+          documents={<DocumentPanel user={id} staff editable />}
+        />
       )}
     </Workspace>
   );
