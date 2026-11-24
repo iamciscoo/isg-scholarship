@@ -4,13 +4,14 @@ import { Workspace } from "@/components/layout/workspace";
 import { stageLabel } from "@/lib/validation/leads";
 export default async function Audit() {
   const { db, user, role } = await requireStaff(true);
-  const [audit, summary] = await Promise.all([
+  const [audit, summary, failures] = await Promise.all([
     db
       .from("audit_logs")
       .select("id,action,entity_id,actor_id,created_at")
       .order("created_at", { ascending: false })
       .limit(100),
     db.rpc("notification_summary"),
+    db.rpc("notification_delivery_failures"),
   ]);
   return (
     <Workspace role={role} email={user.email || ""} active="audit">
@@ -49,6 +50,15 @@ export default async function Audit() {
             }
           </Text>
         </p>
+        {!!failures.data?.length && (
+          <ul className="notification-history">
+            {(failures.data as { channel: string; error: string; total: number }[]).map((row) => (
+              <li key={`${row.channel}:${row.error}`}>
+                <Text>{row.channel}</Text> · {row.error} ({row.total})
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
       <section className="workspace-panel">
         <h2>

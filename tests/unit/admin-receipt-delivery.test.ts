@@ -55,3 +55,36 @@ it("records the provider identifier from the file message without sending a dupl
     expect.objectContaining({ p_state: "sent", p_provider: "file-message" }),
   );
 });
+
+it("attaches an application receipt with the package name and exact review link", async () => {
+  const receipt = "80000000-0000-4000-8000-000000000002";
+  mock.rpc
+    .mockReset()
+    .mockResolvedValueOnce({
+      data: [
+        {
+          id: "package-event",
+          lease_id: "lease",
+          channel: "whatsapp",
+          event: "payment.receipt_received",
+          entity_id: receipt,
+          recipient: "123456789@g.us",
+          payload: {
+            applicantName: "Test Scholar",
+            applicationName: "Engineering package",
+            status: "Pending review",
+          },
+        },
+      ],
+    })
+    .mockResolvedValue({ error: null });
+  const fetcher = vi.fn();
+  vi.stubGlobal("fetch", fetcher);
+  mock.attachment.mockResolvedValue(Response.json({ idMessage: "package-file" }));
+  expect(await dispatchAdminAlerts("https://isg.example")).toMatchObject({ sent: 1, failed: 0 });
+  expect(mock.attachment).toHaveBeenCalledTimes(1);
+  const caption = mock.attachment.mock.calls[0][3];
+  expect(caption).toContain("Application: Engineering package");
+  expect(caption).toContain(`https://isg.example/admin/receipts/${receipt}`);
+  expect(fetcher).not.toHaveBeenCalled();
+});

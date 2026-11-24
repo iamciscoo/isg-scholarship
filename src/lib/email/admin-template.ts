@@ -25,6 +25,7 @@ const titles: Record<string, string> = {
 };
 
 function staffPath(event: string, id: string, path?: string) {
+  if (event.startsWith("account.")) return /^[0-9a-f-]{36}$/i.test(id) ? `/admin/users/${id}` : "/admin/users";
   if (
     path &&
     /^\/admin\/(?:inbox|enquiries|settings|consultations|payments|applications|(?:receipts|cases|declarations|applications)\/[0-9a-f-]{36})$/.test(
@@ -36,17 +37,19 @@ function staffPath(event: string, id: string, path?: string) {
   if (event === "enquiry.received") return "/admin/enquiries";
   if (event === "payment.receipt_received") return `/admin/receipts/${id}`;
   if (event === "payment.reviewed") return "/admin/payments";
-  if (event.startsWith("account.")) return "/admin/settings";
   if (event.startsWith("application.") || event.startsWith("package.")) return "/admin/applications";
   return "/admin/consultations";
 }
 
 export function adminAlertTemplate(event: string, id: string, details: NotificationDetails, baseUrl: string) {
-  const title = titles[event] || "ISG workspace update";
-  const applicant = details.applicantName || details.firstName;
+  const title = event === "payment.receipt_received" && details.applicationName
+    ? "Application payment receipt to review"
+    : titles[event] || "ISG workspace update";
+  const applicant = (details.applicantName || details.firstName)?.replace(/[\r\n\t]+/g, " ").trim();
   const text = [
     title,
     applicant && `Applicant: ${applicant}`,
+    event.startsWith("account.") && details.registeredEmail && `Registered email: ${details.registeredEmail}`,
     details.reference && `Consultation reference: ${details.reference}`,
     details.status && `Status: ${details.status}`,
     details.applicationName && `Application: ${details.applicationName}`,

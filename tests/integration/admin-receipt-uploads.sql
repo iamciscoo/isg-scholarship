@@ -45,6 +45,22 @@ exception when raise_exception then if sqlerrm<>'Application unavailable' then r
 select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000202","aal":"aal1"}',true);
 select public.test_assert(not exists(select 1 from public.case_files where id='89000000-0000-4000-8000-000000000102'),'other applicant cannot read receipt');
 reset role;
+select public.test_assert((
+  select count(*)=1 and bool_and(payload->>'path'='/admin/receipts/89000000-0000-4000-8000-000000000102'
+    and payload->>'applicationName'='New package fixture')
+  from private.integration_events where event='payment.receipt_received' and channel='whatsapp'
+    and entity_id='89000000-0000-4000-8000-000000000102'
+),'one WhatsApp application receipt alert links to the exact receipt');
+select public.test_assert(exists(select 1 from public.whatsapp_receipt('89000000-0000-4000-8000-000000000102','123456789@g.us')),'authorized group can retrieve application receipt attachment');
+select public.test_assert((
+  select count(*)=1 and bool_and(payload->>'status'='Verified' and
+    payload->>'path'='/dashboard/applications/'||current_setting('test.flow_application'))
+  from private.notification_outbox where recipient='admin-receipt@example.invalid' and event='package_payment_update'
+),'approval queues one applicant email with direct application link');
+select public.test_assert((
+  select count(*)=1 from private.notification_outbox where recipient='admin-receipt@example.invalid'
+    and event='payment_update' and payload->>'status'='Verified'
+),'consultation approval queues one applicant email');
 update public.user_roles set role='advisor' where user_id='00000000-0000-4000-8000-000000000102';
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000102","aal":"aal1"}',true);

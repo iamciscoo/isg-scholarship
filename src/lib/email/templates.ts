@@ -8,6 +8,7 @@ export function escapeHtml(value: string) {
 export type NotificationDetails = {
   firstName?: string;
   applicantName?: string;
+  registeredEmail?: string;
   reference?: string;
   status?: string;
   nextStep?: string;
@@ -24,6 +25,11 @@ const consultation = "/dashboard/consultations";
 const application = "/dashboard/application";
 const packages = "/dashboard/applications";
 const eventCopy: Record<string, [string, string, string]> = {
+  consultation_stage_update: [
+    "Consultation status updated",
+    "Open Consultations to see the latest status and any next steps.",
+    consultation,
+  ],
   meeting_scheduled: ["Consultation scheduled", "Your advisor scheduled your consultation.", consultation],
   meeting_completed: ["Consultation completed", "Open your application to see the next step.", application],
   meeting_cancelled: [
@@ -115,6 +121,14 @@ function receiptCopy(status?: string): [string, string, string] {
   return ["Consultation payment update", "Open Consultations for the latest payment details.", consultation];
 }
 
+function applicationReceiptCopy(status?: string): [string, string, string] {
+  if (status === "Verified")
+    return ["Application receipt approved", "Your package payment was verified. Open Applications for the next step.", packages];
+  if (status === "Rejected")
+    return ["New application receipt needed", "Open the application to read the feedback and upload a replacement receipt.", packages];
+  return eventCopy.package_payment_update;
+}
+
 function workspacePath(value: string | undefined, fallback: string) {
   return value &&
     /^\/dashboard(?:\/(?:consultations|application|applications(?:\/[0-9a-f-]{36})?))?$/.test(value)
@@ -145,7 +159,9 @@ export function notificationTemplate(event: string, payload: NotificationDetails
       ? ["New ISG enquiry", "Open the staff workspace to review the record.", "/admin"]
       : event === "payment_update"
         ? receiptCopy(payload.status)
-        : eventCopy[event] || ["Workspace update", "Open your ISG workspace for details.", "/dashboard"];
+        : event === "package_payment_update"
+          ? applicationReceiptCopy(payload.status)
+          : eventCopy[event] || ["Workspace update", "Open your ISG workspace for details.", "/dashboard"];
   const url = siteUrl + (staff ? fallback : workspacePath(payload.path, fallback));
   const name = payload.firstName || payload.applicantName || "there";
   const meet = event === "meeting_scheduled" ? meetingLink(payload.meetUrl) : "";

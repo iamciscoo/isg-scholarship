@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { authConfigured } from "@/lib/supabase/config";
 import type { Role } from "./permissions";
@@ -11,7 +12,11 @@ export const requireUser = cache(async () => {
     data: { user },
     error,
   } = await db.auth.getUser();
-  if (error || !user) redirect("/login");
+  if (error || !user) {
+    const pathname = (await headers()).get("x-isg-pathname") || "";
+    const followsRecord = /^\/admin\/(users|receipts)\/[0-9a-f-]{36}$/i.test(pathname);
+    redirect(followsRecord ? `/login?next=${encodeURIComponent(pathname)}` : "/login");
+  }
   const [{ data: profile }, { data: roleRecord }] = await Promise.all([
     db.from("profiles")
       .select("id,first_name,last_name,phone,nationality,residence,status,avatar_path,updated_at")

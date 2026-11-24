@@ -21,6 +21,23 @@ type Event = {
   payload?: NotificationDetails;
 };
 
+async function accountDetails(db: ReturnType<typeof adminClient>, item: Event): Promise<NotificationDetails> {
+  const details = item.payload || {};
+  if (!item.event.startsWith("account.") || details.registeredEmail) return details;
+  // Older queued events predate the registration snapshot.
+  const { data } = await db.auth.admin.getUserById(item.entity_id);
+  const user = data?.user;
+  if (!user?.email) return details;
+  const metadata = user.user_metadata;
+  const name = [metadata?.first_name, metadata?.last_name].filter((value) => typeof value === "string").join(" ").trim();
+  return {
+    ...details,
+    registeredEmail: user.email,
+    applicantName: details.applicantName || (typeof metadata?.full_name === "string" ? metadata.full_name : name),
+    status: user.email_confirmed_at ? "Email confirmed" : "Awaiting email confirmation",
+  };
+}
+
 async function sendWhatsApp(
   db: ReturnType<typeof adminClient>,
   provider: ReturnType<typeof greenApiConfig>,
@@ -82,7 +99,7 @@ export async function dispatchAdminAlerts(baseUrl: string) {
   return deliveryBatch(
     (data || []) as Event[],
     async (item) => {
-      const content = adminAlertTemplate(item.event, item.entity_id, item.payload || {}, baseUrl);
+      const content = adminAlertTemplate(item.event, item.entity_id, await accountDetails(db, item), baseUrl);
       const result =
         item.channel === "email"
           ? await sendEmail(item.id, item.recipient, content)

@@ -1,8 +1,28 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { dispatchAdminAlerts } from "@/server/services/admin-alerts";
+import { adminAlertTemplate } from "@/lib/email/admin-template";
 
 const { rpc } = vi.hoisted(() => ({ rpc: vi.fn() }));
 vi.mock("@/lib/supabase/admin", () => ({ adminClient: () => ({ rpc }) }));
+
+it("includes registered email and status and replaces the old settings link", () => {
+  const id = "80000000-0000-4000-8000-000000000001";
+  const { text } = adminAlertTemplate(
+    "account.created",
+    id,
+    {
+      registeredEmail: "student@example.invalid",
+      applicantName: "Sample Student",
+      status: "Awaiting email confirmation",
+      path: "/admin/settings",
+    },
+    "https://isg.example",
+  );
+  expect(text).toContain("Registered email: student@example.invalid");
+  expect(text).toContain("Applicant: Sample Student");
+  expect(text).toContain("Status: Awaiting email confirmation");
+  expect(text).toContain(`https://isg.example/admin/users/${id}`);
+});
 
 afterEach(() => {
   vi.resetAllMocks();

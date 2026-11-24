@@ -7,6 +7,7 @@ export async function proxy(request: NextRequest) {
   const csp = `default-src 'self'; script-src 'self' 'nonce-${nonce}' ${development ? "'unsafe-eval'" : ""} https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' ${development ? "ws: http://localhost:* http://127.0.0.1:*" : ""} https://*.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';`;
   const headers = new Headers(request.headers);
   headers.set("x-nonce", nonce);
+  headers.set("x-isg-pathname", request.nextUrl.pathname);
   headers.set("Content-Security-Policy", csp);
   let response = NextResponse.next({ request: { headers } });
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
