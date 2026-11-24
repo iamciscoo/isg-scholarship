@@ -53,15 +53,17 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
   }, [pathname]);
   const staff = role !== "applicant";
   const base = role === "admin" ? "/admin" : "/advisor";
+  const profileLink = { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" };
   const links = staff
     ? [
+        ...(role === "admin" ? [profileLink] : []),
         {
           href: role === "admin" ? "/admin/consultations" : base,
           label: "Consultations",
           icon: ClipboardList,
           id: "overview",
         },
-        { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" },
+        ...(role === "advisor" ? [profileLink] : []),
 
         ...(role === "admin"
           ? [
@@ -91,7 +93,7 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
       ]
     : [
         { href: "/dashboard", label: "My overview", icon: Home, id: "overview" },
-        { href: "/dashboard/profile", label: "My profile", icon: UserRound, id: "profile" },
+        profileLink,
         {
           href: "/dashboard/consultations",
           label: "Consultations",
@@ -150,8 +152,7 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
               </div>
               <span>{email}</span>
               <WorkspaceProfileMenu
-                links={role === "admin" ? navigation.toSorted((a, b) =>
-                  Number(b.id === "profile") - Number(a.id === "profile")) : navigation}
+                links={navigation}
                 account={account || { name: email || "ISG account", avatar: null }}
               />
               <form action={signOut} className="workspace-desktop-logout">

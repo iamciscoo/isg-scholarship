@@ -275,7 +275,7 @@ export function CountrySelect({
       />
       {selected && (
         <span className="country-selected-flag">
-          <CountryFlag code={selected.code} />
+          <CountryFlag code={selected.code} eager />
         </span>
       )}
       {open && (

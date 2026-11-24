@@ -4,7 +4,7 @@ const codes =
   );
 const display = new Intl.DisplayNames(["en"], { type: "region" });
 export const countries = codes
-  .map((code) => ({ code, name: display.of(code) ?? code }))
+  .map((code) => ({ code, name: code === "CN" ? "China" : (display.of(code) ?? code) }))
   .filter((country) => country.name !== country.code)
   .sort((a, b) => a.name.localeCompare(b.name));
 const countryCodes = new Map(countries.map(({ name, code }) => [name.toLowerCase(), code]));

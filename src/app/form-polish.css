@@ -124,12 +124,13 @@ option {
 }
 .country-selected-flag {
   position: absolute;
-  inset-inline-start: 12px;
-  top: 15px;
+  inset-inline-start: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   pointer-events: none;
 }
-.country-select .country-input-with-flag {
-  padding-inline-start: 44px;
+.country-select input[type="text"][role="combobox"].country-input-with-flag {
+  padding-inline-start: 48px;
 }
 .country-list {
   position: absolute;
