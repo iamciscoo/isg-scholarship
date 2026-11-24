@@ -3,14 +3,12 @@ import * as Menu from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
 import { ChevronDown, Check } from "lucide-react";
 import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/i18n/provider";
 import { locales, languages } from "@/lib/i18n/config";
 import { setLocale } from "@/lib/i18n/actions";
 export function LanguageSelector() {
   const { locale, m } = useLocale();
   const [pending, start] = useTransition();
-  const router = useRouter();
   return (
     <Menu.Root>
       <Menu.Trigger className="language-trigger" disabled={pending} aria-label={m.ui.language}>
@@ -25,7 +23,8 @@ export function LanguageSelector() {
             onValueChange={(value) =>
               start(async () => {
                 await setLocale(value);
-                router.refresh();
+                // Server-rendered copy (heroes, sections) only changes on a fresh request.
+                window.location.reload();
               })
             }
           >
