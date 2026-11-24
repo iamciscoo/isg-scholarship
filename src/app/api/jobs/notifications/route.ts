@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { dispatchDelivery } from "@/server/services/notification-delivery";
+import { removeExpiredPdfUploads } from "@/server/services/case-pdf-staging";
 export const maxDuration = 60;
 export async function GET(request: Request) {
   const expected = process.env.CRON_SECRET;
@@ -11,7 +12,10 @@ export async function GET(request: Request) {
     !timingSafeEqual(Buffer.from(received), Buffer.from(`Bearer ${expected}`))
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const [email, admin] = await dispatchDelivery();
+  const [[email, admin]] = await Promise.all([
+    dispatchDelivery(),
+    removeExpiredPdfUploads().catch(() => console.error("expired_case_pdf_cleanup_unavailable")),
+  ]);
   const available = email.status === "fulfilled" && admin.status === "fulfilled";
   if (!available) console.error("notification_job_failed");
   return NextResponse.json(

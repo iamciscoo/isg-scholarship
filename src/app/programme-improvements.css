@@ -132,7 +132,7 @@
   border-bottom: 1px solid var(--line);
   padding-bottom: 12px;
 }
-.catalogue-tabs a {
+.catalogue-tabs :is(a, button) {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -142,10 +142,13 @@
   font-size: 14px;
   color: var(--navy);
 }
-.catalogue-tabs a[aria-current="page"] {
+.catalogue-tabs :is(a[aria-current="page"], button[aria-selected="true"]) {
   background: var(--navy);
   border-color: var(--navy);
   color: #fff;
+}
+.application-tabs {
+  margin-bottom: 0;
 }
 .catalogue-mobile-action {
   display: none;

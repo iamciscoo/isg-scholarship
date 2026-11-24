@@ -46,7 +46,7 @@ select set_config('request.jwt.claims',jsonb_build_object('sub',current_setting(
 select public.review_payment_receipt('81000000-0000-4000-8000-000000000091',true,'');
 select public.test_assert((select completed_at is not null from public.consultation_cases where user_id=current_setting('test.flow_user')::uuid),'package verification unlocks form');
 select set_config('request.jwt.claims',jsonb_build_object('sub',current_setting('test.flow_user'),'aal','aal1')::text,true);
-select set_config('test.flow_declaration',public.save_application_form(current_setting('test.full_data')::jsonb||'{"email":"admin-flow@example.invalid"}'::jsonb,true)::text,true);
+select set_config('test.flow_declaration',public.save_application_form(current_setting('test.full_data')::jsonb||'{"email":"admin-flow@example.invalid","guardianDob":"1975-05-04"}'::jsonb,true)::text,true);
 do $$begin
  perform public.review_full_application(current_setting('test.flow_declaration')::uuid,'submitted','accepted','');
  raise exception 'Applicant changed tracking status';

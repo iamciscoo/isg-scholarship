@@ -1,14 +1,13 @@
 "use client";
-import { useWorkspaceText } from "@/lib/i18n/workspace-text";
-
-import { Text } from "@/lib/i18n/workspace-text";
-
-import { useRef, useState } from "react";
+import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
+import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { prepareImage } from "@/lib/images";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
-import { caseFileLimit, caseFileSizeError, type CaseUploadKind } from "@/lib/validation/case-file";
+import {
+  caseFileLimit, caseFileSizeError, casePdfLimit, casePdfSizeError, isCasePdf, type CaseUploadKind,
+} from "@/lib/validation/case-file";
 
 async function shrink(file: File) {
   if (!file.type.startsWith("image/") || file.size < 1_500_000) return file;
@@ -40,21 +39,40 @@ const labels: Record<CaseUploadKind, string> = {
 
 type UploadTarget = { kind: CaseUploadKind; category: string; application?: string; applicant?: string };
 
-async function upload(file: File, target: UploadTarget) {
+async function upload(file: File, target: UploadTarget, compact: boolean) {
+  const pdf = isCasePdf(file);
   const prepared = await shrink(await prepareImage(file));
-  if (prepared.size > caseFileLimit) throw Error(caseFileSizeError);
+  const sizeError = pdf ? casePdfSizeError : caseFileSizeError;
+  if (prepared.size > (pdf ? casePdfLimit : caseFileLimit)) throw Error(sizeError);
   const data = new FormData();
-  data.set("file", prepared);
   data.set("originalName", file.name);
   data.set("kind", target.kind);
   data.set("category", target.category);
   if (target.application) data.set("application", target.application);
   if (target.applicant) data.set("applicant", target.applicant);
+  if (pdf && compact) data.set("compressPdf", "1");
+  if (pdf && prepared.size > caseFileLimit) {
+    data.set("preparePdf", "1");
+    const prepare = await fetch("/api/case-files", { method: "POST", body: data });
+    const slot = (await prepare.json().catch(() => null)) as { id?: string; url?: string; error?: string } | null;
+    if (!prepare.ok || !slot?.id || !slot.url) throw Error(slot?.error || "Upload failed. Please try again.");
+    const uploaded = await fetch(slot.url, {
+      method: "PUT",
+      body: prepared,
+      headers: { "Content-Type": "application/pdf" },
+      redirect: "error",
+    });
+    if (!uploaded.ok) throw Error(uploaded.status === 413 ? sizeError : "Upload failed. Please try again.");
+    data.delete("preparePdf");
+    data.set("pdfId", slot.id);
+  } else {
+    data.set("file", prepared);
+  }
   const response = await fetch("/api/case-files", { method: "POST", body: data });
   const result = (await response.json().catch(() => null)) as { id?: string; error?: string } | null;
   if (response.ok && result?.id) return;
   throw Error(
-    result?.error || (response.status === 413 ? caseFileSizeError : "Upload failed. Please try again."),
+    result?.error || (response.status === 413 ? sizeError : "Upload failed. Please try again."),
   );
 }
 
@@ -78,16 +96,26 @@ export function FileUpload({
   const [pending, setPending] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState("");
+  const [selection, setSelection] = useState<File[]>([]);
   const [retry, setRetry] = useState<File[]>([]);
+  const [compress, setCompress] = useState(false);
+  const detailsId = useId();
   const ref = useRef<HTMLInputElement>(null);
   const canSelectMultiple = kind !== "receipt" && multiple;
+
+  useEffect(() => {
+    const input = ref.current;
+    // A native file chooser can finish before React attaches the change handler.
+    if (input?.files?.length) input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, []);
 
   return (
     <form
       className="form-stack min-w-0"
+      aria-busy={pending}
       onSubmit={async (event) => {
         event.preventDefault();
-        const selected = retry.length ? retry : Array.from(ref.current?.files || []);
+        const selected = retry.length ? retry : selection;
         if (pending || !selected.length) return;
         setPending(true);
         setErrors([]);
@@ -96,7 +124,7 @@ export function FileUpload({
         const messages: string[] = [];
         for (const file of selected) {
           try {
-            await upload(file, { kind, category, application, applicant });
+            await upload(file, { kind, category, application, applicant }, compress);
           } catch (error) {
             const reason = error instanceof Error ? error.message : "Upload failed. Please try again.";
             const message =
@@ -104,13 +132,16 @@ export function FileUpload({
                 ? "This photo could not be read. Try JPEG or PNG."
                 : reason;
             failed.push(file);
-            messages.push(canSelectMultiple ? `${file.name}: ${message}` : message);
+            messages.push(canSelectMultiple ? `${file.name}: ${translate(message)}` : translate(message));
           }
         }
         setPending(false);
         setRetry(failed);
         setErrors(messages);
-        if (!failed.length && ref.current) ref.current.value = "";
+        if (!failed.length) {
+          if (ref.current) ref.current.value = "";
+          setSelection([]);
+        }
         const uploaded = selected.length - failed.length;
         if (uploaded) {
           setSuccess(
@@ -132,32 +163,43 @@ export function FileUpload({
           type="file"
           accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf,.heic,.heif,.pdf"
           multiple={canSelectMultiple}
-          required
+          aria-describedby={detailsId}
           disabled={pending}
-          onChange={() => {
+          onChange={(event) => {
+            setSelection(Array.from(event.target.files || []));
+            setCompress(false);
             setRetry([]);
             setErrors([]);
             setSuccess("");
           }}
         />
       </label>
-      <p className="field-help">
-        <Text>{"Images or PDFs · 4 MB each. Keep the original PDF."}</Text>
+      <p id={detailsId} className="field-help">
+        <Text>{"PDFs up to 5 MB. Images up to 4 MB after compression."}</Text>
       </p>
+      {(retry.length ? retry : selection).some(isCasePdf) && (
+        <div>
+          <label className="checkbox-field">
+            <input type="checkbox" checked={compress} disabled={pending} onChange={(event) => setCompress(event.target.checked)} />
+            <Text>{"Compress PDF when possible"}</Text>
+          </label>
+          <p className="field-help"><Text>{"Compression may save an image-based copy. Keep your original PDF."}</Text></p>
+        </div>
+      )}
       {kind === "receipt" && (
         <p className="field-help">
           <Text>{"Shared privately with ISG staff. Hide unrelated bank details."}</Text>
         </p>
       )}
       {errors.length > 0 && (
-        <div role="alert" className="notice notice-error break-words">
+        <div role="alert" className="field-error break-words">
           {errors.map((message, i) => (
             <div key={i}>{message}</div>
           ))}
         </div>
       )}
       {success && <p role="status">{success}</p>}
-      <Button disabled={pending}>
+      <Button disabled={pending || (!selection.length && !retry.length)}>
         {pending ? (
           <>
             <Text>{"Uploading"}</Text>

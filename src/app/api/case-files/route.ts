@@ -9,6 +9,9 @@ import { isPreviewPackage } from "@/lib/validation/opportunities";
 import { caseFileLimit, caseFileSizeError, caseUploadKinds } from "@/lib/validation/case-file";
 import { wakeNotifications } from "@/server/services/notification-delivery";
 import { storageBody } from "@/server/services/storage-body";
+import { stagedPdfPath, stagedPdfStorage } from "@/server/services/case-pdf-staging";
+
+export const maxDuration = 60;
 
 const uploadBodyLimit = caseFileLimit + 64 * 1024;
 
@@ -35,6 +38,7 @@ export async function POST(request: Request) {
   });
   if (rate.error || !rate.data)
     return Response.json({ error: "Please wait before uploading again." }, { status: 429 });
+  let stagedPath: string | undefined;
   try {
     const chunks: Uint8Array[] = [];
     let size = 0;
@@ -53,7 +57,9 @@ export async function POST(request: Request) {
     const fd = await new Response(Buffer.concat(chunks), {
       headers: { "Content-Type": contentType },
     }).formData();
-    const file = fd.get("file");
+    let file = fd.get("file");
+    const preparing = fd.get("preparePdf") === "1";
+    const pdfId = z.uuid().nullable().safeParse(fd.get("pdfId"));
     const kindInput = z.enum(caseUploadKinds).safeParse(fd.get("kind"));
     const category = z
       .string()
@@ -62,7 +68,8 @@ export async function POST(request: Request) {
     const application = z.uuid().nullable().safeParse(fd.get("application"));
     const applicant = z.uuid().nullable().safeParse(fd.get("applicant"));
     if (
-      !(file instanceof File) ||
+      !pdfId.success ||
+      Number(file instanceof File) + Number(preparing) + Number(Boolean(pdfId.data)) !== 1 ||
       !kindInput.success ||
       !application.success ||
       !applicant.success ||
@@ -121,9 +128,23 @@ export async function POST(request: Request) {
       if (error || !documentRequest)
         throw Error("This document category is unavailable. Refresh and try again.");
     }
-    const validated = await validateCaseFile(file);
-    const id = randomUUID(),
-      path = `${owner}/${id}.${validated.extension}`;
+    if (preparing) {
+      const id = randomUUID();
+      const signed = await stagedPdfStorage(admin).createSignedUploadUrl(stagedPdfPath(user.id, id));
+      if (signed.error) throw Error("Private storage is unavailable. Please try again.");
+      return Response.json({ id, url: signed.data.signedUrl }, { headers: { "Cache-Control": "no-store" } });
+    }
+    if (pdfId.data) {
+      const path = stagedPdfPath(user.id, pdfId.data);
+      const staged = await stagedPdfStorage(admin).download(path);
+      if (staged.error || !staged.data) throw Error("The PDF upload is incomplete. Please try again.");
+      stagedPath = path;
+      file = new File([staged.data], "upload.pdf", { type: "application/pdf" });
+    }
+    if (!(file instanceof File)) throw Error("Choose a valid file to upload.");
+    const validated = await validateCaseFile(file, fd.get("compressPdf") === "1");
+    const id = pdfId.data || randomUUID();
+    const path = `${owner}/${id}.${validated.extension}`;
     const upload = await admin.storage
       .from("case-files")
       .upload(path, storageBody(validated.data), { contentType: validated.mime, upsert: false });
@@ -186,5 +207,10 @@ export async function POST(request: Request) {
     return Response.json({ id }, { status: 201 });
   } catch (err) {
     return Response.json({ error: err instanceof Error ? err.message : "Upload failed." }, { status: 422 });
+  } finally {
+    if (stagedPath) {
+      const removed = await stagedPdfStorage(admin).remove([stagedPath]).catch(() => null);
+      if (!removed || removed.error) console.error("staged_case_pdf_cleanup_failed");
+    }
   }
 }

@@ -2,11 +2,11 @@ import "server-only";
 import { PDFiumLibrary } from "@hyzyla/pdfium";
 import PDFDocument from "pdfkit";
 import sharp from "sharp";
-import { caseFileLimit, casePdfPageLimit } from "@/lib/validation/case-file";
+import { casePdfLimit, casePdfPageLimit } from "@/lib/validation/case-file";
 
 // Rebuild from rendered pages so links, JavaScript, attachments and other PDF objects
 // cannot carry over. Only PDFium's WebAssembly renderer reads the submitted PDF.
-export async function rebuildPrivatePdf(input: Buffer) {
+export async function rebuildPrivatePdf(input: Buffer, compact = false) {
   const library = await PDFiumLibrary.init().catch(() => {
     console.error("pdfium_initialization_failed");
     throw Error("PDF processing is temporarily unavailable. Try again later.");
@@ -23,6 +23,8 @@ export async function rebuildPrivatePdf(input: Buffer) {
         throw Error(`Choose a PDF with up to ${casePdfPageLimit} pages. You can upload it in parts.`);
 
       let imageBytes = 0;
+      const imageBudget = casePdfLimit - 64 * 1024;
+      let remaining = pages;
       for (const page of document.pages()) {
         try {
           const { originalWidth, originalHeight } = page.getOriginalSize();
@@ -34,7 +36,7 @@ export async function rebuildPrivatePdf(input: Buffer) {
           )
             throw Error("This PDF has an unreadable page.");
 
-          const scale = 1800 / Math.max(originalWidth, originalHeight);
+          const scale = (compact ? 1600 : 1800) / Math.max(originalWidth, originalHeight);
           const { data, width, height } = await page
             .render({
               width: Math.max(1, Math.round(originalWidth * scale)),
@@ -44,14 +46,19 @@ export async function rebuildPrivatePdf(input: Buffer) {
             .catch(() => {
               throw Error("This PDF has an unreadable page.");
             });
-          const image = await sharp(data, { raw: { width, height, channels: 4 } })
-            .removeAlpha()
-            .jpeg({ quality: 84, mozjpeg: true })
-            .toBuffer();
+          const pixels = sharp(data, { raw: { width, height, channels: 4 } }).removeAlpha();
+          const pageBudget = (imageBudget - imageBytes) / remaining;
+          let image = await pixels.clone().jpeg({ quality: compact ? 74 : 84, mozjpeg: true }).toBuffer();
+          if (image.length > pageBudget)
+            image = await pixels.clone().jpeg({ quality: 73, mozjpeg: true }).toBuffer();
+          if (image.length > pageBudget)
+            image = await pixels.resize({ width: 1450, height: 1450, fit: "inside", withoutEnlargement: true })
+              .jpeg({ quality: 68, mozjpeg: true }).toBuffer();
           imageBytes += image.length;
-          if (imageBytes > caseFileLimit)
+          remaining -= 1;
+          if (imageBytes > imageBudget)
             throw Error("This PDF is too large after processing. Upload it in smaller parts.");
-          const size: [number, number] = [width / 2, height / 2];
+          const size: [number, number] = [originalWidth, originalHeight];
           output.addPage({ size }).image(image, 0, 0, { width: size[0], height: size[1] });
         } finally {
           page.close();
@@ -64,7 +71,7 @@ export async function rebuildPrivatePdf(input: Buffer) {
     const chunks: Buffer[] = [];
     for await (const chunk of output) chunks.push(chunk);
     const result = Buffer.concat(chunks);
-    if (result.length > caseFileLimit)
+    if (result.length > casePdfLimit)
       throw Error("This PDF is too large after processing. Upload it in smaller parts.");
     return result;
   } finally {

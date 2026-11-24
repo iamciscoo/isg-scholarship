@@ -1,6 +1,6 @@
 import { test, expect as playwrightExpect } from "@playwright/test";
 import sharp from "sharp";
-import { login, submitConsultation, samplePdf, submittedConsultation } from "./workflow-helpers";
+import { chooseCountry, login, submitConsultation, samplePdf, submittedConsultation } from "./workflow-helpers";
 import { seedPagination } from "./pagination-fixtures";
 
 const expect = playwrightExpect.configure({ timeout: 15_000 });
@@ -134,28 +134,52 @@ test("consultation, receipt correction, admin package assignment, application an
   await student.reload();
   await student.getByRole("link", { name: "Fill application form" }).click();
   await expect(student.getByRole("heading", { name: "Application details" })).toBeVisible();
+  await expect(student.locator("#application-residence")).toHaveValue("Tanzania");
   await student.getByRole("button", { name: "Submit application", exact: true }).click();
   await expect(student.locator("#application-institutionName-error")).toHaveText("This field is required.");
+  await expect(student.locator("#application-guardianDob-error")).toHaveText("This field is required.");
 
+  const detailsTab = student.getByRole("tab", { name: "Details", exact: true });
+  const documentsTab = student.getByRole("tab", { name: "Documents", exact: true });
+  await student.locator('[name="cityStreet"]').fill("QA Street");
+  await documentsTab.click();
   const awards = student
     .locator("article")
     .filter({ has: student.getByRole("heading", { name: "Achievement certificates", exact: true }) });
+  await expect(awards.getByRole("button", { name: "Upload files", exact: true })).toBeDisabled();
+  const xref = pdf.lastIndexOf("startxref");
+  const largePdf = Buffer.concat([
+    pdf.subarray(0, xref),
+    Buffer.from("%"),
+    Buffer.alloc(5 * 1024 * 1024 - pdf.length - 2, 0x20),
+    Buffer.from("\n"),
+    pdf.subarray(xref),
+  ]);
   await awards.locator('input[type="file"]').setInputFiles([
-    { name: "award-one.pdf", mimeType: "application/pdf", buffer: pdf },
+    { name: "award-one.pdf", mimeType: "application/pdf", buffer: largePdf },
     { name: "award-two.png", mimeType: "image/png", buffer: png },
   ]);
+  await awards.getByRole("checkbox", { name: "Compress PDF when possible" }).check();
+  await detailsTab.click();
+  await expect(student.locator('[name="cityStreet"]')).toHaveValue("QA Street");
+  await documentsTab.click();
+  const directUpload = student.waitForResponse((response) =>
+    response.request().method() === "PUT" && response.url().includes("/object/upload/sign/case-pdf-staging/"),
+  );
   await awards.getByRole("button", { name: "Upload files", exact: true }).click();
+  expect((await directUpload).ok()).toBe(true);
   await expect(awards.getByRole("link", { name: "award-one.pdf", exact: true })).toBeVisible({
     timeout: 20_000,
   });
   await expect(awards.getByRole("link", { name: "award-two.png", exact: true })).toBeVisible();
+  await detailsTab.click();
+  await chooseCountry(student, "application-institutionCountry", "Tanzania");
   for (const [name, value] of Object.entries({
-    cityStreet: "QA Street",
     institutionName: "QA College",
-    institutionCountry: "Tanzania",
     graduationYear: "2025",
     guardianFirstName: "QA",
     guardianLastName: "Contact",
+    guardianDob: "1975-05-04",
     guardianPhone: "+255700000001",
     guardianRelation: "Parent",
   }))
@@ -224,8 +248,10 @@ test("consultation, receipt correction, admin package assignment, application an
   await admin.getByRole("link", { name: "Review recorded application" }).click();
   await expect(admin.getByText("Recorded by ISG staff", { exact: true })).toBeVisible();
   await expect(admin.getByText("Staff entered college", { exact: true })).toBeVisible();
-  await student.goto("/dashboard/application");
+  await student.goto("/dashboard");
+  await student.goto("/dashboard/application#application-documents");
   await expect(student.getByRole("link", { name: "staff-document.pdf", exact: true })).toBeVisible();
+  await detailsTab.click();
   await expect(student.locator('[name="institutionName"]')).toHaveValue("Staff entered college");
 
   await student.goto("/dashboard");

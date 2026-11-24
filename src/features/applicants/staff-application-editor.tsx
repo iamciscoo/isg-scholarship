@@ -30,7 +30,7 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
     db.from("profiles").select("first_name,last_name,phone,residence").eq("id", id).single(),
     db
       .from("eligibility_assessments")
-      .select("preferred_fields,qualification,graduation_year")
+      .select("preferred_fields,qualification,graduation_year,residence")
       .eq("applicant_id", id)
       .order("created_at")
       .limit(1)
@@ -45,6 +45,7 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
     ...profile.data,
     firstName: profile.data.first_name || "",
     lastName: profile.data.last_name || "",
+    residence: profile.data.residence || assessment.data?.residence || "",
     studyInterest: assessment.data?.preferred_fields || "",
     programme: assessment.data?.preferred_fields || "",
     highestEducation: assessment.data?.qualification || "",

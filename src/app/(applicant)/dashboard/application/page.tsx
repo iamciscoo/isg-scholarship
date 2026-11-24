@@ -4,6 +4,7 @@ import { Text } from "@/lib/i18n/workspace-text";
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
+import { ApplicationTabs } from "@/features/applicants/application-tabs";
 import { FullApplicationForm } from "@/features/applicants/full-application-form";
 import { DocumentPanel } from "@/features/applicants/document-panel";
 import { applicationDraftSchema } from "@/lib/validation/application-form";
@@ -63,7 +64,7 @@ export default async function ApplicationDetails() {
     db.from("application_form_drafts").select("data").eq("user_id", user.id).maybeSingle(),
     db
       .from("eligibility_assessments")
-      .select("preferred_fields,qualification,field_of_study,graduation_year")
+      .select("preferred_fields,qualification,field_of_study,graduation_year,residence")
       .eq("applicant_id", user.id)
       .order("created_at")
       .limit(1)
@@ -92,7 +93,7 @@ export default async function ApplicationDetails() {
     firstName: profile.first_name,
     lastName: profile.last_name,
     phone: profile.phone,
-    residence: profile.residence,
+    residence: profile.residence || a?.residence || "",
     studyInterest: a?.preferred_fields || "",
     programme: a?.preferred_fields || "",
     highestEducation: a?.qualification || "",
@@ -108,62 +109,68 @@ export default async function ApplicationDetails() {
       <h1>
         <Text>{"Scholarship application"}</Text>
       </h1>
-      {declaration.data && (
-        <section className="workspace-panel">
-          <div className="panel-head">
-            <span className="status-pill">{translate(fullApplicationStatusLabel(status))}</span>
-            <Link className="text-link" href={`/api/application-pdf/${declaration.data.id}`}>
-              <Text>{"Download submitted application"}</Text>
-            </Link>
-          </div>
-          <p>
-            {declaration.data.submission_method === "staff"
-              ? translate("Recorded by ISG")
-              : translate("Submitted")}{" "}
-            {applicationDate(declaration.data.accepted_at)}
-          </p>
-          {needsInformation && (
-            <p>
-              <Text>{"Review the request below and send your corrections or additional documents."}</Text>
-            </p>
-          )}
-        </section>
-      )}
-      <ApplicationUpdates updates={updates.data} />
-      {editable &&
-        (declaration.data ? (
-          <details className="workspace-panel package-gallery">
-            <summary>
-              <Text>{"Edit and resubmit application details"}</Text>
-            </summary>
-            <FullApplicationForm initial={initial} />
-          </details>
-        ) : (
-          <section className="workspace-panel">
-            <h2>
-              <Text>{"Application details"}</Text>
-            </h2>
-            <FullApplicationForm initial={initial} />
-          </section>
-        ))}
-      <DocumentPanel user={user.id} />
-      {declaration.data && needsInformation && (
-        <section className="workspace-panel">
-          <h2>
-            <Text>{"Send requested updates"}</Text>
-          </h2>
-          <p>
-            <Text>{"Use this after adding the requested files or to reply to your reviewer."}</Text>
-          </p>
-          <ActionForm action={respondToApplicationReview} label="Send for review">
-            <input name="declaration" type="hidden" value={declaration.data.id} />
-            <label>
-              <Text>{"Note for ISG (optional)"}</Text>
-              <textarea name="note" maxLength={2000} />
-            </label>
-          </ActionForm>
-        </section>
-      )}
+      <ApplicationTabs
+        details={
+          <>
+            {declaration.data && (
+              <section className="workspace-panel">
+                <div className="panel-head">
+                  <span className="status-pill">{translate(fullApplicationStatusLabel(status))}</span>
+                  <Link className="text-link" href={`/api/application-pdf/${declaration.data.id}`}>
+                    <Text>{"Download submitted application"}</Text>
+                  </Link>
+                </div>
+                <p>
+                  {declaration.data.submission_method === "staff"
+                    ? translate("Recorded by ISG")
+                    : translate("Submitted")}{" "}
+                  {applicationDate(declaration.data.accepted_at)}
+                </p>
+                {needsInformation && (
+                  <p>
+                    <Text>{"Review the request below and send your corrections or additional documents."}</Text>
+                  </p>
+                )}
+              </section>
+            )}
+            <ApplicationUpdates updates={updates.data} />
+            {declaration.data && needsInformation && (
+              <section className="workspace-panel">
+                <h2>
+                  <Text>{"Send requested updates"}</Text>
+                </h2>
+                <p>
+                  <Text>{"Use this after adding the requested files or to reply to your reviewer."}</Text>
+                </p>
+                <ActionForm action={respondToApplicationReview} label="Send for review">
+                  <input name="declaration" type="hidden" value={declaration.data.id} />
+                  <label>
+                    <Text>{"Note for ISG (optional)"}</Text>
+                    <textarea name="note" maxLength={2000} />
+                  </label>
+                </ActionForm>
+              </section>
+            )}
+            {editable &&
+              (declaration.data ? (
+                <details className="workspace-panel package-gallery">
+                  <summary>
+                    <Text>{"Edit and resubmit application details"}</Text>
+                  </summary>
+                  <FullApplicationForm initial={initial} />
+                </details>
+              ) : (
+                <section className="workspace-panel">
+                  <h2>
+                    <Text>{"Application details"}</Text>
+                  </h2>
+                  <FullApplicationForm initial={initial} />
+                </section>
+              ))}
+          </>
+        }
+        documents={<DocumentPanel user={user.id} />}
+      />
     </Workspace>
   );
 }

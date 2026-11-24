@@ -4,7 +4,7 @@ import { PDFiumLibrary } from "@hyzyla/pdfium";
 import PDFDocument from "pdfkit";
 import sharp from "sharp";
 import { validateCaseFile } from "@/server/services/file-validation";
-import { caseFileLimit, casePdfPageLimit } from "@/lib/validation/case-file";
+import { caseFileLimit, casePdfLimit, casePdfPageLimit } from "@/lib/validation/case-file";
 
 afterEach(() => vi.unstubAllEnvs());
 
@@ -85,6 +85,14 @@ it("preserves the original only after the configured scanner accepts it", async 
   }
 });
 
+it("uses the smaller PDF settings when compression is requested during safe rebuilding", async () => {
+  vi.stubEnv("CLAMAV_HOST", "");
+  const pdf = new File([new Uint8Array(await makePdf(1))], "transcript.pdf");
+  const standard = await validateCaseFile(pdf);
+  const compact = await validateCaseFile(pdf, true);
+  expect(compact.data.length).toBeLessThan(standard.data.length);
+});
+
 it("rejects malformed, oversized and excessively long PDF uploads", async () => {
   vi.stubEnv("CLAMAV_HOST", "");
   await expect(
@@ -99,4 +107,7 @@ it("rejects malformed, oversized and excessively long PDF uploads", async () => 
   await expect(
     validateCaseFile(new File([new Uint8Array(caseFileLimit + 1)], "large.png", { type: "image/png" })),
   ).rejects.toThrow("4 MB or smaller");
+  await expect(
+    validateCaseFile(new File([new Uint8Array(casePdfLimit + 1)], "large.pdf", { type: "application/pdf" })),
+  ).rejects.toThrow("5 MB or smaller");
 });

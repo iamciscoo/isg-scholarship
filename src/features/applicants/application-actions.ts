@@ -5,7 +5,7 @@ import {
   applicationFields,
   applicationFieldErrors,
   applicationDraftSchema,
-  fullApplicationSchema,
+  applicationSubmissionSchema,
 } from "@/lib/validation/application-form";
 import type { ActionState } from "@/components/forms/action-form";
 import { fullApplicationStatuses } from "@/lib/validation/application-review";
@@ -31,7 +31,7 @@ export async function saveFullApplication(_: ActionState, fd: FormData): Promise
   const values = Object.fromEntries(
     applicationFields.flatMap((s) => s.fields.map((f) => [f.key, String(fd.get(f.key) || "")])),
   );
-  const parsed = (declare ? fullApplicationSchema : applicationDraftSchema).safeParse({
+  const parsed = (declare ? applicationSubmissionSchema : applicationDraftSchema).safeParse({
     ...values,
     email: user.email,
     guardianPermission: fd.get("guardianPermission") === "on",

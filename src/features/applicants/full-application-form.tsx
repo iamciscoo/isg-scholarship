@@ -8,6 +8,7 @@ import { LoadingDots } from "@/components/ui/loading-dots";
 import { useDirtyForm } from "@/components/forms/unsaved-changes";
 import type { ActionState } from "@/components/forms/action-form";
 import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
+import { CountrySelect } from "./country-select";
 export function FullApplicationForm({
   initial,
   applicant,
@@ -25,7 +26,7 @@ export function FullApplicationForm({
   const saved = useRef(initial);
   const draftButton = useRef<HTMLButtonElement>(null);
   const t = useWorkspaceText();
-  const { formRef, dirty } = useDirtyForm({
+  const { formRef, dirty, revision } = useDirtyForm({
     state,
     pending,
     label: "Save draft",
@@ -77,7 +78,24 @@ export function FullApplicationForm({
                   {t(f.label)}
                   {f.optional ? ` (${t("optional")})` : ""}
                 </label>
-                {f.options ? (
+                {f.type === "country" ? (
+                  <>
+                    <input type="hidden" name={f.key} value={String(answers[f.key] || "")} />
+                    <CountrySelect
+                      key={`${f.key}-${revision}`}
+                      id={`application-${f.key}`}
+                      name={f.key}
+                      defaultValue={String(answers[f.key] || "")}
+                      required
+                      invalid={!!errorFor(f.key)}
+                      describedBy={fieldAttrs(f.key)["aria-describedby"]}
+                      onValueChange={(value) => {
+                        update(f.key, value);
+                        formRef.current?.dispatchEvent(new Event("change", { bubbles: true }));
+                      }}
+                    />
+                  </>
+                ) : f.options ? (
                   <select
                     id={`application-${f.key}`}
                     {...fieldAttrs(f.key)}
@@ -100,7 +118,8 @@ export function FullApplicationForm({
                     type={f.type || "text"}
                     maxLength={f.type === "email" ? 254 : 160}
                     min={f.type === "number" ? 1950 : undefined}
-                    max={f.type === "number" ? 2099 : undefined}
+                    max={f.type === "number" ? 2099 : f.type === "date" ? new Date().toISOString().slice(0, 10) : undefined}
+                    aria-required={!f.optional}
                     value={String(answers[f.key] || "")}
                     onChange={(event) => update(f.key, event.target.value)}
                     readOnly={f.key === "email"}
@@ -169,6 +188,7 @@ export function FullApplicationForm({
           className={dirty ? "save-inline-hidden" : undefined}
           name="intent"
           value="draft"
+          formNoValidate
           variant="outline"
           disabled={pending}
         >

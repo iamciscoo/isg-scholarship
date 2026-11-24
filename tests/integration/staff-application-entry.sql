@@ -45,7 +45,16 @@ set local role authenticated;
 select set_config('request.jwt.claims',jsonb_build_object('sub',current_setting('test.flow_admin'),'aal','aal1')::text,true);
 select public.review_payment_receipt('81000000-0000-4000-8000-000000000092',true,'');
 select public.test_assert((select completed_at is not null from public.consultation_cases where user_id=current_setting('test.flow_user')::uuid),'package verification unlocks form');
-select set_config('test.staff_data',current_setting('test.full_data'),true);
+select set_config('test.staff_data',(current_setting('test.full_data')::jsonb||'{"guardianDob":"1975-05-04"}')::text,true);
+select public.save_staff_application(current_setting('test.flow_user')::uuid,
+ current_setting('test.staff_data')::jsonb||'{"email":"staff-entry@example.invalid","guardianDob":""}',false);
+do $$begin
+ perform public.save_staff_application(current_setting('test.flow_user')::uuid,
+   current_setting('test.staff_data')::jsonb||'{"email":"staff-entry@example.invalid","guardianDob":""}',true);
+ raise exception 'Final submission accepted without date of birth';
+exception when check_violation then
+ if sqlerrm not like '%application_declarations_guardian_dob_required%' then raise;end if;
+end $$;
 select set_config('test.staff_declaration',public.save_staff_application(current_setting('test.flow_user')::uuid,current_setting('test.staff_data')::jsonb||'{"email":"staff-entry@example.invalid"}',true)::text,true);
 select public.test_assert((select submission_method='staff' and submitted_by=current_setting('test.flow_admin')::uuid from public.application_declarations where id=current_setting('test.staff_declaration')::uuid),'staff provenance is stored');
 select public.test_assert(public.save_staff_application(current_setting('test.flow_user')::uuid,current_setting('test.staff_data')::jsonb||'{"email":"staff-entry@example.invalid"}',true)::text=current_setting('test.staff_declaration'),'staff submission retry is idempotent');

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { fullApplicationSchema, applicationDraftSchema } from "@/lib/validation/application-form";
+import { fullApplicationSchema, applicationDraftSchema, applicationSubmissionSchema } from "@/lib/validation/application-form";
 describe("Later application boundary", () => {
   const draft = {
     firstName: "",
@@ -67,6 +67,12 @@ describe("Later application boundary", () => {
     ] as const)
       expect(parsed[key]).toBe("");
     expect(fullApplicationSchema.parse(parsed)).toEqual(parsed);
+  });
+  it("requires a valid past birth date for new submissions only", () => {
+    expect(applicationDraftSchema.safeParse({ ...complete, guardianDob: "" }).success).toBe(true);
+    expect(applicationSubmissionSchema.safeParse(complete).success).toBe(false);
+    expect(applicationSubmissionSchema.safeParse({ ...complete, guardianDob: "2100-05-04" }).success).toBe(false);
+    expect(applicationSubmissionSchema.safeParse({ ...complete, guardianDob: "1975-05-04" }).success).toBe(true);
   });
   it.each(["1949", "2100", "2026junk", "", "2026.5"])(
     "rejects invalid graduation year %s",

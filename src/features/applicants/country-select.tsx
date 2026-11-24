@@ -171,6 +171,7 @@ export function CountrySelect({
   inputRef,
   invalid,
   describedBy,
+  required,
 }: {
   id: string;
   name: string;
@@ -181,6 +182,7 @@ export function CountrySelect({
   inputRef?: Ref<HTMLInputElement>;
   invalid?: boolean;
   describedBy?: string;
+  required?: boolean;
 }) {
   const { locale } = useLocale();
   const translate = useWorkspaceText();
@@ -231,6 +233,7 @@ export function CountrySelect({
         aria-activedescendant={open && active >= 0 ? optionId(active) : undefined}
         aria-autocomplete="list"
         aria-invalid={invalid}
+        aria-required={required}
         aria-describedby={describedBy}
         placeholder={translate("Search for a country")}
         value={visibleValue}

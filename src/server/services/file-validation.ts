@@ -1,7 +1,7 @@
 import "server-only";
 import sharp from "sharp";
 import { createConnection } from "node:net";
-import { caseFileLimit, caseFileSizeError } from "@/lib/validation/case-file";
+import { caseFileLimit, caseFileSizeError, casePdfLimit, casePdfSizeError, isCasePdf } from "@/lib/validation/case-file";
 import { rebuildPrivatePdf } from "./private-pdf";
 
 async function scanPdf(data: Buffer, host: string) {
@@ -42,19 +42,26 @@ async function scanPdf(data: Buffer, host: string) {
     });
   });
 }
-export async function validateCaseFile(file: File) {
-  if (file.size < 1 || file.size > caseFileLimit) throw Error(caseFileSizeError);
-  const data = Buffer.from(await file.arrayBuffer());
+export async function validateCaseFile(file: File, compressPdf = false) {
   const unspecifiedType = !file.type || file.type === "application/octet-stream";
-  if (file.type === "application/pdf" || (unspecifiedType && data.subarray(0, 5).toString() === "%PDF-")) {
+  const pdf = isCasePdf(file) || (unspecifiedType && await file.slice(0, 5).text() === "%PDF-");
+  if (file.size < 1 || file.size > (pdf ? casePdfLimit : caseFileLimit))
+    throw Error(pdf ? casePdfSizeError : caseFileSizeError);
+  const data = Buffer.from(await file.arrayBuffer());
+  if (pdf) {
     if (data.subarray(0, 5).toString() !== "%PDF-") throw Error("Choose a valid PDF.");
     if (!data.subarray(-2048).includes(Buffer.from("%%EOF"))) throw Error("This PDF is incomplete.");
     const host = process.env.CLAMAV_HOST;
     if (host) {
       await scanPdf(data, host);
-      return { data, mime: "application/pdf", extension: "pdf" };
+      const compressed = compressPdf ? await rebuildPrivatePdf(data, true).catch(() => null) : null;
+      return {
+        data: compressed && compressed.length < data.length ? compressed : data,
+        mime: "application/pdf",
+        extension: "pdf",
+      };
     }
-    return { data: await rebuildPrivatePdf(data), mime: "application/pdf", extension: "pdf" };
+    return { data: await rebuildPrivatePdf(data, compressPdf), mime: "application/pdf", extension: "pdf" };
   }
   if (!unspecifiedType && !["image/jpeg", "image/png", "image/webp"].includes(file.type))
     throw Error("Choose a JPEG, PNG, WebP or PDF.");

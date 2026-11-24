@@ -36,6 +36,13 @@ export const fullApplicationSchema = z
       .refine(Boolean, "Confirm that you informed your guardian before sharing their details."),
   })
   .strict();
+// Historical submissions can be downloaded even if the date was optional when filed.
+export const applicationSubmissionSchema = fullApplicationSchema.extend({
+  guardianDob: z.iso.date({
+    error: (issue) => issue.input ? "Enter a valid date." : "This field is required.",
+  }).refine((date) => date <= new Date().toISOString().slice(0, 10), "Enter a valid date."),
+});
+
 export const applicationDraftSchema = fullApplicationSchema
   .partial()
   .extend({
@@ -87,7 +94,7 @@ export const applicationFields: {
       { key: "guardianFirstName", label: "First name" },
       { key: "guardianMiddleName", label: "Middle name", optional: true },
       { key: "guardianLastName", label: "Last name" },
-      { key: "guardianDob", label: "Date of birth", type: "date", optional: true },
+      { key: "guardianDob", label: "Date of birth", type: "date" },
       { key: "guardianPhone", label: "Phone number", type: "tel" },
       { key: "guardianEmail", label: "Email address", type: "email", optional: true },
       { key: "guardianRelation", label: "Relation to the guardian" },
@@ -97,7 +104,7 @@ export const applicationFields: {
     title: "Where you stay",
     fields: [
       { key: "poBox", label: "P.O. Box", optional: true },
-      { key: "residence", label: "Place you stay" },
+      { key: "residence", label: "Place you stay", type: "country" },
     ],
   },
   {
@@ -105,7 +112,7 @@ export const applicationFields: {
     fields: [
       { key: "highestEducation", label: "Highest level of education" },
       { key: "institutionName", label: "Name of the education institution" },
-      { key: "institutionCountry", label: "Country of the institution" },
+      { key: "institutionCountry", label: "Country of the institution", type: "country" },
       { key: "institutionCity", label: "City of the institution", optional: true },
       { key: "institutionStreet", label: "Street of the institution", optional: true },
       { key: "graduationYear", label: "Year you graduated", type: "number" },

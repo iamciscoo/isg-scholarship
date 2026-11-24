@@ -7,7 +7,7 @@ import {
   applicationFields,
   applicationFieldErrors,
   applicationDraftSchema,
-  fullApplicationSchema,
+  applicationSubmissionSchema,
 } from "@/lib/validation/application-form";
 import { wakeNotifications } from "@/server/services/notification-delivery";
 
@@ -24,7 +24,7 @@ export async function saveStaffApplication(
       section.fields.map((field) => [field.key, String(fd.get(field.key) || "")]),
     ),
   );
-  const parsed = (submit ? fullApplicationSchema : applicationDraftSchema).safeParse({
+  const parsed = (submit ? applicationSubmissionSchema : applicationDraftSchema).safeParse({
     ...values,
     guardianPermission: fd.get("guardianPermission") === "on",
   });
