@@ -9,6 +9,7 @@ import { authSchema, passwordSchema, safeNext } from "@/lib/validation/auth";
 import { clientIdentity, sameOrigin } from "@/lib/security/request";
 import { requireUser } from "@/lib/auth/session";
 import { wakeNotifications } from "@/server/services/notification-delivery";
+import { requestOrigin } from "@/lib/server-origin";
 export type AuthState = {
   error?: string;
   field?: "email" | "password" | "confirmPassword" | "adult" | "terms";
@@ -16,7 +17,7 @@ export type AuthState = {
 };
 export async function signInWithGoogle(fd: FormData) {
   if (!authConfigured()) redirect("/login?error=oauth");
-  const origin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const origin = await requestOrigin();
   const next = safeNext(fd.get("next")?.toString() || null);
   const db = await createClient();
   const { data, error } = await db.auth.signInWithOAuth({
@@ -52,7 +53,7 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
   });
   if (rate.error || !rate.data) return { error: "Please wait 15 minutes before trying again." };
   const db = await createClient();
-  const url = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const url = await requestOrigin();
   if (mode.data === "forgot-password") {
     const { error } = await db.auth.resetPasswordForEmail(email.data, {
       redirectTo: `${url}/auth/callback?next=/reset-password`,
