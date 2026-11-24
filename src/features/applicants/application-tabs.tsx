@@ -5,34 +5,52 @@ import { useWorkspaceText } from "@/lib/i18n/workspace-text";
 
 const tabs = [
   { id: "details", label: "Details" },
+  { id: "application", label: "Application" },
   { id: "documents", label: "Documents" },
 ] as const;
 
-export function ApplicationTabs({ details, documents }: { details: ReactNode; documents?: ReactNode }) {
+export function ApplicationTabs({
+  details,
+  application,
+  documents,
+}: {
+  details: ReactNode;
+  application?: ReactNode;
+  documents?: ReactNode;
+}) {
   const t = useWorkspaceText();
   const id = useId();
   const [active, setActive] = useState<(typeof tabs)[number]["id"]>("details");
   const hasDocuments = Boolean(documents);
+  const shown = tabs.filter((tab) => tab.id !== "documents" || hasDocuments);
 
   useEffect(() => {
-    const sync = () =>
-      setActive(hasDocuments && window.location.hash === "#application-documents" ? "documents" : "details");
+    const sync = () => {
+      const hash = window.location.hash;
+      setActive(
+        (hash === "#application-documents" && hasDocuments
+          ? "documents"
+          : hash === "#application-form" && application
+            ? "application"
+            : "details") as (typeof tabs)[number]["id"],
+      );
+    };
     const frame = requestAnimationFrame(sync);
     window.addEventListener("hashchange", sync);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("hashchange", sync);
     };
-  }, [hasDocuments]);
+  }, [hasDocuments, application]);
 
-  function select(next: typeof active) {
+  function select(next: (typeof active)) {
     setActive(next);
     const url = new URL(window.location.href);
-    url.hash = next === "documents" ? "application-documents" : "";
+    url.hash = next === "documents" ? "application-documents" : next === "application" ? "application-form" : "";
     window.history.replaceState(window.history.state, "", url);
   }
 
-  if (!hasDocuments) return <>{details}</>;
+  if (shown.length < 2) return <>{details}</>;
 
   return (
     <>
@@ -41,7 +59,7 @@ export function ApplicationTabs({ details, documents }: { details: ReactNode; do
         role="tablist"
         aria-label={t("Scholarship application")}
       >
-        {tabs.map((tab) => (
+        {shown.map((tab) => (
           <button
             key={tab.id}
             id={`${id}-tab-${tab.id}`}
@@ -54,19 +72,22 @@ export function ApplicationTabs({ details, documents }: { details: ReactNode; do
             onKeyDown={(event) => {
               if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
               event.preventDefault();
+              const index = shown.findIndex((item) => item.id === active);
               const next =
-                event.key === "Home" || (event.key !== "End" && active === "documents")
-                  ? "details"
-                  : "documents";
-              select(next);
-              document.getElementById(`${id}-tab-${next}`)?.focus();
+                event.key === "Home"
+                  ? shown[0]
+                  : event.key === "End"
+                    ? shown[shown.length - 1]
+                    : shown[(index + (event.key === "ArrowLeft" ? shown.length - 1 : 1)) % shown.length];
+              select(next.id);
+              document.getElementById(`${id}-tab-${next.id}`)?.focus();
             }}
           >
             {t(tab.label)}
           </button>
         ))}
       </div>
-      {tabs.map((tab) => (
+      {shown.map((tab) => (
         <div
           key={tab.id}
           id={`${id}-panel-${tab.id}`}
@@ -75,7 +96,7 @@ export function ApplicationTabs({ details, documents }: { details: ReactNode; do
           aria-labelledby={`${id}-tab-${tab.id}`}
           hidden={active !== tab.id}
         >
-          {tab.id === "details" ? details : documents}
+          {tab.id === "details" ? details : tab.id === "documents" ? documents : application}
         </div>
       ))}
     </>

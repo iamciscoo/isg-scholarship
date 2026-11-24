@@ -13,6 +13,8 @@ import { packageStatus } from "./package-status";
 import { UserFiles } from "@/features/consultations/user-files";
 import { ApplicationTabs } from "./application-tabs";
 import { DocumentPanel } from "./document-panel";
+import { FullApplicationForm } from "./full-application-form";
+import type { FullApplication } from "@/lib/validation/application-form";
 
 export async function ApplicationDetail({
   id,
@@ -43,6 +45,16 @@ export async function ApplicationDetail({
   if (caseError) throw Error("Application status unavailable");
   const area = staff ? (admin ? "/admin" : "/advisor") : "/dashboard";
   const paid = application.package_state === "paid";
+  const { data: draft } = paid
+    ? await db.from("application_form_drafts").select("data").eq("user_id", application.user_id).maybeSingle()
+    : { data: null };
+  const applicationForm =
+    paid && !record.current_declaration_id ? (
+      <FullApplicationForm
+        applicant={staff ? application.user_id : undefined}
+        initial={(draft?.data ?? {}) as Partial<FullApplication>}
+      />
+    ) : undefined;
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
       <Link className="text-link" href={`${area}/applications`}>
@@ -68,14 +80,6 @@ export async function ApplicationDetail({
                   <Link className="text-link" href={`${area}/cases/${application.user_id}`}>
                     <Text>{"View consultation"}</Text>
                   </Link>
-                  {paid && (
-                    <Link
-                      className="button button-outline"
-                      href={`${area}/cases/${application.user_id}/application`}
-                    >
-                      <Text>{"Enter application details"}</Text>
-                    </Link>
-                  )}
                   {record.current_declaration_id && (
                     <Link
                       className="button button-primary"
@@ -86,11 +90,10 @@ export async function ApplicationDetail({
                   )}
                 </div>
               ) : (
-                paid && (
+                paid &&
+                record.current_declaration_id && (
                   <Link className="button button-primary" href="/dashboard/application">
-                    {record.current_declaration_id
-                      ? translate("View application")
-                      : translate("Fill application form")}
+                    {translate("View application")}
                   </Link>
                 )
               )}
@@ -107,6 +110,7 @@ export async function ApplicationDetail({
             />
           </>
         }
+        application={applicationForm}
         documents={
           staff ? (
             <UserFiles user={application.user_id} />

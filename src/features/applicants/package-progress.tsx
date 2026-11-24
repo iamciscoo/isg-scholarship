@@ -104,20 +104,22 @@ export async function PackageProgress({
         </>
       )}
       {receipt.data && (
-        <Link
-          className="text-link"
-          href={admin ? `/admin/receipts/${receipt.data.id}` : `/api/case-files/${receipt.data.id}`}
-        >
-          {admin ? translate("Open payment receipt →") : translate("Download your receipt")}
-        </Link>
-      )}
-      {receipt.data && (!staff || admin) && (
-        <details className="package-gallery">
-          <summary>
-            <Text>{"Preview receipt"}</Text>
-          </summary>
-          <ReceiptPreview id={receipt.data.id} mime={receipt.data.mime} />
-        </details>
+        <div className="receipt-actions">
+          <Link
+            className="text-link"
+            href={admin ? `/admin/receipts/${receipt.data.id}` : `/api/case-files/${receipt.data.id}`}
+          >
+            {admin ? translate("Open payment receipt →") : translate("Download your receipt")}
+          </Link>
+          {(!staff || admin) && (
+            <details className="package-gallery">
+              <summary>
+                <Text>{"Preview receipt"}</Text>
+              </summary>
+              <ReceiptPreview id={receipt.data.id} mime={receipt.data.mime} />
+            </details>
+          )}
+        </div>
       )}
     </section>
   );

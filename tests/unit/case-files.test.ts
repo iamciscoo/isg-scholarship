@@ -85,12 +85,14 @@ it("preserves the original only after the configured scanner accepts it", async 
   }
 });
 
-it("uses the smaller PDF settings when compression is requested during safe rebuilding", async () => {
+it("skips the compression pass for small PDFs so uploads stay fast", async () => {
   vi.stubEnv("CLAMAV_HOST", "");
   const pdf = new File([new Uint8Array(await makePdf(1))], "transcript.pdf");
   const standard = await validateCaseFile(pdf);
   const compact = await validateCaseFile(pdf, true);
-  expect(compact.data.length).toBeLessThan(standard.data.length);
+  // Compression is unconditional in the API now, but a sub-1MB file is already small, so no extra pass runs.
+  expect(compact.data.length).toBe(standard.data.length);
+  expect(compact.data.subarray(0, 5).toString()).toBe("%PDF-");
 });
 
 it("rejects malformed, oversized and excessively long PDF uploads", async () => {

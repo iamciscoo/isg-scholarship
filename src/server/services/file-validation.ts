@@ -52,16 +52,18 @@ export async function validateCaseFile(file: File, compressPdf = false) {
     if (data.subarray(0, 5).toString() !== "%PDF-") throw Error("Choose a valid PDF.");
     if (!data.subarray(-2048).includes(Buffer.from("%%EOF"))) throw Error("This PDF is incomplete.");
     const host = process.env.CLAMAV_HOST;
+    // Compressing a small PDF costs a ghostscript round-trip and saves nothing.
+    const shouldCompress = compressPdf && data.length > 1024 * 1024;
     if (host) {
       await scanPdf(data, host);
-      const compressed = compressPdf ? await rebuildPrivatePdf(data, true).catch(() => null) : null;
+      const compressed = shouldCompress ? await rebuildPrivatePdf(data, true).catch(() => null) : null;
       return {
         data: compressed && compressed.length < data.length ? compressed : data,
         mime: "application/pdf",
         extension: "pdf",
       };
     }
-    return { data: await rebuildPrivatePdf(data, compressPdf), mime: "application/pdf", extension: "pdf" };
+    return { data: await rebuildPrivatePdf(data, shouldCompress), mime: "application/pdf", extension: "pdf" };
   }
   if (!unspecifiedType && !["image/jpeg", "image/png", "image/webp"].includes(file.type))
     throw Error("Choose a JPEG, PNG, WebP or PDF.");

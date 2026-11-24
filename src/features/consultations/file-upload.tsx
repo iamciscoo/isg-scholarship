@@ -120,19 +120,26 @@ export function FileUpload({
         setSuccess("");
         const failed: File[] = [];
         const messages: string[] = [];
-        for (const file of selected) {
-          try {
-            await upload(file, { kind, category, application, applicant });
-          } catch (error) {
-            const reason = error instanceof Error ? error.message : "Upload failed. Please try again.";
-            const message =
-              reason === "decode" || reason === "encode"
-                ? "This photo could not be read. Try JPEG or PNG."
-                : reason;
-            failed.push(file);
-            messages.push(canSelectMultiple ? `${file.name}: ${translate(message)}` : translate(message));
-          }
-        }
+        const results = await Promise.all(
+          selected.map(async (file) => {
+            try {
+              await upload(file, { kind, category, application, applicant });
+              return "";
+            } catch (error) {
+              const reason = error instanceof Error ? error.message : "Upload failed. Please try again.";
+              const message =
+                reason === "decode" || reason === "encode"
+                  ? "This photo could not be read. Try JPEG or PNG."
+                  : reason;
+              return canSelectMultiple ? `${file.name}: ${translate(message)}` : translate(message);
+            }
+          }),
+        );
+        selected.forEach((file, index) => {
+          if (!results[index]) return;
+          failed.push(file);
+          messages.push(results[index]);
+        });
         setPending(false);
         setRetry(failed);
         setErrors(messages);
@@ -152,10 +159,12 @@ export function FileUpload({
         }
       }}
     >
-      <label className="min-w-0 grid-cols-1">
-        {<Text>{label}</Text>}
+      <span className="field-label">
+        <Text>{label}</Text>
+      </span>
+      <label className="file-picker">
         <input
-          className="w-full min-w-0 max-w-full overflow-hidden"
+          className="file-picker-input"
           ref={ref}
           name="file"
           type="file"
@@ -170,15 +179,15 @@ export function FileUpload({
             setSuccess("");
           }}
         />
+        <span className="button button-outline" aria-hidden="true">
+          {selection.length || retry.length
+            ? `${selection.length || retry.length} file${(selection.length || retry.length) === 1 ? "" : "s"} selected`
+            : translate("Choose file")}
+        </span>
       </label>
       <p id={detailsId} className="field-help">
         <Text>{"PDFs up to 5 MB. Images up to 4 MB after compression."}</Text>
       </p>
-      {kind === "receipt" && (
-        <p className="field-help">
-          <Text>{"Shared privately with ISG staff. Hide unrelated bank details."}</Text>
-        </p>
-      )}
       {errors.length > 0 && (
         <div role="alert" className="field-error break-words">
           {errors.map((message, i) => (
