@@ -44,14 +44,24 @@ export default async function AuthPage({
   return (
     <>
       <h1>{copy[mode][0]}</h1>
-      <p>{copy[mode][1]}</p>
+      {mode !== "register" && <p>{copy[mode][1]}</p>}
       {query.account && (
         <p className="field-error mb-5" role="alert">Your account is unavailable. Please contact ISG.</p>
       )}
       {query.error && (
         <p className="field-error mb-5" role="alert">
-          This link could not be verified. Please request a new link.
+          {query.error === "email_exists"
+            ? "An account already exists for this email. Sign in with your password, or ask ISG to link Google to it."
+            : query.error === "oauth"
+              ? "Google sign-in is unavailable right now. Use your email and password instead."
+              : "This link could not be verified. Please request a new link."}
         </p>
+      )}
+      {(mode === "login" || mode === "register") && (
+        <GoogleSignIn
+          next={query.next ? safeNext(query.next) : undefined}
+          configured={authConfigured()}
+        />
       )}
       <AuthForm
         mode={mode}
@@ -60,12 +70,6 @@ export default async function AuthPage({
         captchaRequired={Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)}
         nonce={(await headers()).get("x-nonce") || undefined}
       />
-      {(mode === "login" || mode === "register") && (
-        <GoogleSignIn
-          next={query.next ? safeNext(query.next) : undefined}
-          configured={authConfigured()}
-        />
-      )}
     </>
   );
 }

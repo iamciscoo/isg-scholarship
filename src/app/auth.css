@@ -111,8 +111,30 @@
 }
 .auth-card > p {
   font-size: 14px;
-  margin-bottom: 30px;
+  margin-bottom: 18px;
   line-height: 1.8;
+}
+.auth-card .form-stack {
+  gap: 14px;
+}
+.google-signin {
+  display: grid;
+  margin-bottom: 6px;
+}
+.google-signin .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+.google-signin::after {
+  content: "or";
+  display: block;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
 }
 .auth-card .button {
   width: 100%;
