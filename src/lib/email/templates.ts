@@ -1,9 +1,4 @@
-export function escapeHtml(value: string) {
-  return value.replace(
-    /[&<>"']/g,
-    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
-  );
-}
+import { notificationEmailHtml } from "./notification-layout";
 
 export type NotificationDetails = {
   firstName?: string;
@@ -167,34 +162,40 @@ export function notificationTemplate(event: string, payload: NotificationDetails
         : event === "package_payment_update"
           ? applicationReceiptCopy(payload.status)
           : eventCopy[event] || ["Workspace update", "Open your ISG workspace for details.", "/dashboard"];
-  const url = siteUrl + (staff ? fallback : workspacePath(payload.path, fallback));
+  const path = staff ? fallback : workspacePath(payload.path, fallback);
+  const opensDocuments = path === application && (event === "document_request" || event === "document_update");
+  const url = new URL(path + (opensDocuments ? "#application-documents" : ""), siteUrl).href;
   const name = payload.firstName || payload.applicantName || "there";
   const meet = event === "meeting_scheduled" ? meetingLink(payload.meetUrl) : "";
   const time =
     payload.startsAt && !Number.isNaN(Date.parse(payload.startsAt))
       ? new Date(payload.startsAt).toISOString().replace("T", " ").slice(0, 16) + " UTC"
       : "";
-  const lines = [
-    staff ? "" : `Hello ${name},`,
-    summary,
-    payload.reference && `Reference: ${payload.reference}`,
-    !staff && payload.status && `Status: ${payload.status}`,
-    !staff && payload.documentName && `Document: ${payload.documentName}`,
-    !staff && payload.applicationName && `Application: ${payload.applicationName}`,
-    !staff && payload.nextStep && `Next step: ${payload.nextStep}`,
-    event === "meeting_scheduled" && time && `Time: ${time}`,
-  ].filter((line): line is string => Boolean(line));
-  const label = staff ? "Open staff workspace" : "Open your ISG workspace";
+  const greeting = staff ? "" : `Hello ${name},`;
+  const fields: [string, string | undefined | false][] = [
+    ["Reference", payload.reference],
+    ["Status", !staff && payload.status],
+    ["Document", !staff && payload.documentName],
+    ["Application", !staff && payload.applicationName],
+    ["Next step", !staff && payload.nextStep],
+    ["Time", event === "meeting_scheduled" && time],
+  ];
+  const details = fields.filter((entry): entry is [string, string] => Boolean(entry[1]));
+  const label = staff ? "Open staff workspace" : opensDocuments ? "Open application documents" : "Open your ISG workspace";
   return {
     subject: assessment && payload.reference ? `ISG ${title} · ${payload.reference}` : `ISG ${title}`,
     text: [
-      ...lines,
+      greeting,
+      summary,
+      ...details.map(([key, value]) => `${key}: ${value}`),
       meet && `Join consultation: ${meet}`,
       `${label}: ${url}`,
       "International Scholarship Gateway",
     ]
       .filter(Boolean)
       .join("\n"),
-    html: `<!doctype html><html lang="en"><body style="background:#f6f5f0;font-family:Arial,sans-serif;color:#0d2c62;padding:24px"><main style="max-width:560px;margin:auto;background:#fff;padding:24px;border-radius:12px"><h1>${escapeHtml(title)}</h1>${lines.map((line) => `<p>${escapeHtml(line).replace(/\n/g, "<br>")}</p>`).join("")}${meet ? `<p><a href="${escapeHtml(meet)}">Join consultation</a></p>` : ""}<p><a href="${escapeHtml(url)}">${label}</a></p><p>International Scholarship Gateway</p></main></body></html>`,
+    html: notificationEmailHtml({
+      title, summary, greeting, details, action: { label, url }, siteUrl, meetingUrl: meet,
+    }),
   };
 }

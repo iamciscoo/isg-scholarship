@@ -5,6 +5,9 @@ it("directs recipients of staff messages to their private inbox", () => {
   expect(template.subject).toBe("ISG New account message");
   expect(template.text).toContain("open Notifications to read your new message");
   expect(template.html).toContain('href="https://isg.example/dashboard"');
+  expect(template.html).toContain('src="https://isg.example/brand/email-logo.png"');
+  expect(template.html).toContain('alt="International Scholarship Gateway"');
+  expect(template.html).toContain("<h1 ");
 });
 it("escapes applicant input in HTML email", () => {
   const template = notificationTemplate(
@@ -27,8 +30,8 @@ it("keeps applicant PII out of staff alerts", () => {
 });
 it.each(["document_request", "document_update"])("links %s directly to the document workspace", (event) => {
   const template = notificationTemplate(event, { reference: "ISG consultation" }, "https://isg.example");
-  expect(template.text).toContain("https://isg.example/dashboard/application");
-  expect(template.html).toContain('href="https://isg.example/dashboard/application"');
+  expect(template.text).toContain("https://isg.example/dashboard/application#application-documents");
+  expect(template.html).toContain('href="https://isg.example/dashboard/application#application-documents"');
 });
 
 it("explains a rejected receipt and links to the upload workspace", () => {
