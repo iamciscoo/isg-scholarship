@@ -8,9 +8,18 @@ export async function getMarketingImages(): Promise<MarketingImage[]> {
   const { data, error } = await db
     .from("marketing_images")
     .select("id,label")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .abortSignal(AbortSignal.timeout(5000));
   if (error) throw Error("Marketing gallery unavailable");
   return (data || []).map((m) => ({ id: m.id, path: `/api/marketing-images/${m.id}`, label: m.label }));
+}
+export async function getEditorMarketingImages() {
+  try {
+    return await getMarketingImages();
+  } catch {
+    console.error("catalogue_marketing_gallery_unavailable");
+    return [];
+  }
 }
 export async function getHomepageImage() {
   if (!authConfigured()) return "/images/study-together.webp";

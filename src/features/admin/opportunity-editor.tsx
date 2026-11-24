@@ -3,7 +3,7 @@ import { getWorkspaceText } from "@/lib/i18n/server";
 import { ActionForm } from "@/components/forms/action-form";
 import { savePromotion } from "./opportunity-actions";
 import { ApprovedImagePicker } from "./approved-image-picker";
-import { getMarketingImages } from "@/server/repositories/marketing-images";
+import { getEditorMarketingImages } from "@/server/repositories/marketing-images";
 import { DestinationSelect } from "@/features/consultations/destination-select";
 import { countries } from "@/lib/countries";
 import { programmeFields } from "@/config/programme-areas";
@@ -11,7 +11,7 @@ import { studyLevels } from "@/lib/validation/assessment";
 import type { Programme } from "@/lib/programmes";
 
 export async function ProgrammeEditor({ value }: { value?: Programme }) {
-  const [images, t] = await Promise.all([getMarketingImages(), getWorkspaceText()]);
+  const [images, t] = await Promise.all([getEditorMarketingImages(), getWorkspaceText()]);
   return (
     <ActionForm key={value?.id || "new-programme"} action={savePromotion} label="Save programme">
       <input type="hidden" name="id" value={value?.id || ""} />

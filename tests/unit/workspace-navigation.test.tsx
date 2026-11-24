@@ -39,10 +39,10 @@ it("shares ordered applicant links and one current page with the mobile menu", (
   ]);
   expect(account).toEqual({ name: "fixture@example.invalid", avatar: null });
 });
-it("keeps all admin destinations, puts users first and applications above payments", () => {
+it("puts profile first in the admin menu and keeps the other destinations", () => {
   mock.pathname.mockReturnValue("/admin/users");
   const { links } = render("admin");
-  expect(links.slice(0, 2).map((l: { id: string }) => l.id)).toEqual(["overview", "profile"]);
+  expect(links.slice(0, 2).map((l: { id: string }) => l.id)).toEqual(["profile", "overview"]);
   const hrefs = links.map((l: { href: string }) => l.href);
   expect(hrefs).toContain("/admin/users");
   expect(hrefs).toContain("/admin/settings");

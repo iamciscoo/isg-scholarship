@@ -4,14 +4,13 @@ import { Text } from "@/lib/i18n/workspace-text";
 import Image from "next/image";
 import { ActionForm } from "@/components/forms/action-form";
 import { type ScholarshipPackage, marketingImageSchema } from "@/lib/validation/opportunities";
-import { getMarketingImages } from "@/server/repositories/marketing-images";
+import { getEditorMarketingImages } from "@/server/repositories/marketing-images";
 import { ApprovedImagePicker } from "./approved-image-picker";
 import { PackagePriceField } from "./package-price-field";
 import { saveScholarshipPackage } from "./scholarship-package-actions";
 
 export async function ScholarshipPackageEditor({ value }: { value?: ScholarshipPackage }) {
-  const translate = await getWorkspaceText();
-  const images = await getMarketingImages();
+  const [translate, images] = await Promise.all([getWorkspaceText(), getEditorMarketingImages()]);
   const fields = [
     { key: "name", label: "Scholarship name", value: value?.name, max: 200 },
     { key: "provider", label: "University or provider", value: value?.provider, max: 200 },

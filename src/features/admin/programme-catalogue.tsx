@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import Form from "next/form";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -10,6 +11,7 @@ import { deletePromotion } from "./opportunity-actions";
 import { DestinationFlag } from "@/features/consultations/destination-select";
 import type { Programme } from "@/lib/programmes";
 import { CatalogueLayout } from "./catalogue-layout";
+import { CatalogueLoading, CatalogueUnavailable } from "./catalogue-status";
 
 const pageSize = 5;
 
@@ -22,29 +24,42 @@ export async function ProgrammeCatalogue({
 }) {
   const t = await getWorkspaceText();
   const requestedPage = Math.max(1, Math.min(100000, Number.parseInt(query.page || "1", 10) || 1));
-  const search = (query.q || "").slice(0, 100).replace(/[%_\\*]/g, "").trim();
+  const search = (query.q || "")
+    .slice(0, 100)
+    .replace(/[%_\\*]/g, "")
+    .trim();
   const filter = <T extends { ilike: (column: string, pattern: string) => T }>(request: T) =>
     search ? request.ilike("title", `%${search}%`) : request;
   const fetchPage = (page: number) =>
     filter(db.from("study_promotions").select("*", { count: "exact" }))
       .order("title")
       .order("id")
-      .range((page - 1) * pageSize, page * pageSize - 1);
+      .range((page - 1) * pageSize, page * pageSize - 1)
+      .abortSignal(AbortSignal.timeout(8000));
+  const editing = z.uuid().safeParse(query.edit).success;
   const [requested, edit] = await Promise.all([
     fetchPage(requestedPage),
-    z.uuid().safeParse(query.edit).success
-      ? db.from("study_promotions").select("*").eq("id", query.edit).maybeSingle()
+    editing
+      ? db
+          .from("study_promotions")
+          .select("*")
+          .eq("id", query.edit)
+          .abortSignal(AbortSignal.timeout(8000))
+          .maybeSingle()
       : Promise.resolve({ data: null, error: null }),
   ]);
   let list = requested;
   let page = requestedPage;
   if (page > 1 && (list.status === 416 || (!list.error && !list.data.length))) {
-    const total = await filter(db.from("study_promotions").select("id", { count: "exact", head: true }));
-    if (total.error) throw Error("Programmes unavailable");
+    const total = await filter(
+      db.from("study_promotions").select("id", { count: "exact", head: true }),
+    ).abortSignal(AbortSignal.timeout(8000));
+    if (total.error) return <CatalogueUnavailable href="/admin/packages?tab=programmes" />;
     page = Math.max(1, Math.ceil((total.count || 0) / pageSize));
     list = await fetchPage(page);
   }
-  if (list.error || edit.error) throw Error("Programmes unavailable");
+  if (list.error || edit.error || (editing && !edit.data))
+    return <CatalogueUnavailable href="/admin/packages?tab=programmes" />;
   const pages = Math.max(1, Math.ceil((list.count || 0) / pageSize));
   const value = (edit.data as Programme | null) || undefined;
   const href = (next: number, id?: string) => {
@@ -68,7 +83,9 @@ export async function ProgrammeCatalogue({
               </Link>
             )}
           </div>
-          <ProgrammeEditor value={value} />
+          <Suspense fallback={<CatalogueLoading />}>
+            <ProgrammeEditor value={value} />
+          </Suspense>
         </>
       }
     >
@@ -109,7 +126,9 @@ export async function ProgrammeCatalogue({
                 <span className="badge">{t(p.published ? "Available" : "Unpublished")}</span>
               </div>
               <h3>
-                <Link href={href(page, p.id)}>{p.title}</Link>
+                <Link scroll={false} href={href(page, p.id)}>
+                  {p.title}
+                </Link>
               </h3>
               <p>
                 {t(p.study_level)} · {t(p.field)}
@@ -123,7 +142,7 @@ export async function ProgrammeCatalogue({
                 ))}
               </div>
               <div className="row-actions">
-                <Link className="button button-outline button-sm" href={href(page, p.id)}>
+                <Link className="button button-outline button-sm" scroll={false} href={href(page, p.id)}>
                   <Text>Edit programme</Text>
                 </Link>
                 <DeleteForm

@@ -21,10 +21,12 @@ export function CatalogueLayout({
   const panel = useRef<HTMLElement>(null);
   const t = useWorkspaceText();
   useEffect(() => {
-    if (!open || !window.matchMedia("(max-width: 767px)").matches) return;
-    controls.current?.scrollIntoView({ block: "nearest" });
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
+    if (!open || (!editing && !mobile)) return;
+    const target = mobile ? controls.current : panel.current;
+    target?.scrollIntoView({ block: editing ? "start" : "nearest" });
     panel.current?.focus({ preventScroll: true });
-  }, [open]);
+  }, [editing, open]);
 
   return (
     <div className="operation-grid catalogue-grid">

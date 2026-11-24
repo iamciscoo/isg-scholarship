@@ -150,7 +150,8 @@ function WorkspaceFrame({ children, role, email, active = "overview", account }:
               </div>
               <span>{email}</span>
               <WorkspaceProfileMenu
-                links={navigation}
+                links={role === "admin" ? navigation.toSorted((a, b) =>
+                  Number(b.id === "profile") - Number(a.id === "profile")) : navigation}
                 account={account || { name: email || "ISG account", avatar: null }}
               />
               <form action={signOut} className="workspace-desktop-logout">

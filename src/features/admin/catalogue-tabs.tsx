@@ -5,10 +5,10 @@ export async function CatalogueTabs({ programmes = false }: { programmes?: boole
   const t = await getWorkspaceText();
   return (
     <nav className="catalogue-tabs" aria-label={t("Catalogue")}>
-      <Link href="/admin/packages" aria-current={!programmes ? "page" : undefined}>
+      <Link href="/admin/packages" prefetch={programmes} aria-current={!programmes ? "page" : undefined}>
         <Text>Scholar packages</Text>
       </Link>
-      <Link href="/admin/packages?tab=programmes" aria-current={programmes ? "page" : undefined}>
+      <Link href="/admin/packages?tab=programmes" prefetch={!programmes} aria-current={programmes ? "page" : undefined}>
         <Text>Programmes</Text>
       </Link>
     </nav>

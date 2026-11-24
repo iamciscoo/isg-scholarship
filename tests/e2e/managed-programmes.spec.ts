@@ -69,6 +69,9 @@ test("programme editing, country availability, five stages and mobile feedback",
   await expect(workspaceMenu).toHaveCSS("box-shadow", "none");
   await expect(workspaceMenu).toHaveCSS("scale", "1.04");
   await page.mouse.up();
+  const navigationItems = page.getByRole("menuitem");
+  await expect(navigationItems.nth(0)).toHaveText("My profile");
+  await expect(navigationItems.nth(1)).toHaveText("Consultations");
   await page.keyboard.press("Escape");
   await expect(page.getByRole("heading", { name: "Saved packages" })).toBeVisible();
   await expect(page.getByLabel("Scholarship name", { exact: true })).toBeHidden();
@@ -140,7 +143,12 @@ test("programme editing, country availability, five stages and mobile feedback",
   await expect(
     page.locator(".hero-destinations").getByRole("link", { name: "Tanzania", exact: true }),
   ).toBeVisible();
-  await page.goto(`/admin/packages?tab=programmes&edit=${id}`);
+  await page.goto("/admin/packages?tab=programmes&q=QA%20programme%20exclusive");
+  await page.getByRole("link", { name: "Edit programme", exact: true }).click();
+  await expect(page).toHaveURL(new RegExp(`edit=${id}`));
+  await expect(page.getByLabel("Programme title", { exact: true })).toHaveValue("QA programme exclusive");
+  await page.reload();
+  await expect(page.getByLabel("Programme title", { exact: true })).toHaveValue("QA programme exclusive");
   await page.getByRole("button", { name: /^Destinations:/ }).click();
   await countrySearch.fill("tanz");
   await countries.getByRole("checkbox", { name: "Tanzania", exact: true }).uncheck();
