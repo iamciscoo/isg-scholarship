@@ -122,9 +122,11 @@ option {
 .localized-content {
   display: contents;
 }
-.field input[readonly] {
+.field input[readonly],
+.field input:disabled {
   background: #f2f5f9;
   color: var(--muted);
+  cursor: not-allowed;
 }
 .country-select {
   position: relative;

@@ -16,26 +16,25 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
   return (
     <ActionForm action={saveProfile} label="Save profile">
       <div className="form-grid">
-        <div className="field">
-          <label htmlFor="profile-email">{t("Email address")}</label>
-          <input id="profile-email" name="email" defaultValue={email} readOnly autoComplete="email" />
-        </div>
         {(
           [
-            { name: "first_name", label: "First name", auto: "given-name" },
-            { name: "last_name", label: "Last name", auto: "family-name" },
-            { name: "phone", label: "Phone / WhatsApp (optional)", auto: "tel" },
-            { name: "residence", label: "Country of residence (optional)", auto: "country-name" },
-            { name: "nationality", label: "Nationality (optional)", auto: "off" },
+            { name: "first_name", label: "First name", auto: "given-name", value: profile.first_name },
+            { name: "last_name", label: "Last name", auto: "family-name", value: profile.last_name },
+            { name: "email", label: "Email address", auto: "email", value: email },
+            { name: "phone", label: "Phone / WhatsApp (optional)", auto: "tel", value: profile.phone },
+            { name: "residence", label: "Country of residence (optional)", auto: "country-name", value: profile.residence },
+            { name: "nationality", label: "Nationality (optional)", auto: "off", value: profile.nationality },
           ] as const
         ).map((field) => (
           <div className="field" key={field.name}>
             <label htmlFor={field.name}>{t(field.label)}</label>
-            {field.name === "residence" || field.name === "nationality" ? (
+            {field.name === "email" ? (
+              <input id={field.name} defaultValue={field.value} disabled autoComplete="email" />
+            ) : field.name === "residence" || field.name === "nationality" ? (
               <CountrySelect
                 id={field.name}
                 name={field.name}
-                defaultValue={profile[field.name]}
+                defaultValue={field.value}
                 mode={field.name === "nationality" ? "demonym" : "country"}
               />
             ) : (
@@ -43,7 +42,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
                 id={field.name}
                 name={field.name}
                 autoComplete={field.auto}
-                defaultValue={profile[field.name]}
+                defaultValue={field.value}
                 required={field.name.endsWith("name")}
                 maxLength={field.name === "phone" ? 25 : 80}
               />
