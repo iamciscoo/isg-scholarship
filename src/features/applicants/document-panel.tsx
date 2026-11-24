@@ -90,11 +90,7 @@ export async function DocumentPanel({
                     </li>
                   ))}
                 </ul>
-              ) : (
-                <p className="field-help">
-                  <Text>{"Will send later."}</Text>
-                </p>
-              )}
+              ) : null}
             </article>
           );
         })}
