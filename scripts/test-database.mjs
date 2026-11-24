@@ -77,6 +77,7 @@ try {
     "tests/integration/notification-resolution.sql",
     "tests/integration/managed-programmes.sql",
     "tests/integration/workflow-delivery.sql",
+    "tests/integration/admin-notification-email.sql",
     "scripts/reset-consultations-and-packages.sql",
     "tests/integration/consultation-reset.sql",
   ];

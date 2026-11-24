@@ -39,7 +39,7 @@ export function NotificationComposer({
           <p className="notice">
             <Text>
               {
-                "This message will appear in every active account, including accounts created later. It does not send email or WhatsApp messages."
+                "This message will appear in every active account, including accounts created later."
               }
             </Text>
           </p>
@@ -100,6 +100,19 @@ export function NotificationComposer({
           </option>
         </select>
       </label>
+      <label className="checkbox-field">
+        <input
+          type="checkbox"
+          name="email"
+          defaultChecked
+          aria-describedby="notification-email-hint"
+          disabled={Boolean(state.message)}
+        />
+        <Text>{"Also notify by email"}</Text>
+      </label>
+      <small id="notification-email-hint">
+        <Text>{"Email alerts go to current recipients with confirmed addresses. Recipients sign in to read the message."}</Text>
+      </small>
       <label className="checkbox-field">
         <input type="checkbox" required disabled={Boolean(state.message)} />
         <Text>{"I have reviewed this message and its audience. Publish it to these accounts."}</Text>

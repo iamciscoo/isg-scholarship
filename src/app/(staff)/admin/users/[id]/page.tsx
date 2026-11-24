@@ -2,12 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { UserRoleMenu } from "@/features/admin/user-role-menu";
+import { UserFiles } from "@/features/consultations/user-files";
 import { requireStaff } from "@/lib/auth/session";
-import { getWorkspaceText } from "@/lib/i18n/server";
+import { getLocale, getWorkspaceText } from "@/lib/i18n/server";
 import { adminClient } from "@/lib/supabase/admin";
 
 export default async function UserRecord({ params }: { params: Promise<{ id: string }> }) {
-  const [{ id }, { db }, t] = await Promise.all([params, requireStaff(true), getWorkspaceText()]);
+  const [{ id }, { db }, t, locale] = await Promise.all([params, requireStaff(true), getWorkspaceText(), getLocale()]);
   if (!z.uuid().safeParse(id).success) notFound();
   const [account, profile, role, consultation] = await Promise.all([
     adminClient().auth.admin.getUserById(id),
@@ -26,40 +27,60 @@ export default async function UserRecord({ params }: { params: Promise<{ id: str
   const details = profile.data;
   const name = [details?.first_name, details?.last_name].filter(Boolean).join(" ");
   const userRole = role.data?.role || "applicant";
-  const facts: [string, string | undefined][] = [
-    ["Email address", user.email],
-    ["Role", t(userRole)],
-    ["Status", details?.status && t(details.status)],
-    ["Registration status", t(user.email_confirmed_at ? "Email confirmed" : "Awaiting email confirmation")],
-    ["Phone number", details?.phone],
-    ["Nationality", details?.nationality],
-    ["Country of residence", details?.residence],
+  const date = new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeZone: "Africa/Dar_es_Salaam" });
+  const groups: { title: string; facts: [string, string | undefined][] }[] = [
+    {
+      title: "Contact details",
+      facts: [
+        ["Email address", user.email],
+        ["Phone number", details?.phone],
+        ["Nationality", details?.nationality],
+        ["Country of residence", details?.residence],
+      ],
+    },
+    {
+      title: "Account details",
+      facts: [
+        ["Role", t(userRole)],
+        ["Status", details?.status && t(details.status)],
+        ["Registration status", t(user.email_confirmed_at ? "Email confirmed" : "Awaiting email confirmation")],
+        ["Joined", date.format(new Date(user.created_at))],
+        ["Last sign-in", user.last_sign_in_at && date.format(new Date(user.last_sign_in_at))],
+      ],
+    },
   ];
   return (
     <>
       <Link href="/admin/users" className="text-link">
         {t("Users")}
       </Link>
-      <h1>{name || user.email || t("Unnamed account")}</h1>
-      <section className="workspace-panel">
-        <div className="panel-head">
-          <h2>{t("Account details")}</h2>
+      <header className="user-record-header">
+        <h1>{name || user.email || t("Unnamed account")}</h1>
+        <div className="workspace-action-row">
+          {consultation.data && (
+            <Link href={`/admin/cases/${id}`} className="button button-outline button-sm">
+              {t("Open case")}
+            </Link>
+          )}
           <UserRoleMenu id={id} role={userRole} />
         </div>
-        <dl className="case-card-progress">
-          {facts.map(([label, value]) => (
-            <div key={label}>
-              <dt>{t(label)}</dt>
-              <dd>{value || t("Not provided")}</dd>
-            </div>
-          ))}
-        </dl>
-        {consultation.data && (
-          <Link href={`/admin/cases/${id}`} className="text-link">
-            {t("Open case")}
-          </Link>
-        )}
-      </section>
+      </header>
+      <div className="user-record-grid">
+        {groups.map(({ title, facts }) => (
+          <section className="workspace-panel" key={title}>
+            <h2>{t(title)}</h2>
+            <dl className="user-record-facts">
+              {facts.map(([label, value]) => (
+                <div key={label}>
+                  <dt>{t(label)}</dt>
+                  <dd>{value || t("Not provided")}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+      </div>
+      {consultation.data && <UserFiles user={id} />}
     </>
   );
 }

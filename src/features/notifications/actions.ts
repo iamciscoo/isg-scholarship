@@ -2,6 +2,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireStaff } from "@/lib/auth/session";
+import { wakeNotifications } from "@/server/services/notification-delivery";
 export type NotificationState = { error?: string; message?: string };
 export async function publishNotification(
   _previous: NotificationState,
@@ -26,6 +27,7 @@ export async function publishNotification(
       ]),
       recipient: z.union([z.literal(""), z.uuid()]),
       request: z.uuid(),
+      email: z.literal("on").optional(),
     })
     .safeParse(Object.fromEntries(fd));
   if (!parsed.success)
@@ -37,8 +39,14 @@ export async function publishNotification(
     p_link: p.link,
     p_recipient: p.recipient || null,
     p_request: p.request,
+    p_email: p.email === "on",
   });
   if (error) return { error: "The notification could not be published. Check the recipient and try again." };
+  if (p.email === "on") wakeNotifications();
   revalidatePath("/admin/notifications");
-  return { message: "Notification published. It is now available in the recipients’ ISG accounts." };
+  return {
+    message: p.email === "on"
+      ? "Notification published. Email alerts are queued for confirmed addresses."
+      : "Notification published. It is now available in the recipients’ ISG accounts.",
+  };
 }

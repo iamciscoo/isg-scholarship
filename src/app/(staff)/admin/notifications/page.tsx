@@ -1,14 +1,15 @@
 import { Text } from "@/lib/i18n/workspace-text";
+import { getWorkspaceText } from "@/lib/i18n/server";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { NotificationComposer } from "@/features/notifications/composer";
 export default async function Notifications({ searchParams }: { searchParams: Promise<{ new?: string }> }) {
-  const composerKey = (await searchParams).new || "initial";
-  const { db, user, role } = await requireStaff(true);
+  const [query, { db, user, role }, t] = await Promise.all([searchParams, requireStaff(true), getWorkspaceText()]);
+  const composerKey = query.new || "initial";
   const [people, messages] = await Promise.all([
-    db.rpc("staff_accounts"),
+    db.rpc("notification_recipients"),
     db
       .from("account_notifications")
       .select("id,title,body,recipient_id,created_at")
@@ -16,12 +17,11 @@ export default async function Notifications({ searchParams }: { searchParams: Pr
       .limit(30),
   ]);
   if (people.error || messages.error) throw new Error("Notification workspace unavailable");
-  const recipients = people.data
-    .filter((p: { status: string }) => p.status === "active")
-    .map((p: { id: string; first_name: string; last_name: string; email: string }) => ({
-      id: p.id,
-      name: `${p.first_name} ${p.last_name}`.trim() ? `${p.first_name} ${p.last_name} · ${p.email}` : p.email,
-    }));
+  const recipients = (people.data as { id: string; name: string }[]).map((person) => ({
+    ...person,
+    name: person.name || t("Unnamed account"),
+  }));
+  const recipientNames = new Map(recipients.map(({ id, name }) => [id, name]));
   return (
     <Workspace role={role} email={user.email || ""} active="notifications">
       <h1>
@@ -57,9 +57,8 @@ export default async function Notifications({ searchParams }: { searchParams: Pr
                   <p>{n.body}</p>
                   <small>
                     {n.recipient_id
-                      ? recipients.find((r: { id: string; name: string }) => r.id === n.recipient_id)?.name ||
-                        "One account"
-                      : "All active accounts"}{" "}
+                      ? recipientNames.get(n.recipient_id) || t("One account")
+                      : t("All active accounts")}{" "}
                     · {new Date(n.created_at).toISOString().slice(0, 10)}
                   </small>
                 </li>

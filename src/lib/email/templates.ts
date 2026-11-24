@@ -25,6 +25,11 @@ const consultation = "/dashboard/consultations";
 const application = "/dashboard/application";
 const packages = "/dashboard/applications";
 const eventCopy: Record<string, [string, string, string]> = {
+  account_notification_published: [
+    "New account message",
+    "Sign in to your ISG account and open Notifications to read your new message.",
+    "/dashboard",
+  ],
   consultation_stage_update: [
     "Consultation status updated",
     "Open Consultations to see the latest status and any next steps.",

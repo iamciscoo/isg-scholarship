@@ -1,5 +1,11 @@
 import { expect, it } from "vitest";
 import { notificationTemplate } from "@/lib/email/templates";
+it("directs recipients of staff messages to their private inbox", () => {
+  const template = notificationTemplate("account_notification_published", {}, "https://isg.example");
+  expect(template.subject).toBe("ISG New account message");
+  expect(template.text).toContain("open Notifications to read your new message");
+  expect(template.html).toContain('href="https://isg.example/dashboard"');
+});
 it("escapes applicant input in HTML email", () => {
   const template = notificationTemplate(
     "assessment_received",
