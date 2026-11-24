@@ -11,7 +11,7 @@ export async function saveProfile(_state: ProfileState, fd: FormData): Promise<P
     .object({
       first_name: z.string().trim().min(1).max(80),
       last_name: z.string().trim().min(1).max(80),
-      phone: z.string().trim().max(25),
+      phone: z.string().trim().min(7).max(25),
       nationality: z.string().trim().max(80),
       residence: z.string().trim().max(80),
     })
@@ -21,7 +21,7 @@ export async function saveProfile(_state: ProfileState, fd: FormData): Promise<P
       ),
     );
   if (!parsed.success)
-    return { error: "Please check your profile details. First and last names are required." };
+    return { error: "Please check your profile details. Your name and phone / WhatsApp number are required." };
   const { error } = await db.from("profiles").update(parsed.data).eq("id", user.id);
   if (error) return { error: "Your profile could not be updated. Please try again." };
   if (fd.get("terms") === "on") {

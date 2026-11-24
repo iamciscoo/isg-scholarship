@@ -39,7 +39,7 @@ const labels: Record<CaseUploadKind, string> = {
 
 type UploadTarget = { kind: CaseUploadKind; category: string; application?: string; applicant?: string };
 
-async function upload(file: File, target: UploadTarget, compact: boolean) {
+async function upload(file: File, target: UploadTarget) {
   const pdf = isCasePdf(file);
   const prepared = await shrink(await prepareImage(file));
   const sizeError = pdf ? casePdfSizeError : caseFileSizeError;
@@ -50,7 +50,6 @@ async function upload(file: File, target: UploadTarget, compact: boolean) {
   data.set("category", target.category);
   if (target.application) data.set("application", target.application);
   if (target.applicant) data.set("applicant", target.applicant);
-  if (pdf && compact) data.set("compressPdf", "1");
   if (pdf && prepared.size > caseFileLimit) {
     data.set("preparePdf", "1");
     const prepare = await fetch("/api/case-files", { method: "POST", body: data });
@@ -98,7 +97,6 @@ export function FileUpload({
   const [success, setSuccess] = useState("");
   const [selection, setSelection] = useState<File[]>([]);
   const [retry, setRetry] = useState<File[]>([]);
-  const [compress, setCompress] = useState(false);
   const detailsId = useId();
   const ref = useRef<HTMLInputElement>(null);
   const canSelectMultiple = kind !== "receipt" && multiple;
@@ -124,7 +122,7 @@ export function FileUpload({
         const messages: string[] = [];
         for (const file of selected) {
           try {
-            await upload(file, { kind, category, application, applicant }, compress);
+            await upload(file, { kind, category, application, applicant });
           } catch (error) {
             const reason = error instanceof Error ? error.message : "Upload failed. Please try again.";
             const message =
@@ -167,7 +165,6 @@ export function FileUpload({
           disabled={pending}
           onChange={(event) => {
             setSelection(Array.from(event.target.files || []));
-            setCompress(false);
             setRetry([]);
             setErrors([]);
             setSuccess("");
@@ -177,15 +174,6 @@ export function FileUpload({
       <p id={detailsId} className="field-help">
         <Text>{"PDFs up to 5 MB. Images up to 4 MB after compression."}</Text>
       </p>
-      {(retry.length ? retry : selection).some(isCasePdf) && (
-        <div>
-          <label className="checkbox-field">
-            <input type="checkbox" checked={compress} disabled={pending} onChange={(event) => setCompress(event.target.checked)} />
-            <Text>{"Compress PDF when possible"}</Text>
-          </label>
-          <p className="field-help"><Text>{"Compression may save an image-based copy. Keep your original PDF."}</Text></p>
-        </div>
-      )}
       {kind === "receipt" && (
         <p className="field-help">
           <Text>{"Shared privately with ISG staff. Hide unrelated bank details."}</Text>

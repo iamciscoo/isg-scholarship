@@ -142,7 +142,7 @@ export async function POST(request: Request) {
       file = new File([staged.data], "upload.pdf", { type: "application/pdf" });
     }
     if (!(file instanceof File)) throw Error("Choose a valid file to upload.");
-    const validated = await validateCaseFile(file, fd.get("compressPdf") === "1");
+    const validated = await validateCaseFile(file, true);
     const id = pdfId.data || randomUUID();
     const path = `${owner}/${id}.${validated.extension}`;
     const upload = await admin.storage

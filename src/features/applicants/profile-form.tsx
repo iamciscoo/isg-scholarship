@@ -21,7 +21,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
             { name: "first_name", label: "First name", auto: "given-name", value: profile.first_name },
             { name: "last_name", label: "Last name", auto: "family-name", value: profile.last_name },
             { name: "email", label: "Email address", auto: "email", value: email },
-            { name: "phone", label: "Phone / WhatsApp (optional)", auto: "tel", value: profile.phone },
+            { name: "phone", label: "Phone / WhatsApp", auto: "tel", value: profile.phone },
             { name: "residence", label: "Country of residence (optional)", auto: "country-name", value: profile.residence },
             { name: "nationality", label: "Nationality (optional)", auto: "off", value: profile.nationality },
           ] as const
@@ -43,7 +43,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
                 name={field.name}
                 autoComplete={field.auto}
                 defaultValue={field.value}
-                required={field.name.endsWith("name")}
+                required={field.name.endsWith("name") || field.name === "phone"}
                 maxLength={field.name === "phone" ? 25 : 80}
               />
             )}
