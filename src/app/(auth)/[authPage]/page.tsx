@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { AuthForm } from "@/features/auth/auth-form";
+import { GoogleSignIn } from "@/features/auth/google-sign-in";
 import { authConfigured } from "@/lib/supabase/config";
 import { safeNext } from "@/lib/validation/auth";
 import { requireUser } from "@/lib/auth/session";
@@ -59,6 +60,12 @@ export default async function AuthPage({
         captchaRequired={Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)}
         nonce={(await headers()).get("x-nonce") || undefined}
       />
+      {(mode === "login" || mode === "register") && (
+        <GoogleSignIn
+          next={query.next ? safeNext(query.next) : undefined}
+          configured={authConfigured()}
+        />
+      )}
     </>
   );
 }

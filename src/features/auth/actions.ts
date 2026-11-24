@@ -14,6 +14,22 @@ export type AuthState = {
   field?: "email" | "password" | "confirmPassword" | "adult" | "terms";
   message?: string;
 };
+export async function signInWithGoogle(fd: FormData) {
+  if (!authConfigured()) redirect("/login?error=oauth");
+  const origin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const next = safeNext(fd.get("next")?.toString() || null);
+  const db = await createClient();
+  const { data, error } = await db.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      queryParams: { prompt: "select_account" },
+    },
+  });
+  if (error || !data.url) redirect("/login?error=oauth");
+  redirect(data.url);
+}
+
 export async function authenticate(_previous: AuthState, fd: FormData): Promise<AuthState> {
   if (!authConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY)
     return { error: "Account services are awaiting setup. Please contact ISG." };

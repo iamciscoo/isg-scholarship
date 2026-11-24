@@ -119,6 +119,25 @@ option {
   color: var(--navy);
   font-size: 20px;
 }
+.google-signin {
+  display: grid;
+  margin-top: 16px;
+}
+.google-signin .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+.google-signin::before {
+  content: "or";
+  display: block;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
 .localized-content {
   display: contents;
 }

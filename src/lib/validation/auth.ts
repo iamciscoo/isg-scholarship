@@ -14,7 +14,7 @@ export const authSchema = z.object({
   password: z.string().min(1).max(128),
 });
 export function safeNext(value: string | null | undefined) {
-  return value && /^\/(?:dashboard|admin|advisor|consultation)(?:\/[a-zA-Z0-9-]+)*$/.test(value)
+  return value && /^\/(?:dashboard|admin|advisor|consultation|reset-password)(?:\/[a-zA-Z0-9-]+)*$/.test(value)
     ? value
     : "/dashboard";
 }
