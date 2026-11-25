@@ -1,6 +1,6 @@
 "use client";
 import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
-import { useEffect, useId, useRef, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { prepareImage } from "@/lib/images";
 import { Button } from "@/components/ui/button";
@@ -93,7 +93,6 @@ export function FileUpload({
   const translate = useWorkspaceText();
   const router = useRouter();
   const [pending, setPending] = useState(false);
-  const [, startRefresh] = useTransition();
   const [errors, setErrors] = useState<string[]>([]);
   const [success, setSuccess] = useState("");
   const [selection, setSelection] = useState<File[]>([]);
@@ -107,6 +106,8 @@ export function FileUpload({
     // A native file chooser can finish before React attaches the change handler.
     if (input?.files?.length) input.dispatchEvent(new Event("change", { bubbles: true }));
   }, []);
+
+  if (success && !errors.length) return <p role="status" className="form-message">{success}</p>;
 
   return (
     <form
@@ -144,13 +145,10 @@ export function FileUpload({
         setPending(false);
         setRetry(failed);
         setErrors(messages);
-        if (!failed.length)
-          // Clear together with the server refresh, otherwise the picker flashes "No file chosen".
-          startRefresh(() => {
-            if (ref.current) ref.current.value = "";
-            setSelection([]);
-            router.refresh();
-          });
+        if (!failed.length) {
+          if (ref.current) ref.current.value = "";
+          setSelection([]);
+        }
         const uploaded = selected.length - failed.length;
         if (uploaded) {
           setSuccess(
@@ -159,8 +157,8 @@ export function FileUpload({
             }),
           );
           window.dispatchEvent(new Event("isg:notifications-read"));
-          if (failed.length) router.refresh();
         }
+        router.refresh();
       }}
     >
       <span className="field-label">

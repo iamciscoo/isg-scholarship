@@ -49,7 +49,7 @@ export function ActionForm({
         </p>
       )}
       {decisions ? (
-        <div className="workspace-action-row">
+        <div className="workspace-action-row decision-row">
           <Button type="submit" disabled={pending} name={decisions.name} value={decisions.primary.value}>
             {pending ? (
               <>

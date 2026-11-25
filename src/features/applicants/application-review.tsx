@@ -104,7 +104,7 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
                       {fullApplicationStatuses
                         .filter(
                           (value) =>
-                            value === status || !["submitted", "approved", "declined"].includes(value),
+                            value === status || !["approved", "declined"].includes(value),
                         )
                         .map((value) => (
                           <option key={value} value={value}>

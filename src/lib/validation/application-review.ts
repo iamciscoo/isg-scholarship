@@ -15,7 +15,9 @@ export const fullApplicationStatusLabels = {
 export type FullApplicationStatus = keyof typeof fullApplicationStatusLabels;
 export const fullApplicationStatuses = (
   Object.keys(fullApplicationStatusLabels) as FullApplicationStatus[]
-).filter((status) => status !== "in_review" && status !== "needs_information");
+).filter(
+  (status) => !["submitted", "in_review", "needs_information"].includes(status),
+);
 
 export function fullApplicationStatusLabel(status: string) {
   return fullApplicationStatusLabels[status as FullApplicationStatus] || "Submitted";

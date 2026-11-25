@@ -61,7 +61,7 @@ export async function reviewFullApplication(_: ActionState, fd: FormData): Promi
   const parsed = z
     .object({
       declaration: z.uuid(),
-      previous: z.enum(fullApplicationStatuses),
+      previous: z.string().trim().min(1).max(40),
       status: z.enum(fullApplicationStatuses),
       note: z.string().trim().max(2000),
     })

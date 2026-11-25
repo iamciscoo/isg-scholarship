@@ -1,5 +1,5 @@
 import { z } from "zod";
-export const leadStages = ["new", "under_review", "more_information", "qualified", "closed"] as const;
+export const leadStages = ["under_review", "more_information", "qualified", "closed"] as const;
 export const leadReviewSchema = z.object({
   id: z.uuid(),
   stage: z.enum(leadStages),
@@ -18,5 +18,6 @@ export function stageLabel(stage: string) {
   return stage.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
 }
 export function currentLeadStage(stage: string) {
+  if (stage === "new") return "under_review";
   return stage === "converted" ? "qualified" : stage === "not_currently_eligible" ? "closed" : stage;
 }

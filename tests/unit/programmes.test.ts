@@ -38,10 +38,9 @@ it("filters by real programme destinations and never restores removed countries"
   expect(programmeDestinations(rows.slice(1))).toEqual(["Germany"]);
   expect(programmeDestinations([])).toEqual([]);
 });
-it("offers five clear consultation stages and preserves legacy meaning", () => {
-  expect(leadStages).toHaveLength(5);
+it("offers four clear consultation stages and preserves legacy meaning", () => {
+  expect(leadStages).toHaveLength(4);
   expect(leadStages.map(stageLabel)).toEqual([
-    "New",
     "Under review",
     "Needs information",
     "Completed",
@@ -49,6 +48,7 @@ it("offers five clear consultation stages and preserves legacy meaning", () => {
   ]);
   expect(stageLabel("converted")).toBe("Completed");
   expect(stageLabel("not_currently_eligible")).toBe("Closed");
+  expect(currentLeadStage("new")).toBe("under_review");
   expect(currentLeadStage("converted")).toBe("qualified");
   expect(currentLeadStage("not_currently_eligible")).toBe("closed");
   expect(

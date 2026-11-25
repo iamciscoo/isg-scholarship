@@ -60,20 +60,21 @@ export async function DocumentPanel({
           const documents = files.data.filter((file) => file.category === request.category);
           const hasRequest = requests.data.some((item) => item.category === request.category);
           const multiple = !["passport", "photo"].includes(request.category);
+          const uploader = (!staff || editable) && hasRequest && (
+            <FileUpload
+              kind="document"
+              category={request.category}
+              applicant={staff ? user : undefined}
+              multiple={multiple}
+              label={`Choose ${request.label.toLowerCase()}`}
+            />
+          );
           return (
             <article key={request.category} className="operation-card">
               <span className="status-pill">{<Text>{request.required ? "Required" : "Optional"}</Text>}</span>
               <h3>{<Text>{request.label}</Text>}</h3>
               {request.note && <p className="preserve-lines">{request.note}</p>}
-              {(!staff || editable) && hasRequest && (
-                <FileUpload
-                  kind="document"
-                  category={request.category}
-                  applicant={staff ? user : undefined}
-                  multiple={multiple}
-                  label={`Choose ${request.label.toLowerCase()}`}
-                />
-              )}
+              {!documents.length && uploader}
               {documents.length ? (
                 <ul className="case-file-list">
                   {documents.map((file, index) => (
@@ -91,6 +92,14 @@ export async function DocumentPanel({
                   ))}
                 </ul>
               ) : null}
+              {uploader && multiple && documents.length > 0 && (
+                <details className="upload-more">
+                  <summary>
+                    <Text>{"Add another file"}</Text>
+                  </summary>
+                  {uploader}
+                </details>
+              )}
             </article>
           );
         })}

@@ -58,7 +58,8 @@ export function PaymentPanel({
               </Text>
             </p>
           )}
-          {(instructions || record.payment_status === "rejected") && <FileUpload kind="receipt" />}
+          {(instructions || record.payment_status === "rejected") &&
+            (!receipts.length || record.payment_status === "rejected") && <FileUpload kind="receipt" />}
         </>
       )}
       {!!receipts.length && (
