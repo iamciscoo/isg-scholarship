@@ -239,7 +239,7 @@ tr[data-href] td a:focus-visible {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.case-actions > a {
+.case-actions > .button {
   justify-content: center;
   text-align: center;
 }
@@ -252,7 +252,7 @@ tr[data-href] td a:focus-visible {
   width: 100%;
   justify-content: center;
 }
-.case-actions > a {
+.case-actions > a.text-link {
   display: inline-flex;
   align-items: center;
   min-height: 44px;

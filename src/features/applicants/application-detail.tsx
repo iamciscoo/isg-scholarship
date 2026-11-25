@@ -60,7 +60,7 @@ export async function ApplicationDetail({
               {staff ? translate("Review recorded application") : translate("View application")}
             </Link>
             {staff && (
-              <Link className="button button-outline" href={`${area}/cases/${application.user_id}/application`}>
+              <Link className="button button-outline" href={`${area}/applications/${id}/application`}>
                 <Text>{"Edit application details"}</Text>
               </Link>
             )}

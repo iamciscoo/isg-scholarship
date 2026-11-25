@@ -69,7 +69,6 @@ it("opens the exact accepted PDF and its applicant case after administrator auth
   expect(links).toEqual([
     "/admin/applications",
     `/api/application-pdf/${declarationId}`,
-    `/admin/cases/${userId}/application`,
     `/admin/cases/${userId}`,
   ]);
 });

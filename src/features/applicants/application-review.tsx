@@ -25,7 +25,7 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
     .maybeSingle();
   if (error) throw Error("Application submission unavailable");
   if (!declaration) notFound();
-  const [caseRecord, updates] = await Promise.all([
+  const [caseRecord, updates, application] = await Promise.all([
     db
       .from("consultation_cases")
       .select("current_declaration_id,application_status")
@@ -38,8 +38,9 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
       .order("created_at", { ascending: false })
       .order("id")
       .limit(10),
+    db.from("study_applications").select("id").eq("user_id", declaration.user_id).limit(1),
   ]);
-  if (caseRecord.error || updates.error) throw Error("Application review unavailable");
+  if (caseRecord.error || updates.error || application.error) throw Error("Application review unavailable");
 
   const current = caseRecord.data.current_declaration_id === id;
   const status = caseRecord.data.application_status;
@@ -73,8 +74,8 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
               <Link className="text-link" href={`/api/application-pdf/${id}`}>
                 <Text>{"Download application"}</Text>
               </Link>
-              {current && (
-                <Link href={`${area}/cases/${declaration.user_id}/application`}>
+              {current && application.data?.[0] && (
+                <Link className="text-link" href={`${area}/applications/${application.data[0].id}/application`}>
                   <Text>{"Edit application"}</Text>
                 </Link>
               )}

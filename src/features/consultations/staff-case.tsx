@@ -97,7 +97,7 @@ export async function StaffCase({ id, admin }: { id: string; admin: boolean }) {
                 </Link>
                 <p>{packageStatus(application.package_state, application.status)}</p>
                 {application.package_state === "paid" && (
-                  <Link className="button button-outline" href={`/${area}/applications/${application.id}`}>
+                  <Link className="button button-outline" href={`/${area}/applications/${application.id}/application`}>
                     <Text>{"Enter application details"}</Text>
                   </Link>
                 )}

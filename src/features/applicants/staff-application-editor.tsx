@@ -13,33 +13,34 @@ import { ApplicationTabs } from "./application-tabs";
 export async function StaffApplicationEditor({ id, admin }: { id: string; admin: boolean }) {
   const { db, user, role } = await requireStaff(admin);
   if (!z.uuid().safeParse(id).success) notFound();
+  const { data: application, error: applicationError } = await db
+    .from("study_applications")
+    .select("user_id,package_state,status")
+    .eq("id", id)
+    .maybeSingle();
+  if (applicationError) throw Error("Application unavailable");
+  if (!application) notFound();
+  const applicant = application.user_id;
   const { data: record, error } = await db
     .from("consultation_cases")
     .select("user_id,application_status,current_declaration_id")
-    .eq("user_id", id)
+    .eq("user_id", applicant)
     .maybeSingle();
   if (error) throw Error("Application unavailable");
   if (!record) notFound();
-  const [paid, draft, profile, assessment, email] = await Promise.all([
-    db
-      .from("study_applications")
-      .select("id")
-      .eq("user_id", id)
-      .eq("package_state", "paid")
-      .neq("status", "Cancelled")
-      .limit(1),
-    db.from("application_form_drafts").select("data").eq("user_id", id).maybeSingle(),
-    db.from("profiles").select("first_name,last_name,phone,residence").eq("id", id).single(),
+  const [draft, profile, assessment, email] = await Promise.all([
+    db.from("application_form_drafts").select("data").eq("user_id", applicant).maybeSingle(),
+    db.from("profiles").select("first_name,last_name,phone,residence").eq("id", applicant).single(),
     db
       .from("eligibility_assessments")
       .select("preferred_fields,qualification,graduation_year,residence")
-      .eq("applicant_id", id)
+      .eq("applicant_id", applicant)
       .order("created_at")
       .limit(1)
       .maybeSingle(),
-    db.rpc("staff_application_email", { p_user: id }),
+    db.rpc("staff_application_email", { p_user: applicant }),
   ]);
-  if (paid.error || draft.error || profile.error || assessment.error || email.error)
+  if (draft.error || profile.error || assessment.error || email.error)
     throw Error("Application details unavailable");
   const area = admin ? "admin" : "advisor";
   const restored = applicationDraftSchema.safeParse(draft.data?.data || {});
@@ -55,19 +56,19 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
     ...(restored.success ? restored.data : {}),
     email: email.data || "",
   };
-  const applicationId = paid.data?.[0]?.id;
+  const paid = application.package_state === "paid" && application.status !== "Cancelled";
   const closed = ["accepted", "rejected", "completed", "cancelled", "approved", "declined"].includes(
     record.application_status || "",
   );
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
-      <Link className="text-link" href={applicationId ? `/${area}/applications/${applicationId}` : `/${area}/cases/${id}`}>
-        <Text>{applicationId ? "← Applications" : "← Consultation"}</Text>
+      <Link className="text-link" href={`/${area}/applications/${id}`}>
+        <Text>{"← Applications"}</Text>
       </Link>
       <h1>
         <Text>{"Application for"}</Text> {initial.firstName} {initial.lastName}
       </h1>
-      {!paid.data?.length ? (
+      {!paid ? (
         <p>
           <Text>{"Verify the package payment before entering application details."}</Text>
         </p>
@@ -85,7 +86,7 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
                   <Text>{"The applicant's answers are entered in the Application tab."}</Text>
                 </p>
               )}
-              <Link className="text-link" href={`/${area}/cases/${id}`}>
+              <Link className="text-link" href={`/${area}/cases/${applicant}`}>
                 <Text>{"View consultation →"}</Text>
               </Link>
             </section>
@@ -111,12 +112,12 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
                   <p>
                     <Text>{"Enter the information provided by the applicant."}</Text>
                   </p>
-                  <FullApplicationForm initial={initial} applicant={id} />
+                  <FullApplicationForm initial={initial} applicant={applicant} />
                 </section>
               )}
             </>
           }
-          documents={<DocumentPanel user={id} staff editable />}
+          documents={<DocumentPanel user={applicant} staff editable />}
         />
       )}
     </Workspace>
