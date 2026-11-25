@@ -14,6 +14,7 @@ import { UserFiles } from "@/features/consultations/user-files";
 import { ApplicationTabs } from "./application-tabs";
 import { DocumentPanel } from "./document-panel";
 import { FullApplicationForm } from "./full-application-form";
+import { ApplicationStatusForm } from "./application-status-form";
 import type { FullApplication } from "@/lib/validation/application-form";
 
 export async function ApplicationDetail({
@@ -71,6 +72,9 @@ export async function ApplicationDetail({
           applicant={staff ? application.user_id : undefined}
           initial={(draft?.data ?? {}) as Partial<FullApplication>}
         />
+      )}
+      {admin && record.current_declaration_id && (
+        <ApplicationStatusForm declaration={record.current_declaration_id} status={record.application_status} />
       )}
     </>
   );

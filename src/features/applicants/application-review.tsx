@@ -6,10 +6,9 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
-import { ActionForm } from "@/components/forms/action-form";
 import { applicationFields } from "@/lib/validation/application-form";
-import { fullApplicationStatusLabel, fullApplicationStatuses } from "@/lib/validation/application-review";
-import { reviewFullApplication } from "./application-actions";
+import { fullApplicationStatusLabel } from "@/lib/validation/application-review";
+import { ApplicationStatusForm } from "./application-status-form";
 import { DocumentPanel } from "./document-panel";
 import { ApplicationTabs } from "./application-tabs";
 import { ApplicationUpdates, applicationDate } from "./application-updates";
@@ -91,40 +90,7 @@ export async function ApplicationReview({ id, admin = false }: { id: string; adm
                 </Link>
               )}
             </div>
-            {current && admin && (
-              <section className="workspace-panel">
-                <h2>
-                  <Text>{"Application status"}</Text>
-                </h2>
-                <ActionForm action={reviewFullApplication} label="Save status">
-                  <input name="declaration" type="hidden" value={id} />
-                  <input name="previous" type="hidden" value={status} />
-                  <label>
-                    <Text>{"Application status"}</Text>
-                    <select name="status" defaultValue={status}>
-                      {fullApplicationStatuses
-                        .filter(
-                          (value) =>
-                            value === status || !["approved", "declined"].includes(value),
-                        )
-                        .map((value) => (
-                          <option key={value} value={value}>
-                            {fullApplicationStatusLabel(value)}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
-                  <label>
-                    <Text>{"Note for the applicant (optional)"}</Text>
-                    <textarea
-                      name="note"
-                      maxLength={2000}
-                      placeholder={translate("Add instructions if the applicant needs to do something.")}
-                    />
-                  </label>
-                </ActionForm>
-              </section>
-            )}
+            {current && admin && <ApplicationStatusForm declaration={id} status={status} />}
             <section className="workspace-panel">
               <h2>
                 <Text>{"Submitted information"}</Text>

@@ -29,12 +29,20 @@ export function ApplicationTabs({
   useEffect(() => {
     const sync = () => {
       const hash = window.location.hash;
-      setActive(
-        (hash === "#application-documents" && hasDocuments
+      // router.refresh() can drop the hash, so the last tab is also kept in session storage.
+      const saved = window.sessionStorage.getItem("isg-application-tab");
+      const wanted =
+        hash === "#application-documents"
           ? "documents"
-          : hash === "#application-form" && application
+          : hash === "#application-form"
             ? "application"
-            : "details") as (typeof tabs)[number]["id"],
+            : (saved as (typeof tabs)[number]["id"]) || "details";
+      setActive(
+        (wanted === "documents" && !hasDocuments
+          ? "details"
+          : wanted === "application" && !application
+            ? "details"
+            : wanted) as (typeof tabs)[number]["id"],
       );
     };
     const frame = requestAnimationFrame(sync);
@@ -47,6 +55,7 @@ export function ApplicationTabs({
 
   function select(next: (typeof active)) {
     setActive(next);
+    window.sessionStorage.setItem("isg-application-tab", next);
     const url = new URL(window.location.href);
     url.hash = next === "documents" ? "application-documents" : next === "application" ? "application-form" : "";
     window.history.replaceState(window.history.state, "", url);
