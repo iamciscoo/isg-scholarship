@@ -1,13 +1,15 @@
 import { Text } from "@/lib/i18n/workspace-text";
+import { getWorkspaceText } from "@/lib/i18n/server";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { requireUser, requireStaff } from "@/lib/auth/session";
 import { Workspace } from "@/components/layout/workspace";
 import { packageStatus } from "./package-status";
 import { proposalSchema } from "@/lib/validation/opportunities";
 import { usdLabel } from "@/lib/format";
-import { fullApplicationStatusLabel } from "@/lib/validation/application-review";
+import { fullApplicationStatusLabel, fullApplicationStatuses } from "@/lib/validation/application-review";
 import { NavigableRow } from "@/components/layout/navigable-row";
-export type ApplicationQuery = { page?: string };
+export type ApplicationQuery = { page?: string; q?: string; status?: string };
 export async function ApplicationList({
   query,
   staff = false,
@@ -18,7 +20,10 @@ export async function ApplicationList({
   admin?: boolean;
 }) {
   const { db, user, role } = staff ? await requireStaff(admin) : await requireUser();
+  const t = await getWorkspaceText();
   const own = !staff;
+  const search = (query.q || "").trim();
+  const status = (query.status || "").trim();
   const page = Math.max(1, Math.min(100000, Number.parseInt(query.page || "1", 10) || 1));
   let request = db
     .from("study_applications")
@@ -29,6 +34,26 @@ export async function ApplicationList({
     .order("id")
     .range((page - 1) * 20, page * 20 - 1);
   if (own) request = request.eq("user_id", user.id);
+  if (staff && (search || status)) {
+    let allow: string[] | null = null;
+    if (search) {
+      const { data, error } = await db.rpc("staff_application_users", { p_search: search });
+      if (error) throw Error("Applications unavailable");
+      allow = (data as string[] | null) ?? [];
+    }
+    if (status) {
+      const { data, error } = await db
+        .from("consultation_cases")
+        .select("user_id")
+        .eq("application_status", status);
+      if (error) throw Error("Applications unavailable");
+      const ids = (data ?? []).map((row) => row.user_id);
+      allow = allow ? allow.filter((id) => ids.includes(id)) : ids;
+    }
+    request = allow?.length
+      ? request.in("user_id", allow)
+      : request.eq("id", "00000000-0000-0000-0000-000000000000");
+  }
   const { data: applications, error, count } = await request;
   if (error) throw Error("Applications unavailable");
   const ids = (applications ?? []).map((a) => a.user_id);
@@ -51,6 +76,8 @@ export async function ApplicationList({
   const base = staff ? (admin ? "/admin/applications" : "/advisor/applications") : "/dashboard/applications";
   const pageLink = (n: number) =>
     `${base}?${new URLSearchParams({
+      ...(search ? { q: search } : {}),
+      ...(status ? { status } : {}),
       page: String(n),
     })}`;
   return (
@@ -58,6 +85,39 @@ export async function ApplicationList({
       <h1>
         <Text>{"Applications"}</Text>
       </h1>
+      {staff && (
+        <form className="case-filters" action={base}>
+          <div className="filter-primary">
+            <div className="field">
+              <label htmlFor="application-filter-q">
+                <Text>{"Name or email"}</Text>
+              </label>
+              <input type="search" name="q" id="application-filter-q" defaultValue={query.q || ""} />
+            </div>
+            <div className="field">
+              <label htmlFor="application-filter-status">
+                <Text>{"Application status"}</Text>
+              </label>
+              <select name="status" id="application-filter-status" defaultValue={status}>
+                <option value="">{t("All statuses")}</option>
+                {fullApplicationStatuses.map((value) => (
+                  <option key={value} value={value}>
+                    {t(fullApplicationStatusLabel(value))}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="filter-actions">
+            <Link className="text-link" href={base}>
+              <Text>{"Reset"}</Text>
+            </Link>
+            <Button size="sm">
+              <Text>{"Apply filters"}</Text>
+            </Button>
+          </div>
+        </form>
+      )}
       {!applications?.length ? (
         <section className="workspace-panel">
           <h2>
