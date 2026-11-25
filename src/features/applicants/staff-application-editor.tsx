@@ -55,13 +55,14 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
     ...(restored.success ? restored.data : {}),
     email: email.data || "",
   };
+  const applicationId = paid.data?.[0]?.id;
   const closed = ["accepted", "rejected", "completed", "cancelled", "approved", "declined"].includes(
     record.application_status || "",
   );
   return (
     <Workspace role={role} email={user.email || ""} active="applications">
-      <Link className="text-link" href={`/${area}/cases/${id}`}>
-        <Text>{"← Consultation"}</Text>
+      <Link className="text-link" href={applicationId ? `/${area}/applications/${applicationId}` : `/${area}/cases/${id}`}>
+        <Text>{applicationId ? "← Applications" : "← Consultation"}</Text>
       </Link>
       <h1>
         <Text>{"Application for"}</Text> {initial.firstName} {initial.lastName}

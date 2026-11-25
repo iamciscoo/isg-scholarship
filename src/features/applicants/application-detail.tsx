@@ -52,12 +52,19 @@ export async function ApplicationDetail({
     <>
       {record.current_declaration_id ? (
         <section className="workspace-panel">
-          <Link
-            className="button button-primary"
-            href={staff ? `${area}/declarations/${record.current_declaration_id}` : "/dashboard/application"}
-          >
-            {staff ? translate("Review recorded application") : translate("View application")}
-          </Link>
+          <div className="workspace-action-row case-actions">
+            <Link
+              className="button button-primary"
+              href={staff ? `${area}/declarations/${record.current_declaration_id}` : "/dashboard/application"}
+            >
+              {staff ? translate("Review recorded application") : translate("View application")}
+            </Link>
+            {staff && (
+              <Link className="button button-outline" href={`${area}/cases/${application.user_id}/application`}>
+                <Text>{"Edit application details"}</Text>
+              </Link>
+            )}
+          </div>
         </section>
       ) : (
         <FullApplicationForm
