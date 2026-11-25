@@ -1065,6 +1065,8 @@
     "Edit application details": "Изменить данные заявки",
     "Name or email": "Имя или почта",
     "All statuses": "Все статусы",
+    "Search images": "Поиск изображений",
+    "No images match your search.": "Нет подходящих изображений.",
     "Add another file": "Добавить ещё файл",
     "The applicant's answers are entered in the Application tab.": "Ответы заявителя находятся на вкладке «Заявка»."
   }

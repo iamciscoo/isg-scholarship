@@ -188,13 +188,11 @@
   cursor: pointer;
   min-height: 62px;
 }
-.image-picker-trigger span,
-.image-picker-option span {
+.image-picker-trigger span {
   flex: 1;
   min-width: 0;
 }
-.image-picker-trigger img,
-.image-picker-option img {
+.image-picker-trigger img {
   object-fit: cover;
   border-radius: 4px;
   flex-shrink: 0;

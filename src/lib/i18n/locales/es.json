@@ -1065,6 +1065,8 @@
     "Edit application details": "Editar los detalles de la solicitud",
     "Name or email": "Nombre o correo",
     "All statuses": "Todos los estados",
+    "Search images": "Buscar imágenes",
+    "No images match your search.": "Ninguna imagen coincide.",
     "Add another file": "Añadir otro archivo",
     "The applicant's answers are entered in the Application tab.": "Las respuestas del solicitante están en la pestaña Aplicación."
   }

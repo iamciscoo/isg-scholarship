@@ -2,13 +2,13 @@
 import { Text, useWorkspaceText } from "@/lib/i18n/workspace-text";
 
 import Image from "next/image";
-import * as Menu from "@radix-ui/react-dropdown-menu";
 import * as Popover from "@radix-ui/react-popover";
-import { ChevronDown, Check, Upload, X } from "lucide-react";
+import { ChevronDown, Check, Upload, X, Search } from "lucide-react";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
 import { approvedImages } from "@/lib/validation/opportunities";
 import type { MarketingImage } from "@/server/repositories/marketing-images";
 import { uploadMarketingImage, type MarketingUploadState } from "./marketing-actions";
+import { toWebp } from "@/lib/images";
 import { LoadingDots } from "@/components/ui/loading-dots";
 const labels = [
   "Students exploring a university library",
@@ -51,38 +51,65 @@ export function ApprovedImagePicker({
     hidden.current?.form?.dispatchEvent(new Event("change", { bubbles: true }));
   }, [selected]);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const options = [...extra, ...images, ...builtIn].filter(
     (v, i, a) => a.findIndex((x) => x.path === v.path) === i,
   );
   if (!options.some((o) => o.path === selected))
     options.unshift({ id: selected, path: selected, label: "Selected marketing image" });
   const current = options.find((o) => o.path === selected)!;
+  const needle = search.trim().toLowerCase();
+  const found = needle ? options.filter((o) => o.label.toLowerCase().includes(needle)) : options;
   return (
     <div className="approved-image-picker">
       <label id={id}>{showUpload ? translate("Approved image") : translate("Gallery image")}</label>
       <input ref={hidden} type="hidden" name="image" value={selected} />
-      <Menu.Root>
-        <Menu.Trigger className="image-picker-trigger" aria-labelledby={id}>
+      <Popover.Root open={open} onOpenChange={setOpen}>
+        <Popover.Trigger className="image-picker-trigger" aria-labelledby={id}>
           <Image src={selected} alt="" width={56} height={38} />
           <span>{current.label}</span>
           <ChevronDown size={18} />
-        </Menu.Trigger>
-        <Menu.Portal>
-          <Menu.Content className="image-picker-menu" sideOffset={6} collisionPadding={12}>
-            <Menu.RadioGroup value={selected} onValueChange={setSelected}>
-              {options.map((o) => (
-                <Menu.RadioItem className="image-picker-option" key={o.path} value={o.path}>
-                  <Image src={o.path} alt="" width={64} height={44} />
+        </Popover.Trigger>
+        <Popover.Portal>
+          <Popover.Content className="image-picker-menu" sideOffset={6} collisionPadding={12}>
+            <div className="image-picker-search">
+              <Search size={16} aria-hidden />
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={translate("Search images")}
+                aria-label={translate("Search images")}
+              />
+            </div>
+            <div className="image-picker-grid" role="listbox" aria-label={translate("Approved image")}>
+              {found.map((o) => (
+                <button
+                  key={o.path}
+                  type="button"
+                  role="option"
+                  aria-selected={o.path === selected}
+                  className="image-picker-card"
+                  onClick={() => {
+                    setSelected(o.path);
+                    setOpen(false);
+                  }}
+                >
+                  <Image src={o.path} alt="" width={200} height={125} sizes="200px" />
                   <span>{o.label}</span>
-                  <Menu.ItemIndicator>
-                    <Check size={16} />
-                  </Menu.ItemIndicator>
-                </Menu.RadioItem>
+                  {o.path === selected && <Check size={16} className="image-picker-check" />}
+                </button>
               ))}
-            </Menu.RadioGroup>
-          </Menu.Content>
-        </Menu.Portal>
-      </Menu.Root>
+            </div>
+            {!found.length && (
+              <p className="image-picker-empty">
+                <Text>{"No images match your search."}</Text>
+              </p>
+            )}
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
       <div className="approved-image-preview">
         <Image src={selected} fill sizes="320px" alt={current.label} />
       </div>
@@ -141,7 +168,14 @@ function ImageUpload({ onUploaded }: { onUploaded: (image: MarketingImage) => vo
     <form
       action={submit}
       className="form-stack"
-      onSubmit={(e) => e.stopPropagation()}
+      onSubmit={async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const data = new FormData(event.currentTarget);
+        const picked = data.get("file");
+        if (picked instanceof File) data.set("file", await toWebp(picked));
+        submit(data);
+      }}
       onReset={(e) => e.preventDefault()}
       aria-busy={pending}
     >

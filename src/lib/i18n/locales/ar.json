@@ -1065,6 +1065,8 @@
     "Edit application details": "تعديل تفاصيل الطلب",
     "Name or email": "الاسم أو البريد",
     "All statuses": "كل الحالات",
+    "Search images": "بحث في الصور",
+    "No images match your search.": "لا توجد صور مطابقة.",
     "Add another file": "إضافة ملف آخر",
     "The applicant's answers are entered in the Application tab.": "إجابات المتقدم موجودة في علامة التبويب الطلب."
   }
