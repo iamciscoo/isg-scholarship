@@ -25,7 +25,7 @@ export function NotificationBell({ signedIn }: { signedIn: boolean }) {
       open={open}
       onOpenChange={(next) => {
         setOpen(next);
-        if (next) void refresh();
+        if (next) void refresh(true);
       }}
     >
       <Popover.Trigger
