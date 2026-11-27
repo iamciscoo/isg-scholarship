@@ -8,7 +8,7 @@ import type { ActionState } from "@/components/forms/action-form";
 import { requireStaff } from "@/lib/auth/session";
 import { adminClient } from "@/lib/supabase/admin";
 import { scholarshipPackageSchema } from "@/lib/validation/opportunities";
-import { validateCaseFile } from "@/server/services/file-validation";
+import { normalizeUploadImage } from "@/server/services/upload-image";
 
 export async function deleteScholarshipPackage(_: ActionState, form: FormData): Promise<ActionState> {
   const { db } = await requireStaff(true);
@@ -68,13 +68,13 @@ export async function saveScholarshipPackage(_: ActionState, form: FormData): Pr
       p_seconds: 900,
     });
     if (rate.error || !rate.data) return { error: "Please wait before uploading more images." };
-    const content = await validateCaseFile(file).catch(() => null);
-    if (!content || content.mime !== "image/webp")
+    const content = await normalizeUploadImage(file).catch(() => null);
+    if (!content)
       return { error: "This image could not be read. Choose another file." };
     imageId = randomUUID();
     const { error } = await admin.storage
       .from("scholarship-images")
-      .upload(`${imageId}.webp`, storageBody(content.data), { contentType: "image/webp", upsert: false });
+      .upload(`${imageId}.webp`, storageBody(content), { contentType: "image/webp", upsert: false });
     if (error) return { error: "The image could not be uploaded. Please try again." };
   }
   const { data: savedId, error } = await db.rpc("save_scholarship_package", {

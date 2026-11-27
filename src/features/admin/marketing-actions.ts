@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireStaff } from "@/lib/auth/session";
 import { adminClient } from "@/lib/supabase/admin";
-import { validateCaseFile } from "@/server/services/file-validation";
+import { normalizeUploadImage } from "@/server/services/upload-image";
 import { marketingImageSchema } from "@/lib/validation/opportunities";
 import type { ActionState } from "@/components/forms/action-form";
 import type { MarketingImage } from "@/server/repositories/marketing-images";
@@ -32,13 +32,12 @@ export async function uploadMarketingImage(
   });
   if (rate.error || !rate.data) return { error: "Please wait before uploading more images." };
   try {
-    const content = await validateCaseFile(file);
-    if (content.mime !== "image/webp") return { error: "Choose an image, not a document." };
+    const content = await normalizeUploadImage(file);
     const id = randomUUID(),
       path = `${id}.webp`;
     const upload = await admin.storage
       .from("marketing-images")
-      .upload(path, storageBody(content.data), { contentType: "image/webp", upsert: false });
+      .upload(path, storageBody(content), { contentType: "image/webp", upsert: false });
     if (upload.error) return { error: "The image could not be uploaded." };
     const record = await admin.rpc("register_marketing_image", {
       p_id: id,

@@ -28,12 +28,15 @@ const config: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["@hyzyla/pdfium"],
   outputFileTracingIncludes: {
-    "/api/case-files": ["./node_modules/@hyzyla/pdfium/dist/pdfium.wasm"],
     "/api/application-pdf/*": [
       "./public/brand/logo.svg",
       "./public/fonts/Manrope-Regular.ttf",
       "./public/fonts/Manrope-Bold.ttf",
     ],
+  },
+  outputFileTracingExcludes: {
+    // The Node entry point reads pdfium.wasm. The base64 build is for a separate entry point.
+    "/api/case-files": ["./node_modules/@hyzyla/pdfium/dist/pdfium.wasm.base64-*.js"],
   },
   poweredByHeader: false,
   experimental: {

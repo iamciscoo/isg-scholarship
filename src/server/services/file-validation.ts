@@ -1,8 +1,8 @@
 import "server-only";
-import sharp from "sharp";
 import { createConnection } from "node:net";
-import { caseFileLimit, caseFileSizeError, casePdfLimit, casePdfSizeError, isCasePdf } from "@/lib/validation/case-file";
+import { casePdfLimit, casePdfSizeError, isCasePdf } from "@/lib/validation/case-file";
 import { rebuildPrivatePdf } from "./private-pdf";
+import { normalizeUploadImage } from "./upload-image";
 
 async function scanPdf(data: Buffer, host: string) {
   await new Promise<void>((resolve, reject) => {
@@ -45,41 +45,21 @@ async function scanPdf(data: Buffer, host: string) {
 export async function validateCaseFile(file: File, compressPdf = false) {
   const unspecifiedType = !file.type || file.type === "application/octet-stream";
   const pdf = isCasePdf(file) || (unspecifiedType && await file.slice(0, 5).text() === "%PDF-");
-  if (file.size < 1 || file.size > (pdf ? casePdfLimit : caseFileLimit))
-    throw Error(pdf ? casePdfSizeError : caseFileSizeError);
+  if (!pdf) return { data: await normalizeUploadImage(file), mime: "image/webp", extension: "webp" };
+  if (file.size < 1 || file.size > casePdfLimit) throw Error(casePdfSizeError);
   const data = Buffer.from(await file.arrayBuffer());
-  if (pdf) {
-    if (data.subarray(0, 5).toString() !== "%PDF-") throw Error("Choose a valid PDF.");
-    if (!data.subarray(-2048).includes(Buffer.from("%%EOF"))) throw Error("This PDF is incomplete.");
-    const host = process.env.CLAMAV_HOST;
-    // Compressing a small PDF costs a ghostscript round-trip and saves nothing.
-    const shouldCompress = compressPdf && data.length > 1024 * 1024;
-    if (host) {
-      await scanPdf(data, host);
-      const compressed = shouldCompress ? await rebuildPrivatePdf(data, true).catch(() => null) : null;
-      return {
-        data: compressed && compressed.length < data.length ? compressed : data,
-        mime: "application/pdf",
-        extension: "pdf",
-      };
-    }
-    return { data: await rebuildPrivatePdf(data, shouldCompress), mime: "application/pdf", extension: "pdf" };
+  if (data.subarray(0, 5).toString() !== "%PDF-") throw Error("Choose a valid PDF.");
+  if (!data.subarray(-2048).includes(Buffer.from("%%EOF"))) throw Error("This PDF is incomplete.");
+  const host = process.env.CLAMAV_HOST;
+  const shouldCompress = compressPdf && data.length > 1024 * 1024;
+  if (host) {
+    await scanPdf(data, host);
+    const compressed = shouldCompress ? await rebuildPrivatePdf(data, true).catch(() => null) : null;
+    return {
+      data: compressed && compressed.length < data.length ? compressed : data,
+      mime: "application/pdf",
+      extension: "pdf",
+    };
   }
-  if (!unspecifiedType && !["image/jpeg", "image/png", "image/webp"].includes(file.type))
-    throw Error("Choose a JPEG, PNG, WebP or PDF.");
-  let normalized: Buffer;
-  try {
-    const image = sharp(data, { limitInputPixels: 25000000, animated: false });
-    const metadata = await image.metadata();
-    if (!["jpeg", "png", "webp"].includes(metadata.format || "")) throw Error();
-    normalized = await image
-      .rotate()
-      .resize({ width: 2000, height: 2600, fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 85 })
-      .toBuffer();
-  } catch {
-    throw Error("This image could not be read. Choose another file.");
-  }
-  if (normalized.length > caseFileLimit) throw Error(caseFileSizeError);
-  return { data: normalized, mime: "image/webp", extension: "webp" };
+  return { data: await rebuildPrivatePdf(data, shouldCompress), mime: "application/pdf", extension: "pdf" };
 }
