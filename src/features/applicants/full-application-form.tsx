@@ -122,7 +122,6 @@ export function FullApplicationForm({
                     aria-required={!f.optional}
                     value={String(answers[f.key] || "")}
                     onChange={(event) => update(f.key, event.target.value)}
-                    readOnly={f.key === "email"}
                   />
                 )}
                 {inline(f.key)}

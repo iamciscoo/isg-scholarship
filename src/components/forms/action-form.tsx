@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useActionState } from "react";
+import { useEffect, useActionState, useId, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { LoadingDots } from "@/components/ui/loading-dots";
 import { useDirtyForm } from "./unsaved-changes";
@@ -19,11 +19,14 @@ export function ActionForm({
   decisions?: {
     name: string;
     primary: { label: string; value: string };
-    secondary: { label: string; value: string };
+    secondary: { label: string; value: string; confirmation?: { title: string; description: string } };
   };
 }) {
   const [state, submit, pending] = useActionState(action, {});
   const t = useWorkspaceText();
+  const dialog = useRef<HTMLDialogElement>(null);
+  const dialogId = useId();
+  const confirmation = decisions?.secondary.confirmation;
   const { formRef, dirty, revision } = useDirtyForm({
     state,
     pending,
@@ -61,11 +64,12 @@ export function ActionForm({
             )}
           </Button>
           <Button
-            type="submit"
+            type={confirmation ? "button" : "submit"}
             variant="outline"
             disabled={pending}
             name={decisions.name}
             value={decisions.secondary.value}
+            onClick={confirmation ? () => dialog.current?.showModal() : undefined}
           >
             {t(decisions.secondary.label)}
           </Button>
@@ -81,6 +85,31 @@ export function ActionForm({
             t(label)
           )}
         </Button>
+      )}
+      {decisions && confirmation && (
+        <dialog
+          ref={dialog}
+          className="confirm-dialog"
+          aria-labelledby={`${dialogId}-title`}
+          aria-describedby={`${dialogId}-description`}
+        >
+          <h2 id={`${dialogId}-title`}>{t(confirmation.title)}</h2>
+          <p id={`${dialogId}-description`}>{t(confirmation.description)}</p>
+          <div className="confirm-actions">
+            <Button type="button" variant="ghost" onClick={() => dialog.current?.close()}>
+              <Text>Cancel</Text>
+            </Button>
+            <Button
+              type="submit"
+              name={decisions.name}
+              value={decisions.secondary.value}
+              disabled={pending}
+              onClick={() => dialog.current?.close()}
+            >
+              {t(decisions.secondary.label)}
+            </Button>
+          </div>
+        </dialog>
       )}
     </form>
   );

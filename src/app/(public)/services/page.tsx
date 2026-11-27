@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/public/page-hero";
 import { Cta } from "@/components/public/cta";
+import { getWorkspaceText } from "@/lib/i18n/server";
 export const metadata: Metadata = { title: "Our services", alternates: { canonical: "/services" } };
 const services = [
   [
@@ -29,7 +30,8 @@ const services = [
     "Agreed support with preparation tasks, provider communications and application progress. The exact scope is confirmed before you commit.",
   ],
 ];
-export default function Services() {
+export default async function Services() {
+  const t = await getWorkspaceText();
   return (
     <>
       <PageHero
@@ -38,27 +40,25 @@ export default function Services() {
         title="The right support, at the right step."
         description="From understanding your options to preparing your application, choose guidance that fits where you are in your journey."
       />
-      <div className="container page-body">
+      <div className="container page-body" data-no-translate>
         <div className="content-grid">
           {services.map(([title, text]) => (
             <section className="content-panel" key={title}>
-              <h2>{title}</h2>
-              <p>{text}</p>
+              <h2>{t(title)}</h2>
+              <p>{t(text)}</p>
             </section>
           ))}
         </div>
         <p>
-          University, scholarship provider, examination, translation and visa fees may be separate.{" "}
+          {t("University, scholarship provider, examination, translation and visa fees may be separate.")}{" "}
           <Link href="/pricing" className="text-link">
-            Read about service fees
+            {t("Read about service fees")}
           </Link>
           .
         </p>
-        <h2>You stay in control.</h2>
+        <h2>{t("You stay in control.")}</h2>
         <p>
-          You will receive the provider name, relevant requirements, material costs and proposed use of your
-          information before authorizing an application. We never ask for your official application portal
-          password.
+          {t("You will receive the provider name, relevant requirements, material costs and proposed use of your information before authorizing an application. We never ask for your official application portal password.")}
         </p>
       </div>
       <Cta />

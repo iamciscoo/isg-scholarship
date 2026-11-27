@@ -46,7 +46,7 @@ export async function submitConsultation(page: Page) {
   await page.locator("#funding").selectOption("Open to advice");
   await expect(page.getByText("Questions for your advisor", { exact: true })).toHaveCount(0);
   await next.click();
-  await page.locator('[name="adultConfirmation"]').check();
+  await expect(page.locator('[name="adultConfirmation"]')).toHaveCount(0);
   await page.locator('[name="processingConsent"]').check();
   const request = page.waitForRequest(
     (request) => request.url().endsWith("/api/assessments") && request.method() === "POST",

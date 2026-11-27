@@ -4,9 +4,8 @@ import { assessment } from "../fixtures/assessment";
 describe("Assessment boundary", () => {
   it("accepts an assessment without marketing consent", () =>
     expect(assessmentSchema.parse(assessment).marketingConsent).toBe(false));
-  it.each(["processingConsent", "adultConfirmation"])("requires %s", (key) =>
-    expect(assessmentSchema.safeParse({ ...assessment, [key]: false }).success).toBe(false),
-  );
+  it("requires processing consent", () =>
+    expect(assessmentSchema.safeParse({ ...assessment, processingConsent: false }).success).toBe(false));
   it("rejects hidden role escalation fields", () =>
     expect(assessmentSchema.safeParse({ ...assessment, role: "admin" }).success).toBe(false));
   it("normalizes the email for verified ownership linking", () =>

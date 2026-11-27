@@ -33,7 +33,6 @@ export async function saveFullApplication(_: ActionState, fd: FormData): Promise
   );
   const parsed = (declare ? applicationSubmissionSchema : applicationDraftSchema).safeParse({
     ...values,
-    email: user.email,
     guardianPermission: fd.get("guardianPermission") === "on",
   });
   if (!parsed.success) return { fieldErrors: applicationFieldErrors(parsed.error.issues) };

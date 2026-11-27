@@ -59,7 +59,6 @@ export function AssessmentForm({
       destinations: "",
       processingConsent: false,
       marketingConsent: false,
-      adultConfirmation: false,
       ...initial,
       constraints: "",
     },

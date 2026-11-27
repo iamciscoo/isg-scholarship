@@ -1,7 +1,6 @@
 import type { AssessmentInput } from "@/lib/validation/assessment";
 import { qualifications, studyLevels } from "@/lib/validation/assessment";
 export const consentFields = [
-  { name: "adultConfirmation", text: "I confirm that I am 18 years of age or older." },
   {
     name: "processingConsent",
     text: "I consent to ISG processing my information to review this assessment and contact me about it.",

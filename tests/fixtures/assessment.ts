@@ -20,5 +20,4 @@ export const assessment: AssessmentInput = {
   constraints: "",
   processingConsent: true,
   marketingConsent: false,
-  adultConfirmation: true,
 };

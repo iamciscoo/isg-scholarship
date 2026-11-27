@@ -67,6 +67,8 @@ test("consultation, receipt correction, admin package assignment, application an
   const caseLink = await admin.getByRole("link", { name: /Open consultation/ }).getAttribute("href");
   await admin.getByLabel("Feedback to the applicant (optional)").fill("Please send a clearer receipt.");
   await admin.getByRole("button", { name: "Request a new receipt" }).click();
+  await admin.getByRole("dialog", { name: "Request a new receipt?" })
+    .getByRole("button", { name: "Request a new receipt" }).click();
   await expect(admin.getByRole("heading", { name: /· rejected/i })).toBeVisible();
   await student.reload();
   await expect(student.getByText("Please send a clearer receipt.")).toBeVisible();

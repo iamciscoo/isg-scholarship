@@ -70,7 +70,7 @@ export async function ApplicationDetail({
       ) : (
         <FullApplicationForm
           applicant={staff ? application.user_id : undefined}
-          initial={(draft?.data ?? {}) as Partial<FullApplication>}
+          initial={{ email: staff ? "" : user.email || "", ...(draft?.data as Partial<FullApplication> | undefined) }}
         />
       )}
       {admin && record.current_declaration_id && (

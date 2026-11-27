@@ -17,10 +17,14 @@ do $$ begin insert into public.consultation_drafts(user_id) values('00000000-000
 do $$ begin perform public.submit_my_consultation('{}',gen_random_uuid(),'forged',auth.uid(),'');raise exception 'Direct privileged submission permitted';exception when insufficient_privilege then null;end $$;
 reset role;
 set role service_role;
-select set_config('test.consultation_reference',public.submit_my_consultation((select data||'{"email":"legacy@example.invalid","firstName":"Saved","lastName":"Applicant"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','own-hash','00000000-0000-4000-8000-000000000201',''),false);
+select set_config('test.consultation_reference',public.submit_my_consultation((select (data-'adultConfirmation')||'{"email":"legacy@example.invalid","firstName":"Saved","lastName":"Applicant"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','own-hash','00000000-0000-4000-8000-000000000201',''),false);
 select public.submit_my_consultation((select data||'{"email":"legacy@example.invalid","firstName":"Saved","lastName":"Applicant"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','own-hash','00000000-0000-4000-8000-000000000201','');
 do $$ begin perform public.submit_my_consultation((select data||'{"email":"other-new@example.invalid"}'::jsonb from public.test_payload),'40000000-0000-4000-8000-000000000002','own-hash','00000000-0000-4000-8000-000000000202','');raise exception 'Cross-account retry attached';exception when raise_exception then if sqlerrm<>'Idempotency mismatch' then raise;end if;end $$;
 reset role;
+select public.test_assert(not exists(
+ select 1 from public.consent_records c join public.eligibility_assessments a on a.id=c.assessment_id
+ where a.reference=current_setting('test.consultation_reference') and c.purpose='adult_confirmation'
+),'new consultations do not create an age attestation');
 set role authenticated;
 select set_config('request.jwt.claims','{"sub":"00000000-0000-4000-8000-000000000201","aal":"aal1"}',false);
 select public.test_assert((select count(*)=1 from public.my_consultations()),'owner sees only its submitted consultation');

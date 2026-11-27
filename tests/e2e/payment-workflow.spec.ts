@@ -35,7 +35,7 @@ async function submitConsultation(page: Page) {
   await page.locator("#intake").selectOption("Next available intake");
   await page.locator("#funding").selectOption("Open to advice");
   await next.click();
-  await page.locator('[name="adultConfirmation"]').check();
+  await expect(page.locator('[name="adultConfirmation"]')).toHaveCount(0);
   await page.locator('[name="processingConsent"]').check();
   await page.getByRole("button", { name: "Submit consultation" }).click();
   await page.getByRole("link", { name: "View payment instructions" }).click();
@@ -114,6 +114,12 @@ test("applicant, admin and advisor complete both payment workflows", async ({ br
   await openReview("50,000");
   await admin.getByLabel("Feedback to the applicant (optional)").fill("OK");
   await admin.getByRole("button", { name: "Request a new receipt" }).click();
+  const requestDialog = admin.getByRole("dialog", { name: "Request a new receipt?" });
+  await expect(requestDialog.getByRole("button", { name: "Cancel" })).toBeFocused();
+  await requestDialog.getByRole("button", { name: "Cancel" }).click();
+  await expect(requestDialog).toBeHidden();
+  await admin.getByRole("button", { name: "Request a new receipt" }).click();
+  await requestDialog.getByRole("button", { name: "Request a new receipt" }).click();
   await expect(admin.getByRole("heading", { name: /· rejected/i })).toBeVisible();
   await student.bringToFront();
   await bell.click();
@@ -177,6 +183,7 @@ test("applicant, admin and advisor complete both payment workflows", async ({ br
   await expect(advisor.getByRole("heading", { name: "Record a workflow update" })).toHaveCount(0);
   await openReview("125,000");
   await admin.getByRole("button", { name: "Request a new receipt" }).click();
+  await requestDialog.getByRole("button", { name: "Request a new receipt" }).click();
   await expect(admin.getByRole("heading", { name: /· rejected/i })).toBeVisible();
   await student.reload();
   await upload();

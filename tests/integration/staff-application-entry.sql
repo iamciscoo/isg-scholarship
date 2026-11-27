@@ -58,10 +58,9 @@ end $$;
 select set_config('test.staff_declaration',public.save_staff_application(current_setting('test.flow_user')::uuid,current_setting('test.staff_data')::jsonb||'{"email":"staff-entry@example.invalid"}',true)::text,true);
 select public.test_assert((select submission_method='staff' and submitted_by=current_setting('test.flow_admin')::uuid from public.application_declarations where id=current_setting('test.staff_declaration')::uuid),'staff provenance is stored');
 select public.test_assert(public.save_staff_application(current_setting('test.flow_user')::uuid,current_setting('test.staff_data')::jsonb||'{"email":"staff-entry@example.invalid"}',true)::text=current_setting('test.staff_declaration'),'staff submission retry is idempotent');
-do $$begin
- perform public.save_staff_application(current_setting('test.flow_user')::uuid,current_setting('test.staff_data')::jsonb||'{"email":"wrong@example.invalid"}',false);
- raise exception 'Staff changed account email';
-exception when raise_exception then if sqlerrm<>'Use account email' then raise;end if;end $$;
+select public.save_staff_application(current_setting('test.flow_user')::uuid,current_setting('test.staff_data')::jsonb||'{"email":"application-contact@example.invalid"}',false);
+select public.test_assert((select data->>'email'='application-contact@example.invalid' from public.application_form_drafts where user_id=current_setting('test.flow_user')::uuid),'staff can save an independent application contact email');
+select public.test_assert(public.staff_application_email(current_setting('test.flow_user')::uuid)='staff-entry@example.invalid','saving the form keeps the original account email');
 select set_config('request.jwt.claims',jsonb_build_object('sub',current_setting('test.flow_user'),'aal','aal1')::text,true);
 do $$begin
  perform public.save_staff_application(current_setting('test.flow_user')::uuid,current_setting('test.staff_data')::jsonb,false);

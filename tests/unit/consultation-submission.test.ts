@@ -42,7 +42,7 @@ it("accepts authenticated consented submissions without unconfigured Turnstile",
   expect(mock.guard).toHaveBeenCalledWith(expect.any(Headers), "", "assessment", false);
   expect(mock.rpc).toHaveBeenCalledWith(
     "submit_my_consultation",
-    expect.objectContaining({ p_user: "90000000-0000-4000-8000-000000000020" }),
+    expect.objectContaining({ p_user: "90000000-0000-4000-8000-000000000020", p_data: assessment }),
   );
 });
 it("requires a signed-in account", async () => {
@@ -54,7 +54,7 @@ it("rejects a different account email", async () => {
   expect((await POST(request({ ...assessment, email: "someone@example.invalid" }))).status).toBe(422);
   expect(mock.rpc).not.toHaveBeenCalled();
 });
-it("requires processing and adult consent", async () => {
+it("requires processing consent", async () => {
   expect((await POST(request({ ...assessment, processingConsent: false }))).status).toBe(422);
   expect(mock.rpc).not.toHaveBeenCalled();
 });

@@ -10,7 +10,14 @@ export function ReceiptReview({ id, status, note }: { id: string; status: string
           decisions={{
             name: "approve",
             primary: { label: "Verify payment received", value: "true" },
-            secondary: { label: "Request a new receipt", value: "false" },
+            secondary: {
+              label: "Request a new receipt",
+              value: "false",
+              confirmation: {
+                title: "Request a new receipt?",
+                description: "The applicant will be asked to upload a replacement receipt.",
+              },
+            },
           }}
         >
           <input type="hidden" name="id" value={id} />

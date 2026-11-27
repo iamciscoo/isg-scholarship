@@ -98,8 +98,8 @@ export default async function ApplicationDetails() {
     programme: a?.preferred_fields || "",
     highestEducation: a?.qualification || "",
     graduationYear: a?.graduation_year ? String(a.graduation_year) : "",
-    ...(restored.success ? restored.data : {}),
     email: user.email || "",
+    ...(restored.success ? restored.data : {}),
   };
   const status = record.application_status;
   const editable = !status || status === "submitted" || status === "needs_information";

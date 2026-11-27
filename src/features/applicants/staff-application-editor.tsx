@@ -53,8 +53,8 @@ export async function StaffApplicationEditor({ id, admin }: { id: string; admin:
     programme: assessment.data?.preferred_fields || "",
     highestEducation: assessment.data?.qualification || "",
     graduationYear: assessment.data?.graduation_year ? String(assessment.data.graduation_year) : "",
-    ...(restored.success ? restored.data : {}),
     email: email.data || "",
+    ...(restored.success ? restored.data : {}),
   };
   const paid = application.package_state === "paid" && application.status !== "Cancelled";
   const closed = ["accepted", "rejected", "completed", "cancelled", "approved", "declined"].includes(

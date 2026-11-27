@@ -32,6 +32,21 @@ test("public pages and legacy redirects work", async ({ page, request }) => {
   expect(legacy.status()).toBe(308);
   expect(legacy.headers().location).toBe("/");
 });
+test("service content is translated after navigating from another public page", async ({ page, baseURL }) => {
+  await page.context().addCookies([{ name: "isg_locale", value: "fr", url: baseURL! }]);
+  await page.goto("/about");
+  await page.getByRole("link", { name: "Nos services", exact: true }).first().click();
+  await expect(page).toHaveURL(/\/services$/);
+  await expect(page.locator(".content-grid h2")).toHaveText([
+    "Évaluation initiale de l’admissibilité",
+    "Conseils sur les bourses",
+    "Examen du profil académique",
+    "Préparation de la candidature",
+    "Consultations individuelles",
+    "Suivi de la candidature",
+  ]);
+  await expect(page.getByRole("link", { name: "Consulter les frais de service" })).toBeVisible();
+});
 test("logo and utility links zoom without a pointer border and retain keyboard focus", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");

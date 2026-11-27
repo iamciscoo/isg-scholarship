@@ -2,6 +2,7 @@ import { z } from "zod";
 const short = z.string().trim().max(160);
 const required = short.min(1, "This field is required.");
 const email = z.union([z.email().max(254), z.literal("")]);
+const applicationEmail = z.email("Enter a valid email address.").max(254);
 export const declarationVersion = "2026-11-18-application-v1";
 export const declarationText =
   "I confirm that the information I have given is true. I understand that submitting this form does not guarantee a scholarship, admission, visa or travel.";
@@ -10,7 +11,7 @@ export const fullApplicationSchema = z
     firstName: required,
     middleName: short.default(""),
     lastName: required,
-    email: z.email().max(254),
+    email: applicationEmail,
     phone: required,
     studyInterest: required,
     programme: required,
@@ -48,6 +49,7 @@ export const applicationDraftSchema = fullApplicationSchema
   .extend({
     firstName: short,
     lastName: short,
+    email: z.union([applicationEmail, z.literal("")]).optional(),
     phone: short,
     studyInterest: short,
     programme: short,

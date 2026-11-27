@@ -13,7 +13,7 @@ export const assessmentFields = [
   ["firstName", "lastName", "email", "phone", "nationality", "residence"],
   ["qualification", "educationStatus", "fieldOfStudy"],
   ["studyLevel", "preferredFields", "destinations", "intake", "funding"],
-  ["processingConsent", "adultConfirmation"],
+  ["processingConsent"],
 ] as const;
 export const assessmentSchema = z
   .object({
@@ -62,13 +62,12 @@ export const assessmentSchema = z
     constraints: z.string().trim().max(400),
     processingConsent: z.boolean().refine((v) => v, "Consent is required to review your assessment."),
     marketingConsent: z.boolean(),
-    adultConfirmation: z.boolean().refine((v) => v, "Confirm you are 18 or over."),
   })
   .strict();
 export type AssessmentInput = z.infer<typeof assessmentSchema>;
 export const intakeSchema = z
   .object({
-    data: assessmentSchema,
+    data: assessmentSchema.extend({ adultConfirmation: z.boolean().optional() }),
     idempotencyKey: z.uuid(),
     turnstileToken: z.string().max(2048),
     website: z.string().max(100),
