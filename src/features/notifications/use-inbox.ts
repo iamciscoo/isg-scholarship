@@ -44,6 +44,7 @@ export function useInbox(signedIn: boolean) {
     [signedIn],
   );
   useEffect(() => {
+    if (!signedIn) return;
     const load = () => {
       if (!document.hidden) void refresh();
     };
@@ -51,7 +52,7 @@ export function useInbox(signedIn: boolean) {
       void refresh(true);
     };
     load();
-    const interval = setInterval(load, 30_000);
+    const interval = setInterval(load, 60_000);
     window.addEventListener("focus", load);
     window.addEventListener("isg:notifications-read", changed);
     document.addEventListener("visibilitychange", load);
@@ -63,7 +64,7 @@ export function useInbox(signedIn: boolean) {
       window.removeEventListener("isg:notifications-read", changed);
       document.removeEventListener("visibilitychange", load);
     };
-  }, [refresh]);
+  }, [refresh, signedIn]);
   useEffect(() => {
     if (previousPath.current === path) return;
     previousPath.current = path;
