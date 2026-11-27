@@ -102,11 +102,6 @@ export async function authenticate(_previous: AuthState, fd: FormData): Promise<
   }
   redirect(safeNext(requested));
 }
-export async function signOut() {
-  const db = await createClient();
-  await db.auth.signOut({ scope: "local" });
-  redirect("/login");
-}
 export async function resetPassword(_state: AuthState, fd: FormData): Promise<AuthState> {
   const { db } = await requireUser();
   const requestHeaders = await headers();

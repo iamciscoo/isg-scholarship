@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { LanguageSelector } from "./language-selector";
 import { NotificationBell } from "@/features/notifications/bell";
-import { signOut } from "@/features/auth/actions";
+import { signOut } from "@/features/auth/sign-out";
 import { Button } from "@/components/ui/button";
 import type { Role } from "@/lib/auth/permissions";
 import { WorkspaceProfileMenu, type WorkspaceAccount } from "./workspace-profile-menu";

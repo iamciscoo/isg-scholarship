@@ -5,7 +5,7 @@ import * as Menu from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
 import Link from "next/link";
 import { LayoutDashboard, LogOut, UserRound } from "lucide-react";
-import { signOut } from "@/features/auth/actions";
+import { signOut } from "@/features/auth/sign-out";
 import { useLocale } from "@/lib/i18n/provider";
 import type { AccountSummary } from "@/lib/auth/account-summary";
 export function AccountMenu({ account }: { account: AccountSummary }) {

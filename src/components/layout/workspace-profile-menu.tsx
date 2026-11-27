@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronDown, LogOut, UserRound, type LucideIcon } from "lucide-react";
-import { signOut } from "@/features/auth/actions";
+import { signOut } from "@/features/auth/sign-out";
 export type WorkspaceLink = { id: string; href: string; label: string; icon: LucideIcon; current: boolean };
 export type WorkspaceAccount = { name: string; avatar: string | null };
 export function WorkspaceProfileMenu({

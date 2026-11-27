@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const mock = vi.hoisted(() => ({ pathname: vi.fn(), menu: vi.fn() }));
 vi.mock("next/navigation", () => ({ usePathname: mock.pathname }));
-vi.mock("@/features/auth/actions", () => ({ signOut: vi.fn() }));
+vi.mock("@/features/auth/sign-out", () => ({ signOut: vi.fn() }));
 vi.mock("@/components/layout/language-selector", () => ({ LanguageSelector: () => null }));
 vi.mock("@/features/notifications/bell", () => ({ NotificationBell: () => null }));
 vi.mock("@/components/layout/workspace-profile-menu", () => ({ WorkspaceProfileMenu: mock.menu }));
